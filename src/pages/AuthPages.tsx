@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Logo from '@/components/Logo';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
@@ -13,26 +14,44 @@ interface AuthFormProps {
 
 const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   const navigate = useNavigate();
+  const { signIn, signUp } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     username: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // In a real app, we'd handle authentication here
-    if (mode === 'login') {
-      toast.success('Successfully logged in!');
-      navigate('/dashboard');
-    } else {
-      toast.success('Account created successfully!');
-      navigate('/dashboard');
+    try {
+      if (mode === 'login') {
+        await signIn(formData.email, formData.password);
+      } else {
+        if (!formData.username) {
+          toast.error('Username is required');
+          return;
+        }
+        
+        // Validate username
+        if (formData.username.length < 5 || /\s/.test(formData.username) || /[^a-zA-Z0-9_]/.test(formData.username)) {
+          toast.error('Username must be at least 5 characters with no spaces or special characters');
+          return;
+        }
+        
+        await signUp(formData.email, formData.password, formData.username);
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -123,8 +142,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
           </CardContent>
           
           <CardFooter className="flex flex-col">
-            <Button type="submit" className="w-full mb-4">
-              {mode === 'login' ? 'Log in' : 'Sign up'}
+            <Button type="submit" className="w-full mb-4" disabled={isSubmitting}>
+              {isSubmitting ? 'Processing...' : mode === 'login' ? 'Log in' : 'Sign up'}
             </Button>
             
             <p className="text-sm text-center text-muted-foreground">

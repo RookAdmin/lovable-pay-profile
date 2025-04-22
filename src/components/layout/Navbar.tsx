@@ -12,7 +12,9 @@ const Navbar: React.FC = () => {
   return (
     <header className="w-full bg-white border-b border-gray-100">
       <div className="container flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-        <Logo withTagline />
+        <Link to="/">
+          <Logo withTagline />
+        </Link>
         
         <div className="flex items-center space-x-2">
           {user ? (
