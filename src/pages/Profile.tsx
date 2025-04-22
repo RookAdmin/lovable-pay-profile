@@ -16,6 +16,14 @@ interface PaymentDetails {
   bankName?: string;
 }
 
+// Create an interface that matches the expected BankDetails in PaymentSection
+interface BankDetails {
+  accountNumber: string;
+  ifsc: string;
+  accountName: string;
+  bankName: string;
+}
+
 const getProfile = async (username: string) => {
   const { data: profile, error } = await supabase
     .from('profiles')
@@ -50,7 +58,20 @@ const getProfile = async (username: string) => {
   
   // Safely type cast the payment details
   const upiDetails = upiMethod?.details as PaymentDetails | undefined;
-  const bankDetails = bankMethod?.details as PaymentDetails | undefined;
+  const paymentDetails = bankMethod?.details as PaymentDetails | undefined;
+  
+  // Create a properly typed bankDetails object that meets the BankDetails interface requirements
+  let bankDetails: BankDetails | undefined;
+  
+  if (paymentDetails?.accountNumber && paymentDetails?.ifsc && 
+      paymentDetails?.accountName && paymentDetails?.bankName) {
+    bankDetails = {
+      accountNumber: paymentDetails.accountNumber,
+      ifsc: paymentDetails.ifsc,
+      accountName: paymentDetails.accountName,
+      bankName: paymentDetails.bankName
+    };
+  }
   
   // Transform smart links to match the required type
   const typedSmartLinks = smartLinks?.map(link => ({
