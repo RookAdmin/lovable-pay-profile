@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +12,18 @@ import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
+import { SmartLink } from '@/types/profile';
+
+interface UpiDetails {
+  upiId: string;
+}
+
+interface BankDetails {
+  accountNumber: string;
+  ifsc: string;
+  accountName: string;
+  bankName: string;
+}
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -32,7 +43,6 @@ const Dashboard = () => {
     enabled: !!user?.id
   });
 
-  // Fetch payment methods
   const { data: paymentMethods } = useQuery({
     queryKey: ['payment_methods', user?.id],
     queryFn: async () => {
@@ -47,7 +57,6 @@ const Dashboard = () => {
     enabled: !!user?.id
   });
 
-  // Fetch smart links
   const { data: smartLinks } = useQuery({
     queryKey: ['smart_links', user?.id],
     queryFn: async () => {
@@ -76,23 +85,36 @@ const Dashboard = () => {
     );
   }
 
-  // Find UPI payment method
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');
   
-  // Extract UPI ID and bank details
-  const upiId = upiMethod?.details?.upiId;
-  const bankDetails = bankMethod?.details && {
-    accountNumber: bankMethod.details.accountNumber,
-    ifsc: bankMethod.details.ifsc,
-    accountName: bankMethod.details.accountName,
-    bankName: bankMethod.details.bankName
-  };
+  const upiId = upiMethod?.details && typeof upiMethod.details === 'object' 
+    ? (upiMethod.details as UpiDetails).upiId 
+    : undefined;
+  
+  const bankDetails = bankMethod?.details && typeof bankMethod.details === 'object' 
+    ? {
+        accountNumber: (bankMethod.details as BankDetails).accountNumber,
+        ifsc: (bankMethod.details as BankDetails).ifsc,
+        accountName: (bankMethod.details as BankDetails).accountName,
+        bankName: (bankMethod.details as BankDetails).bankName
+      } 
+    : undefined;
+
+  const typedSmartLinks: SmartLink[] = smartLinks?.map(link => ({
+    id: link.id,
+    title: link.title,
+    amount: Number(link.amount),
+    currency: link.currency,
+    icon: (link.icon === 'heart' || link.icon === 'coffee' || link.icon === 'zap' || link.icon === 'card') 
+      ? (link.icon as 'heart' | 'coffee' | 'zap' | 'card') 
+      : 'heart',
+    gradient: link.gradient || false
+  })) || [];
 
   return (
     <div className="container py-8">
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar */}
         <div className="w-full md:w-64 shrink-0">
           <Card className="sticky top-8">
             <CardContent className="p-4">
@@ -159,7 +181,6 @@ const Dashboard = () => {
           </Card>
         </div>
         
-        {/* Main Content */}
         <div className="flex-1">
           <Card>
             <CardHeader>
@@ -222,7 +243,7 @@ const Dashboard = () => {
                 </TabsContent>
 
                 <TabsContent value="smart-links">
-                  <SmartLinkSection links={smartLinks || []} />
+                  <SmartLinkSection links={typedSmartLinks} />
                 </TabsContent>
                 
                 <TabsContent value="edit">
