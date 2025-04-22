@@ -8,6 +8,14 @@ import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
 import type { Profile, PaymentMethod, SmartLink, SocialLink } from '@/types/profile';
 
+interface PaymentDetails {
+  upiId?: string;
+  accountNumber?: string;
+  ifsc?: string;
+  accountName?: string;
+  bankName?: string;
+}
+
 const getProfile = async (username: string) => {
   const { data: profile, error } = await supabase
     .from('profiles')
@@ -39,14 +47,24 @@ const getProfile = async (username: string) => {
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');
+  
+  // Safely type cast the payment details
+  const upiDetails = upiMethod?.details as PaymentDetails | undefined;
+  const bankDetails = bankMethod?.details as PaymentDetails | undefined;
+  
+  // Transform smart links to match the required type
+  const typedSmartLinks = smartLinks?.map(link => ({
+    ...link,
+    icon: link.icon as SmartLink['icon'] // Type assertion for the icon
+  })) || [];
 
   return {
     profile,
     socialLinks,
     paymentMethods: paymentMethods || [],
-    smartLinks: smartLinks || [],
-    upiId: upiMethod?.details.upiId,
-    bankDetails: bankMethod?.details
+    smartLinks: typedSmartLinks,
+    upiId: upiDetails?.upiId,
+    bankDetails
   };
 };
 
