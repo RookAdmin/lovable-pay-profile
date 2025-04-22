@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, CreditCard, Wallet, BarChart, Settings, LogOut, Share2 } from 'lucide-react';
+import { User, CreditCard, Wallet, BarChart, Settings, LogOut, Share2, QrCode, LinkIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import ProfileEditForm from '@/components/ProfileEditForm';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
+import PaymentSection from '@/components/PaymentSection';
+import SmartLinkSection from '@/components/SmartLinkSection';
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -30,6 +32,36 @@ const Dashboard = () => {
     enabled: !!user?.id
   });
 
+  // Fetch payment methods
+  const { data: paymentMethods } = useQuery({
+    queryKey: ['payment_methods', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('payment_methods')
+        .select('*')
+        .eq('profile_id', user?.id);
+        
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id
+  });
+
+  // Fetch smart links
+  const { data: smartLinks } = useQuery({
+    queryKey: ['smart_links', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('smart_links')
+        .select('*')
+        .eq('profile_id', user?.id);
+        
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id
+  });
+
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/${profile?.username}`;
     navigator.clipboard.writeText(shareUrl);
@@ -43,6 +75,19 @@ const Dashboard = () => {
       </div>
     );
   }
+
+  // Find UPI payment method
+  const upiMethod = paymentMethods?.find(m => m.type === 'upi');
+  const bankMethod = paymentMethods?.find(m => m.type === 'bank');
+  
+  // Extract UPI ID and bank details
+  const upiId = upiMethod?.details?.upiId;
+  const bankDetails = bankMethod?.details && {
+    accountNumber: bankMethod.details.accountNumber,
+    ifsc: bankMethod.details.ifsc,
+    accountName: bankMethod.details.accountName,
+    bankName: bankMethod.details.bankName
+  };
 
   return (
     <div className="container py-8">
@@ -85,6 +130,14 @@ const Dashboard = () => {
                   Transactions
                 </Button>
                 <Button variant="ghost" className="w-full justify-start" size="sm">
+                  <QrCode size={18} className="mr-2" />
+                  QR Codes
+                </Button>
+                <Button variant="ghost" className="w-full justify-start" size="sm">
+                  <LinkIcon size={18} className="mr-2" />
+                  Smart Links
+                </Button>
+                <Button variant="ghost" className="w-full justify-start" size="sm">
                   <BarChart size={18} className="mr-2" />
                   Analytics
                 </Button>
@@ -116,6 +169,8 @@ const Dashboard = () => {
               <Tabs defaultValue="overview">
                 <TabsList>
                   <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="payment">Payment Methods</TabsTrigger>
+                  <TabsTrigger value="smart-links">Smart Links</TabsTrigger>
                   <TabsTrigger value="edit">Edit Profile</TabsTrigger>
                 </TabsList>
                 
@@ -157,6 +212,17 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
+                </TabsContent>
+
+                <TabsContent value="payment">
+                  <PaymentSection
+                    upiId={upiId}
+                    bankDetails={bankDetails}
+                  />
+                </TabsContent>
+
+                <TabsContent value="smart-links">
+                  <SmartLinkSection links={smartLinks || []} />
                 </TabsContent>
                 
                 <TabsContent value="edit">
