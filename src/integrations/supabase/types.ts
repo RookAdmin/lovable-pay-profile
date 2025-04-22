@@ -9,7 +9,181 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      payment_methods: {
+        Row: {
+          created_at: string
+          details: Json
+          id: string
+          is_active: boolean | null
+          is_primary: boolean | null
+          profile_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          details: Json
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          profile_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          profile_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_methods_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          instagram_url: string | null
+          is_verified: boolean | null
+          linkedin_url: string | null
+          twitter_url: string | null
+          updated_at: string
+          username: string
+          website_url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          instagram_url?: string | null
+          is_verified?: boolean | null
+          linkedin_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          username: string
+          website_url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          instagram_url?: string | null
+          is_verified?: boolean | null
+          linkedin_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          username?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      smart_links: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string
+          gradient: boolean | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          profile_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string
+          gradient?: boolean | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          profile_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string
+          gradient?: boolean | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          profile_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_links_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visits: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          referrer: string | null
+          smart_link_id: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          referrer?: string | null
+          smart_link_id?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          referrer?: string | null
+          smart_link_id?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visits_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visits_smart_link_id_fkey"
+            columns: ["smart_link_id"]
+            isOneToOne: false
+            referencedRelation: "smart_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
