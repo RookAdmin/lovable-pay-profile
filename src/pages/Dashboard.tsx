@@ -5,10 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, CreditCard, Wallet, BarChart, Settings, LogOut } from 'lucide-react';
+import { User, CreditCard, Wallet, BarChart, Settings, LogOut, Share2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import ProfileEditForm from '@/components/ProfileEditForm';
+import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -27,6 +29,12 @@ const Dashboard = () => {
     },
     enabled: !!user?.id
   });
+
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/${profile?.username}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success('Profile link copied to clipboard!');
+  };
 
   if (isLoading) {
     return (
@@ -52,12 +60,21 @@ const Dashboard = () => {
                 </Avatar>
                 <h2 className="text-xl font-semibold">{profile?.display_name || user?.email}</h2>
                 <p className="text-sm text-muted-foreground">@{profile?.username}</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-2"
+                  onClick={handleShare}
+                >
+                  <Share2 size={16} className="mr-2" />
+                  Share Profile
+                </Button>
               </div>
               
               <nav className="space-y-1">
                 <Button variant="ghost" className="w-full justify-start" size="sm">
                   <User size={18} className="mr-2" />
-                  Profile
+                  Overview
                 </Button>
                 <Button variant="ghost" className="w-full justify-start" size="sm">
                   <CreditCard size={18} className="mr-2" />
@@ -93,10 +110,59 @@ const Dashboard = () => {
         <div className="flex-1">
           <Card>
             <CardHeader>
-              <CardTitle>Edit Profile</CardTitle>
+              <CardTitle>Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
-              <ProfileEditForm initialData={profile} />
+              <Tabs defaultValue="overview">
+                <TabsList>
+                  <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="edit">Edit Profile</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="overview">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Welcome, {profile?.display_name || user?.email}!</h3>
+                      <p className="text-muted-foreground">
+                        Your public profile is available at:{' '}
+                        <Link 
+                          to={`/${profile?.username}`} 
+                          className="text-primary hover:underline"
+                        >
+                          {window.location.origin}/{profile?.username}
+                        </Link>
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium mb-2">Bio</h4>
+                      <p>{profile?.bio || 'No bio added yet.'}</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium mb-2">Social Links</h4>
+                      <div className="space-y-2">
+                        {profile?.website_url && (
+                          <p>Website: <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.website_url}</a></p>
+                        )}
+                        {profile?.twitter_url && (
+                          <p>Twitter: <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.twitter_url}</a></p>
+                        )}
+                        {profile?.instagram_url && (
+                          <p>Instagram: <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.instagram_url}</a></p>
+                        )}
+                        {profile?.linkedin_url && (
+                          <p>LinkedIn: <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.linkedin_url}</a></p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="edit">
+                  <ProfileEditForm initialData={profile} />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </div>
