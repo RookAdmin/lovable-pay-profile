@@ -51,12 +51,12 @@ const getProfile = async (username: string) => {
     profile.linkedin_url && { platform: 'linkedin', url: profile.linkedin_url }
   ].filter(Boolean) as SocialLink[];
 
+  // Find payment methods by type
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');
   const cardMethod = paymentMethods?.find(m => m.type === 'card');
 
-  // Get QR code URL - first check for qr_code_url directly on the payment method, then check in details
-  const upiMethod = paymentMethods?.find(m => m.type === 'upi');
+  // Get UPI details and QR code URL
   const upiDetails = upiMethod?.details as PaymentDetails | undefined;
   let qrCodeUrl: string | undefined = undefined;
   
