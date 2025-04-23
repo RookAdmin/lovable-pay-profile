@@ -116,15 +116,18 @@ const Home = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-primary text-white">
+      <section className="py-16 bg-[#003D40] text-[#D4F1F4]">
         <div className="container px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-            <p className="text-lg opacity-90 mb-8">
+            <h2 className="text-3xl font-bold mb-4 text-[#D4F1F4]">Ready to Get Started?</h2>
+            <p className="text-lg opacity-90 mb-8 text-[#D4F1F4]/80">
               Create your payment profile in minutes and start receiving money with privacy and dignity.
             </p>
             <Link to="/signup">
-              <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-gray-100">
+              <Button 
+                size="lg" 
+                className="bg-[#0097A7] text-[#D4F1F4] hover:bg-[#005F6A]"
+              >
                 Create Your Profile
               </Button>
             </Link>
