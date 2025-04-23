@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -55,6 +56,8 @@ const getProfile = async (username: string) => {
   ].filter(Boolean) as SocialLink[];
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
+  const bankMethod = paymentMethods?.find(m => m.type === 'bank');
+  const cardMethod = paymentMethods?.find(m => m.type === 'card');
   
   const upiDetails = upiMethod?.details ? 
     safelyConvertToUpiDetails(upiMethod.details) : 
