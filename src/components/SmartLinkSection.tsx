@@ -18,11 +18,13 @@ interface SmartLink {
 interface SmartLinkSectionProps {
   links: SmartLink[];
   className?: string;
+  upiId?: string;
 }
 
 const SmartLinkSection: React.FC<SmartLinkSectionProps> = ({
   links,
-  className = ''
+  className = '',
+  upiId
 }) => {
   const [showForm, setShowForm] = useState(false);
   
@@ -37,8 +39,22 @@ const SmartLinkSection: React.FC<SmartLinkSectionProps> = ({
   };
   
   const handleLinkClick = (link: SmartLink) => {
-    // In a real implementation, we would handle the payment process
-    toast.success(`Processing ${link.currency}${link.amount} payment`);
+    if (!upiId) {
+      toast.error('No UPI ID available for payment');
+      return;
+    }
+
+    // Construct UPI payment URL
+    const amount = link.amount.toString();
+    const description = encodeURIComponent(link.title);
+    
+    // Format according to UPI deep linking specification
+    const upiUrl = `upi://pay?pa=${upiId}&pn=${description}&am=${amount}&cu=INR`;
+    
+    console.log("Opening UPI payment URL:", upiUrl);
+    
+    // Open the UPI URL which will redirect to the payment app
+    window.location.href = upiUrl;
   };
   
   return (

@@ -74,9 +74,12 @@ const Profile = () => {
           bankDetails={data.bankDetails}
           cardDetails={data.cardDetails}
           qrCodeUrl={data.qrCodeUrl}
-          isViewingMode={true} /* Force view mode regardless of authentication status */
+          isViewingMode={true}
         />
-        <SmartLinkSection links={data.smartLinks} />
+        <SmartLinkSection 
+          links={data.smartLinks} 
+          upiId={data.upiId}
+        />
       </div>
     </div>
   );
