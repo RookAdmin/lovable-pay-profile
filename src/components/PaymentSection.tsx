@@ -36,8 +36,11 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
   
   useEffect(() => {
     console.log("PaymentSection received qrCodeUrl:", qrCodeUrl);
+    console.log("PaymentSection upiId:", upiId);
+    console.log("PaymentSection received bank details:", bankDetails);
+    console.log("PaymentSection received card details:", cardDetails);
     console.log("PaymentSection upiMethodId:", upiMethodId);
-  }, [qrCodeUrl, upiMethodId]);
+  }, [qrCodeUrl, upiId, bankDetails, cardDetails, upiMethodId]);
   
   const handleFormToggle = () => {
     setShowForm(!showForm);
@@ -46,26 +49,31 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
     }
   };
   
+  // Check if we're in the profile view mode (no onPaymentMethodUpdate provided)
+  const isViewingMode = !onPaymentMethodUpdate;
+  
   return (
     <div className="space-y-6">
       <Card className={`shadow-md border-gray-100 ${className}`}>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl">Payment Methods</CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleFormToggle}
-          >
-            {showForm ? 'Hide Form' : (
-              <>
-                <PlusCircle size={16} className="mr-2" />
-                {(!upiId && !bankDetails && !cardDetails) ? 'Add Payment Method' : 'Edit Payment Methods'}
-              </>
-            )}
-          </Button>
+          {!isViewingMode && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleFormToggle}
+            >
+              {showForm ? 'Hide Form' : (
+                <>
+                  <PlusCircle size={16} className="mr-2" />
+                  {(!upiId && !bankDetails && !cardDetails) ? 'Add Payment Method' : 'Edit Payment Methods'}
+                </>
+              )}
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
-          {showForm ? (
+          {(showForm && !isViewingMode) ? (
             <PaymentMethodsForm 
               upiMethod={upiId ? { 
                 id: upiMethodId || '', 
@@ -106,7 +114,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
-                    No UPI ID available. Add a UPI payment method to display here.
+                    No UPI ID available.
                   </div>
                 )}
               </TabsContent>
@@ -133,7 +141,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
                   </>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
-                    No bank details available. Add a bank account to display here.
+                    No bank details available.
                   </div>
                 )}
               </TabsContent>
@@ -163,7 +171,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
-                    No card details available. Add a card to display here.
+                    No card details available.
                   </div>
                 )}
               </TabsContent>
