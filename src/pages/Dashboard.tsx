@@ -86,51 +86,84 @@ const Dashboard = () => {
   }
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
-  const bankMethod = paymentMethods?.find(m => m.type === 'bank');
-  
-  const upiId = upiMethod?.details && typeof upiMethod.details === 'object' 
-    ? (upiMethod.details as UpiDetails).upiId 
-    : undefined;
-  
-  const bankDetails = bankMethod?.details && typeof bankMethod.details === 'object' 
-    ? {
-        accountNumber: (bankMethod.details as BankDetails).accountNumber,
-        ifsc: (bankMethod.details as BankDetails).ifsc,
-        accountName: (bankMethod.details as BankDetails).accountName,
-        bankName: (bankMethod.details as BankDetails).bankName
-      } 
-    : undefined;
+  let upiId: string | undefined;
+  if (
+    upiMethod?.details &&
+    typeof upiMethod.details === "object" &&
+    !Array.isArray(upiMethod.details) &&
+    (upiMethod.details as any).upiId
+  ) {
+    upiId = (upiMethod.details as { upiId?: string }).upiId;
+  }
 
-  const typedSmartLinks: SmartLink[] = smartLinks?.map(link => ({
-    id: link.id,
-    title: link.title,
-    amount: Number(link.amount),
-    currency: link.currency,
-    icon: (link.icon === 'heart' || link.icon === 'coffee' || link.icon === 'zap' || link.icon === 'card') 
-      ? (link.icon as 'heart' | 'coffee' | 'zap' | 'card') 
-      : 'heart',
-    gradient: link.gradient || false
-  })) || [];
+  const bankMethod = paymentMethods?.find(m => m.type === 'bank');
+  let bankDetails:
+    | { accountNumber?: string; ifsc?: string; accountName?: string; bankName?: string }
+    | undefined;
+  if (
+    bankMethod?.details &&
+    typeof bankMethod.details === "object" &&
+    !Array.isArray(bankMethod.details)
+  ) {
+    const det = bankMethod.details as
+      | { accountNumber?: string; ifsc?: string; accountName?: string; bankName?: string }
+      | Record<string, unknown>;
+    if (
+      det.accountNumber &&
+      det.ifsc &&
+      det.accountName &&
+      det.bankName
+    ) {
+      bankDetails = {
+        accountNumber: det.accountNumber as string,
+        ifsc: det.ifsc as string,
+        accountName: det.accountName as string,
+        bankName: det.bankName as string
+      };
+    }
+  }
+
+  const typedSmartLinks: SmartLink[] =
+    Array.isArray(smartLinks)
+      ? smartLinks.map(link => ({
+          id: link.id,
+          title: link.title,
+          amount: Number(link.amount),
+          currency: link.currency,
+          icon:
+            link.icon === "heart" ||
+            link.icon === "coffee" ||
+            link.icon === "zap" ||
+            link.icon === "card"
+              ? link.icon
+              : "heart",
+          gradient: !!link.gradient,
+          profileId: link.profile_id,
+          isActive: link.is_active,
+          createdAt: link.created_at,
+          updatedAt: link.updated_at
+        }))
+      : [];
 
   return (
-    <div className="container py-8">
+    <div className="container py-8 bg-lightblue min-h-screen">
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-64 shrink-0">
-          <Card className="sticky top-8">
+          <Card className="sticky top-8 bg-card border-cyan shadow-lg">
             <CardContent className="p-4">
               <div className="flex flex-col items-center mb-6 pt-2">
-                <Avatar className="h-20 w-20 mb-3">
+                <Avatar className="h-20 w-20 mb-3 border-4 border-cyan">
                   <AvatarImage src={profile?.avatar_url} alt={profile?.display_name || user?.email} />
                   <AvatarFallback>
                     {(profile?.display_name || user?.email || '').substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <h2 className="text-xl font-semibold">{profile?.display_name || user?.email}</h2>
-                <p className="text-sm text-muted-foreground">@{profile?.username}</p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="mt-2"
+                <h2 className="text-xl font-semibold text-teal">{profile?.display_name || user?.email}</h2>
+                <p className="text-sm text-secondary">@{profile?.username}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 border-cyan text-cyan"
                   onClick={handleShare}
                 >
                   <Share2 size={16} className="mr-2" />
@@ -182,7 +215,7 @@ const Dashboard = () => {
         </div>
         
         <div className="flex-1">
-          <Card>
+          <Card className="bg-card shadow-lg border-cyan">
             <CardHeader>
               <CardTitle>Dashboard</CardTitle>
             </CardHeader>
