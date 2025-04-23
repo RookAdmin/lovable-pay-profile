@@ -4,6 +4,9 @@ import { Outlet } from 'react-router-dom';
 import Logo from '@/components/Logo';
 
 const ProfileLayout: React.FC = () => {
+  // Force console logs to help with debugging
+  console.log("Rendering ProfileLayout");
+  
   return (
     <div className="flex flex-col min-h-screen w-full">
       <header className="w-full border-b border-gray-100 py-4">

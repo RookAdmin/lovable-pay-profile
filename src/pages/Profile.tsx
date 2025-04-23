@@ -28,6 +28,7 @@ const getProfile = async (username: string) => {
   console.log("Fetching profile for:", username);
   
   try {
+    // Fetch profile with public access, no auth required
     const { data: profile, error } = await supabase
       .from('profiles')
       .select('*')
@@ -46,6 +47,7 @@ const getProfile = async (username: string) => {
 
     console.log("Profile found:", profile);
     
+    // Fetch payment methods with public access
     const { data: paymentMethods, error: paymentError } = await supabase
       .from('payment_methods')
       .select('*')
@@ -53,11 +55,13 @@ const getProfile = async (username: string) => {
       
     if (paymentError) {
       console.error("Error fetching payment methods:", paymentError);
-      throw paymentError; // Throw error to trigger error handler
+      // Don't throw error here, continue with what we have
+      // This helps ensure partial data still loads
     }
       
-    console.log("Payment methods fetched:", paymentMethods);
+    console.log("Payment methods fetched:", paymentMethods || []);
 
+    // Fetch smart links with public access
     const { data: smartLinks, error: smartLinksError } = await supabase
       .from('smart_links')
       .select('*')
@@ -66,8 +70,10 @@ const getProfile = async (username: string) => {
       
     if (smartLinksError) {
       console.error("Error fetching smart links:", smartLinksError);
-      throw smartLinksError; // Throw error to trigger error handler
+      // Don't throw error here, continue with what we have
     }
+    
+    console.log("Smart links fetched:", smartLinks || []);
 
     const socialLinks: SocialLink[] = [
       profile.instagram_url && { platform: 'instagram', url: profile.instagram_url },
@@ -161,7 +167,7 @@ const Profile = () => {
     queryFn: () => getProfile(username || ''),
     enabled: !!username,
     staleTime: 60000,
-    retry: 2, // Increased retry attempts
+    retry: 3, // Increased retry attempts for better reliability
     meta: {
       onError: (err: Error) => {
         console.error("Error in profile query:", err);
@@ -176,6 +182,18 @@ const Profile = () => {
       refetch();
     }
   }, [username, refetch]);
+
+  useEffect(() => {
+    // Log when data is successfully fetched
+    if (data) {
+      console.log("Profile data loaded successfully", {
+        hasUpiId: !!data.upiId,
+        hasBankDetails: !!data.bankDetails,
+        hasCardDetails: !!data.cardDetails,
+        hasQrCode: !!data.qrCodeUrl,
+      });
+    }
+  }, [data]);
 
   if (isLoading) {
     return (
@@ -194,11 +212,15 @@ const Profile = () => {
     );
   }
   
-  console.log("Profile data loaded:", data);
-  console.log("QR code URL in data:", data.qrCodeUrl);
-  console.log("UPI ID:", data.upiId);
-  console.log("Bank details:", data.bankDetails);
-  console.log("Card details:", data.cardDetails);
+  console.log("Rendering profile data:", {
+    username: data.profile.username,
+    displayName: data.profile.display_name,
+    upiId: data.upiId,
+    hasQrCode: !!data.qrCodeUrl,
+    hasBankDetails: !!data.bankDetails,
+    hasCardDetails: !!data.cardDetails,
+    smartLinksCount: data.smartLinks.length
+  });
   
   return (
     <div className="container max-w-md px-4 py-8">
@@ -217,7 +239,7 @@ const Profile = () => {
           bankDetails={data.bankDetails}
           cardDetails={data.cardDetails}
           qrCodeUrl={data.qrCodeUrl}
-          isViewingMode={true}
+          isViewingMode={true} // Always force viewing mode for public profiles
         />
         <SmartLinkSection links={data.smartLinks} />
       </div>
