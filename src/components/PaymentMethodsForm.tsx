@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -15,7 +14,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import QRUploader from "./QRUploader";
 import { UpiDetails } from '@/types/payment';
 
-// Define validation schemas
 const upiSchema = z.object({
   upiId: z.string().min(5, 'UPI ID must be at least 5 characters')
 });
@@ -52,10 +50,8 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   
-  // UPI QR management
   const [qrCodeUrl, setQrCodeUrl] = React.useState<string>(upiMethod?.details?.qrCodeUrl || "");
 
-  // Initialize UPI form
   const upiForm = useForm<UpiFormData>({
     resolver: zodResolver(upiSchema),
     defaultValues: {
@@ -63,7 +59,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
     }
   });
 
-  // Initialize Bank form
   const bankForm = useForm<BankFormData>({
     resolver: zodResolver(bankSchema),
     defaultValues: {
@@ -74,7 +69,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
     }
   });
 
-  // Initialize Card form
   const cardForm = useForm<CardFormData>({
     resolver: zodResolver(cardSchema),
     defaultValues: {
@@ -180,7 +174,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         return;
       }
 
-      // Mask card number for security
       const maskedCardNumber = data.cardNumber.replace(/^\d{12}/, '************');
       const maskedData = {
         ...data,
@@ -196,7 +189,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
       };
 
       if (cardMethod?.id) {
-        // Update existing
         const { error } = await supabase
           .from('payment_methods')
           .update(payload)
@@ -205,7 +197,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         if (error) throw error;
         toast.success('Card details updated successfully');
       } else {
-        // Insert new
         const { error } = await supabase
           .from('payment_methods')
           .insert(payload);
@@ -214,13 +205,51 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         toast.success('Card details saved successfully');
       }
 
-      // Refresh payment methods data
       queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
-      cardForm.reset(); // Clear form for security
+      cardForm.reset();
     } catch (error) {
       console.error('Error saving card details:', error);
       toast.error('Failed to save card details');
     }
+  };
+
+  const saveQrToSupabase = async (qrUrl: string) => {
+    if (!user) return;
+    let result;
+    if (upiMethod?.id) {
+      result = await supabase
+        .from('payment_methods')
+        .update({
+          details: { 
+            ...(upiMethod.details || {}),
+            qrCodeUrl: qrUrl 
+          },
+          qr_code_url: qrCodeUrl
+        })
+        .eq('id', upiMethod.id);
+    } else {
+      result = await supabase
+        .from('payment_methods')
+        .insert({
+          profile_id: user.id,
+          type: 'upi',
+          details: { 
+            upiId: '',
+            qrCodeUrl: qrUrl 
+          },
+          qr_code_url: qrCodeUrl,
+          is_active: true,
+          is_primary: true
+        });
+    }
+
+    if (result.error) {
+      console.error("Failed to save QR public URL immediately:", result.error);
+      toast.error("Failed to save QR code image.");
+    } else {
+      toast.success("QR code saved!");
+    }
+    queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
   };
 
   return (
@@ -243,8 +272,33 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
             <div className="mb-3">
               <QRUploader
                 initialUrl={qrCodeUrl}
-                onUpload={url => setQrCodeUrl(url)}
-                onDelete={() => setQrCodeUrl("")}
+                onUpload={(url) => {
+                  setQrCodeUrl(url);
+                  saveQrToSupabase(url);
+                }}
+                onDelete={() => {
+                  setQrCodeUrl("");
+                  if (user && upiMethod?.id) {
+                    supabase
+                      .from('payment_methods')
+                      .update({
+                        details: { 
+                          ...(upiMethod.details || {}),
+                          qrCodeUrl: ""
+                        },
+                        qr_code_url: null
+                      })
+                      .eq('id', upiMethod.id)
+                      .then(({ error }) => {
+                        if (error) {
+                          toast.error("Failed to remove QR code");
+                        } else {
+                          queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
+                          toast.success("QR code removed");
+                        }
+                      });
+                  }
+                }}
               />
               <div className="text-xs text-muted-foreground text-center mt-1">
                 Upload your own UPI QR (for Google Pay, PhonePe, Paytm, etc).
@@ -353,7 +407,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                           {...field} 
                           maxLength={19}
                           onChange={(e) => {
-                            // Format card number with spaces for readability
                             const value = e.target.value.replace(/\s/g, '');
                             const formattedValue = value
                               .replace(/\D/g, '')
