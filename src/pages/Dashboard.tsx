@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,6 +61,13 @@ const Dashboard = () => {
     },
     enabled: !!user?.id
   });
+  
+  // Add the missing handleShare function
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/${profile?.username}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success('Profile link copied to clipboard!');
+  };
 
   if (isLoading) {
     return (
