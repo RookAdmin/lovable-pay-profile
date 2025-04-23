@@ -92,13 +92,13 @@ const Dashboard = () => {
   
   const qrCodeUrl = upiMethod?.qr_code_url || 
     (typeof upiMethod?.details === 'object' && upiMethod?.details !== null ? 
-      (upiMethod.details as UpiDetails).qrCodeUrl : 
+      (safelyConvertToUpiDetails(upiMethod.details)).qrCodeUrl : 
       undefined);
   
   console.log("QR code URL:", qrCodeUrl);
 
-  const upiDetails = upiMethod?.details && typeof upiMethod.details === 'object' ? 
-    { upiId: (upiMethod.details as UpiDetails).upiId || '' } : 
+  const upiDetails = upiMethod?.details ? 
+    safelyConvertToUpiDetails(upiMethod.details) : 
     undefined;
 
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');
@@ -287,3 +287,10 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+function safelyConvertToUpiDetails(details: any): UpiDetails {
+  return {
+    upiId: (details as { upiId?: string }).upiId || '',
+    qrCodeUrl: (details as { qrCodeUrl?: string }).qrCodeUrl || ''
+  };
+}

@@ -9,7 +9,7 @@ interface QRUploaderProps {
   initialUrl?: string;
   onUpload: (url: string) => void;
   onDelete?: () => void;
-  onSave?: (url: string) => void;
+  onSave?: (url: string) => Promise<boolean>;
   disabled?: boolean;
 }
 
@@ -100,8 +100,8 @@ const QRUploader: React.FC<QRUploaderProps> = ({
     try {
       console.log("Saving QR code:", fileUrl);
       if (onSave) {
-        const success = await onSave(fileUrl);
-        if (success) {
+        const result = await onSave(fileUrl);
+        if (result === true) {
           toast.success("QR code saved successfully");
         }
       }

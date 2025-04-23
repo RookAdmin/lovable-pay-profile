@@ -7,6 +7,7 @@ import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
 import type { Profile, PaymentMethod, SmartLink, SocialLink } from '@/types/profile';
 import { BankDetails, CardDetails, UpiDetails } from '@/types/payment';
+import { safelyConvertToUpiDetails } from '@/types/payment';
 
 interface PaymentDetails {
   upiId?: string;
@@ -54,10 +55,10 @@ const getProfile = async (username: string) => {
   ].filter(Boolean) as SocialLink[];
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
-  const bankMethod = paymentMethods?.find(m => m.type === 'bank');
-  const cardMethod = paymentMethods?.find(m => m.type === 'card');
-
-  const upiDetails = upiMethod?.details as UpiDetails | undefined;
+  
+  const upiDetails = upiMethod?.details ? 
+    safelyConvertToUpiDetails(upiMethod.details) : 
+    undefined;
   
   let qrCodeUrl: string | undefined = undefined;
   

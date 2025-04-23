@@ -26,3 +26,21 @@ export type PaymentMethod = {
   isPrimary: boolean;
   qrCodeUrl?: string; // Add this field to match database schema
 };
+
+// Helper function to safely convert JSON data to UpiDetails type
+export const safelyConvertToUpiDetails = (details: any): UpiDetails => {
+  if (!details) return { upiId: '' };
+  
+  // If it's an array, return default
+  if (Array.isArray(details)) return { upiId: '' };
+  
+  // If it's an object, extract upiId
+  if (typeof details === 'object') {
+    return {
+      upiId: details.upiId || '',
+      qrCodeUrl: details.qrCodeUrl
+    };
+  }
+  
+  return { upiId: '' };
+};
