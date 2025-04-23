@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -12,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import QRUploader from "./QRUploader";
 
 // Define validation schemas
 const upiSchema = z.object({
@@ -50,6 +50,9 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   
+  // UPI QR management
+  const [qrCodeUrl, setQrCodeUrl] = React.useState<string>(upiMethod?.details?.qrCodeUrl || upiMethod?.details?.qr_code_url || "");
+
   // Initialize UPI form
   const upiForm = useForm<UpiFormData>({
     resolver: zodResolver(upiSchema),
@@ -90,13 +93,13 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
       const payload = {
         profile_id: user.id,
         type: 'upi',
-        details: data,
+        details: { ...data, qrCodeUrl },
+        qr_code_url: qrCodeUrl || null,
         is_active: true,
         is_primary: true
       };
 
       if (upiMethod?.id) {
-        // Update existing
         const { error } = await supabase
           .from('payment_methods')
           .update(payload)
@@ -105,7 +108,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         if (error) throw error;
         toast.success('UPI details updated successfully');
       } else {
-        // Insert new
         const { error } = await supabase
           .from('payment_methods')
           .insert(payload);
@@ -113,8 +115,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         if (error) throw error;
         toast.success('UPI details saved successfully');
       }
-
-      // Refresh payment methods data
       queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
     } catch (error) {
       console.error('Error saving UPI details:', error);
@@ -138,7 +138,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
       };
 
       if (bankMethod?.id) {
-        // Update existing
         const { error } = await supabase
           .from('payment_methods')
           .update(payload)
@@ -147,7 +146,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         if (error) throw error;
         toast.success('Bank details updated successfully');
       } else {
-        // Insert new
         const { error } = await supabase
           .from('payment_methods')
           .insert(payload);
@@ -155,8 +153,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         if (error) throw error;
         toast.success('Bank details saved successfully');
       }
-
-      // Refresh payment methods data
       queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
     } catch (error) {
       console.error('Error saving bank details:', error);
@@ -219,7 +215,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
       <CardHeader>
         <CardTitle>Add Payment Methods</CardTitle>
         <CardDescription>
-          Set up how people can pay you. Your details will be shown on your public profile.
+          Set up how people can pay you. Upload your QR for UPI if available.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -231,6 +227,16 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
           </TabsList>
           
           <TabsContent value="upi">
+            <div className="mb-3">
+              <QRUploader
+                initialUrl={qrCodeUrl}
+                onUpload={url => setQrCodeUrl(url)}
+                onDelete={() => setQrCodeUrl("")}
+              />
+              <div className="text-xs text-muted-foreground text-center mt-1">
+                Upload your own UPI QR (for Google Pay, PhonePe, Paytm, etc).
+              </div>
+            </div>
             <Form {...upiForm}>
               <form onSubmit={upiForm.handleSubmit(handleUpiSubmit)} className="space-y-4">
                 <FormField
@@ -246,7 +252,8 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                     </FormItem>
                   )}
                 />
-                
+                {/* hidden field for qr */}
+                <input type="hidden" value={qrCodeUrl} readOnly name="qrCodeUrl" />
                 <Button type="submit" className="w-full">
                   {upiMethod?.id ? 'Update UPI Details' : 'Save UPI Details'}
                 </Button>

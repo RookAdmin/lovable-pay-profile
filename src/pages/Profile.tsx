@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -19,6 +18,8 @@ interface PaymentDetails {
   nameOnCard?: string;
   expiryMonth?: string;
   expiryYear?: string;
+  qrCodeUrl?: string;
+  qr_code_url?: string;
 }
 
 const getProfile = async (username: string) => {
@@ -53,9 +54,12 @@ const getProfile = async (username: string) => {
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');
   const cardMethod = paymentMethods?.find(m => m.type === 'card');
-  
-  // Safely type cast the payment details
+
+  // NEW: get qr code url (prefer from qr_code_url field, else in details)
   const upiDetails = upiMethod?.details as PaymentDetails | undefined;
+  let qrCodeUrl: string | undefined = (upiMethod?.qr_code_url as string) || upiDetails?.qrCodeUrl;
+
+  // Safely type cast the payment details
   const paymentDetails = bankMethod?.details as PaymentDetails | undefined;
   const cardPaymentDetails = cardMethod?.details as PaymentDetails | undefined;
   
@@ -96,7 +100,8 @@ const getProfile = async (username: string) => {
     smartLinks: typedSmartLinks,
     upiId: upiDetails?.upiId,
     bankDetails,
-    cardDetails
+    cardDetails,
+    qrCodeUrl
   };
 };
 
@@ -141,8 +146,8 @@ const Profile = () => {
           upiId={data.upiId}
           bankDetails={data.bankDetails}
           cardDetails={data.cardDetails}
+          qrCodeUrl={data.qrCodeUrl}
         />
-        
         <SmartLinkSection links={data.smartLinks} />
       </div>
     </div>

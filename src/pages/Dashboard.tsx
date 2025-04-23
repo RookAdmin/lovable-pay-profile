@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,7 +18,6 @@ import { BankDetails, CardDetails, UpiDetails } from '@/types/payment';
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   
-  // Refetch profile data after avatar update, provide a way for the dashboard panel to react.
   const { data: profile, isLoading, refetch } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
@@ -78,13 +76,13 @@ const Dashboard = () => {
   }
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
-  const bankMethod = paymentMethods?.find(m => m.type === 'bank');
-  const cardMethod = paymentMethods?.find(m => m.type === 'card');
-  
+  const qrCodeUrl = upiMethod?.qr_code_url || upiMethod?.details?.qrCodeUrl;
+
   const upiId: UpiDetails | undefined = upiMethod?.details ? 
     { upiId: (upiMethod.details as { upiId?: string }).upiId || '' } : 
     undefined;
 
+  const bankMethod = paymentMethods?.find(m => m.type === 'bank');
   const bankDetails: BankDetails | undefined = bankMethod?.details ? {
     accountNumber: (bankMethod.details as { accountNumber?: string }).accountNumber || '',
     ifsc: (bankMethod.details as { ifsc?: string }).ifsc || '',
@@ -92,6 +90,7 @@ const Dashboard = () => {
     bankName: (bankMethod.details as { bankName?: string }).bankName || ''
   } : undefined;
 
+  const cardMethod = paymentMethods?.find(m => m.type === 'card');
   const cardDetails: CardDetails | undefined = cardMethod?.details ? {
     cardNumber: (cardMethod.details as { cardNumber?: string }).cardNumber || '',
     nameOnCard: (cardMethod.details as { nameOnCard?: string }).nameOnCard || '',
@@ -246,6 +245,7 @@ const Dashboard = () => {
                     upiId={upiId?.upiId}
                     bankDetails={bankDetails}
                     cardDetails={cardDetails}
+                    qrCodeUrl={qrCodeUrl}
                   />
                 </TabsContent>
 

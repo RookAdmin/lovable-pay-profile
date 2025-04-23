@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import QRCode from './QRCode';
@@ -13,6 +12,7 @@ interface PaymentSectionProps {
   upiId?: string;
   bankDetails?: BankDetails;
   cardDetails?: CardDetails;
+  qrCodeUrl?: string;
   className?: string;
 }
 
@@ -20,6 +20,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
   upiId = '',
   bankDetails,
   cardDetails,
+  qrCodeUrl,
   className = ''
 }) => {
   const [showForm, setShowForm] = useState(false);
@@ -45,7 +46,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
         <CardContent>
           {showForm ? (
             <PaymentMethodsForm 
-              upiMethod={upiId ? { id: 'upi', details: { upiId } } : undefined}
+              upiMethod={upiId ? { id: 'upi', details: { upiId, qrCodeUrl } } : undefined}
               bankMethod={bankDetails ? { id: 'bank', details: bankDetails } : undefined}
               cardMethod={cardDetails ? { id: 'card', details: cardDetails } : undefined}
             />
@@ -73,6 +74,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
                       value={upiId} 
                       type="upi" 
                       className="mb-4"
+                      logoUrl={qrCodeUrl}
                     />
                     <CopyField label="UPI ID" value={upiId} className="w-full" />
                   </div>

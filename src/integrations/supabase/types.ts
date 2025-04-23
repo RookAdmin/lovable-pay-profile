@@ -17,6 +17,7 @@ export type Database = {
           is_active: boolean | null
           is_primary: boolean | null
           profile_id: string
+          qr_code_url: string | null
           type: string
           updated_at: string
         }
@@ -27,6 +28,7 @@ export type Database = {
           is_active?: boolean | null
           is_primary?: boolean | null
           profile_id: string
+          qr_code_url?: string | null
           type: string
           updated_at?: string
         }
@@ -37,6 +39,7 @@ export type Database = {
           is_active?: boolean | null
           is_primary?: boolean | null
           profile_id?: string
+          qr_code_url?: string | null
           type?: string
           updated_at?: string
         }
