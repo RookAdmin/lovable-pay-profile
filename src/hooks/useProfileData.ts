@@ -40,13 +40,16 @@ const getProfile = async (username: string) => {
 
     console.log("Profile found:", profile);
     
+    // Using PUBLIC access to payment_methods without requiring authentication
     const { data: paymentMethods, error: paymentError } = await supabase
       .from('payment_methods')
       .select('*')
-      .eq('profile_id', profile.id);
+      .eq('profile_id', profile.id)
+      .eq('is_active', true); // Only get active payment methods
       
     if (paymentError) {
       console.error("Error fetching payment methods:", paymentError);
+      // Continue despite error - we'll show the profile without payment methods
     }
       
     console.log("Payment methods fetched:", paymentMethods || []);
@@ -59,6 +62,7 @@ const getProfile = async (username: string) => {
       
     if (smartLinksError) {
       console.error("Error fetching smart links:", smartLinksError);
+      // Continue despite error - we'll show the profile without smart links
     }
     
     console.log("Smart links fetched:", smartLinks || []);
@@ -151,8 +155,9 @@ export const useProfileData = (username: string | undefined) => {
     queryKey: ['profile', username],
     queryFn: () => getProfile(username || ''),
     enabled: !!username,
-    staleTime: 60000,
-    retry: 3,
+    staleTime: 60000, 
+    retry: 5, // Increased retry attempts
+    retryDelay: attempt => Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000), // Exponential backoff
     meta: {
       onError: (err: Error) => {
         console.error("Error in profile query:", err);
@@ -168,4 +173,3 @@ export const useProfileData = (username: string | undefined) => {
     refetch
   };
 };
-

@@ -20,6 +20,8 @@ const Profile = () => {
   useEffect(() => {
     if (data) {
       console.log("Profile data loaded successfully", {
+        username: data.profile.username,
+        displayName: data.profile.display_name,
         hasUpiId: !!data.upiId,
         hasBankDetails: !!data.bankDetails,
         hasCardDetails: !!data.cardDetails,
@@ -72,7 +74,7 @@ const Profile = () => {
           bankDetails={data.bankDetails}
           cardDetails={data.cardDetails}
           qrCodeUrl={data.qrCodeUrl}
-          isViewingMode={true}
+          isViewingMode={true} /* Force view mode regardless of authentication status */
         />
         <SmartLinkSection links={data.smartLinks} />
       </div>
@@ -81,4 +83,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

@@ -5,7 +5,7 @@ import Logo from '@/components/Logo';
 
 const ProfileLayout: React.FC = () => {
   // Force console logs to help with debugging
-  console.log("Rendering ProfileLayout");
+  console.log("Rendering ProfileLayout - This is a public page that should work without login");
   
   return (
     <div className="flex flex-col min-h-screen w-full">
