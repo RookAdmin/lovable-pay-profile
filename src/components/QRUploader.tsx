@@ -2,12 +2,14 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Upload, Image } from "lucide-react";
+import { Upload, Image, Save } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface QRUploaderProps {
   initialUrl?: string;
   onUpload: (url: string) => void;
   onDelete?: () => void;
+  onSave?: (url: string) => void;
   disabled?: boolean;
 }
 
@@ -15,10 +17,12 @@ const QRUploader: React.FC<QRUploaderProps> = ({
   initialUrl,
   onUpload,
   onDelete,
+  onSave,
   disabled = false,
 }) => {
   const [uploading, setUploading] = useState(false);
   const [fileUrl, setFileUrl] = useState(initialUrl);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,7 +43,6 @@ const QRUploader: React.FC<QRUploaderProps> = ({
     setUploading(true);
     try {
       // Upload to Supabase bucket
-      const { supabase } = await import("@/integrations/supabase/client");
       const ext = file.name.split(".").pop();
       const filePath = `qrs/${Date.now()}-${Math.random().toString(36).substr(2, 4)}.${ext}`;
       
@@ -65,6 +68,26 @@ const QRUploader: React.FC<QRUploaderProps> = ({
       toast.error("Failed to upload QR: " + (err as Error).message);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleSaveQR = async () => {
+    if (!fileUrl) {
+      toast.error("No QR code to save");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      if (onSave) {
+        onSave(fileUrl);
+      }
+      toast.success("QR code saved successfully");
+    } catch (err) {
+      console.error("QR save error:", err);
+      toast.error("Failed to save QR: " + (err as Error).message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -114,6 +137,18 @@ const QRUploader: React.FC<QRUploaderProps> = ({
           {uploading ? "Uploading..." : (fileUrl ? "Change QR" : "Upload QR")}
         </Button>
       </label>
+      {fileUrl && (
+        <Button
+          size="sm"
+          variant="default"
+          onClick={handleSaveQR}
+          disabled={disabled || isSaving}
+          className="w-full"
+        >
+          <Save size={16} className="mr-2" />
+          {isSaving ? "Saving..." : "Save QR"}
+        </Button>
+      )}
       {fileUrl && onDelete && (
         <Button
           size="sm"
