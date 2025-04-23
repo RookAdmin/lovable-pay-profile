@@ -62,7 +62,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
             <PaymentMethodsForm 
               upiMethod={upiId ? { 
                 id: 'upi', 
-                details: { upiId, qrCodeUrl },
+                details: { upiId, qrCodeUrl: qrCodeUrl },
                 qr_code_url: qrCodeUrl 
               } : undefined}
               bankMethod={bankDetails ? { id: 'bank', details: bankDetails } : undefined}

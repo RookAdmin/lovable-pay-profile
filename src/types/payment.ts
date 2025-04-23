@@ -24,4 +24,5 @@ export type PaymentMethod = {
   details: UpiDetails | BankDetails | CardDetails;
   isActive: boolean;
   isPrimary: boolean;
+  qrCodeUrl?: string; // Add this field to match database schema
 };

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -7,7 +6,7 @@ import ProfileHeader from '@/components/ProfileHeader';
 import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
 import type { Profile, PaymentMethod, SmartLink, SocialLink } from '@/types/profile';
-import { BankDetails, CardDetails } from '@/types/payment';
+import { BankDetails, CardDetails, UpiDetails } from '@/types/payment';
 
 interface PaymentDetails {
   upiId?: string;
@@ -47,7 +46,6 @@ const getProfile = async (username: string) => {
     .eq('profile_id', profile.id)
     .eq('is_active', true);
 
-  // Transform data to match our frontend types
   const socialLinks: SocialLink[] = [
     profile.instagram_url && { platform: 'instagram', url: profile.instagram_url },
     profile.twitter_url && { platform: 'twitter', url: profile.twitter_url },
@@ -55,34 +53,27 @@ const getProfile = async (username: string) => {
     profile.linkedin_url && { platform: 'linkedin', url: profile.linkedin_url }
   ].filter(Boolean) as SocialLink[];
 
-  // Find payment methods by type
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');
   const cardMethod = paymentMethods?.find(m => m.type === 'card');
 
-  // Get UPI details and QR code URL
-  const upiDetails = upiMethod?.details as PaymentDetails | undefined;
+  const upiDetails = upiMethod?.details as UpiDetails | undefined;
   
-  // Look for QR code in multiple locations
   let qrCodeUrl: string | undefined = undefined;
   
   if (upiMethod) {
-    // First check for the dedicated qr_code_url field
     qrCodeUrl = upiMethod.qr_code_url;
     
-    // If not found, check in the details object
-    if (!qrCodeUrl && typeof upiDetails === 'object' && upiDetails !== null) {
+    if (!qrCodeUrl && upiDetails?.qrCodeUrl) {
       qrCodeUrl = upiDetails.qrCodeUrl;
     }
     
     console.log("QR code URL found:", qrCodeUrl);
   }
 
-  // Safely type cast the payment details
   const paymentDetails = bankMethod?.details as PaymentDetails | undefined;
   const cardPaymentDetails = cardMethod?.details as PaymentDetails | undefined;
   
-  // Create properly typed objects that meet the interface requirements
   let bankDetails: BankDetails | undefined;
   let cardDetails: CardDetails | undefined;
   
@@ -106,10 +97,9 @@ const getProfile = async (username: string) => {
     };
   }
   
-  // Transform smart links to match the required type
   const typedSmartLinks = smartLinks?.map(link => ({
     ...link,
-    icon: link.icon as SmartLink['icon'] // Type assertion for the icon
+    icon: link.icon as SmartLink['icon']
   })) || [];
 
   return {
@@ -131,11 +121,10 @@ const Profile = () => {
     queryKey: ['profile', username],
     queryFn: () => getProfile(username || ''),
     enabled: !!username,
-    staleTime: 60000, // Consider data stale after 1 minute
+    staleTime: 60000,
   });
   
   useEffect(() => {
-    // Refetch on mount to ensure we have the latest data
     refetch();
   }, [refetch]);
 

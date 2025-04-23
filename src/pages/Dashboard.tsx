@@ -92,13 +92,13 @@ const Dashboard = () => {
   
   const qrCodeUrl = upiMethod?.qr_code_url || 
     (typeof upiMethod?.details === 'object' && upiMethod?.details !== null ? 
-      (upiMethod.details as Record<string, unknown>).qrCodeUrl as string : 
+      (upiMethod.details as UpiDetails).qrCodeUrl : 
       undefined);
   
   console.log("QR code URL:", qrCodeUrl);
 
   const upiDetails = upiMethod?.details && typeof upiMethod.details === 'object' ? 
-    { upiId: (upiMethod.details as { upiId?: string }).upiId || '' } : 
+    { upiId: (upiMethod.details as UpiDetails).upiId || '' } : 
     undefined;
 
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');

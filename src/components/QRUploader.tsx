@@ -21,13 +21,13 @@ const QRUploader: React.FC<QRUploaderProps> = ({
   disabled = false,
 }) => {
   const [uploading, setUploading] = useState(false);
-  const [fileUrl, setFileUrl] = useState(initialUrl);
+  const [fileUrl, setFileUrl] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
 
   // Update fileUrl when initialUrl changes
   useEffect(() => {
     console.log("Initial URL changed:", initialUrl);
-    if (initialUrl !== undefined) {
+    if (initialUrl) {
       setFileUrl(initialUrl);
     }
   }, [initialUrl]);
@@ -100,9 +100,11 @@ const QRUploader: React.FC<QRUploaderProps> = ({
     try {
       console.log("Saving QR code:", fileUrl);
       if (onSave) {
-        await onSave(fileUrl);
+        const success = await onSave(fileUrl);
+        if (success) {
+          toast.success("QR code saved successfully");
+        }
       }
-      toast.success("QR code saved successfully");
     } catch (err) {
       console.error("QR save error:", err);
       toast.error("Failed to save QR: " + (err as Error).message);

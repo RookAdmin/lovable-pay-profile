@@ -96,6 +96,8 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         return;
       }
 
+      console.log("Saving UPI with QR code URL:", qrCodeUrl);
+
       const payload = {
         profile_id: user.id,
         type: 'upi',
@@ -108,28 +110,32 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         is_primary: true
       };
 
-      console.log("Saving UPI with payload:", payload);
+      console.log("Full payload for UPI save:", payload);
 
       if (upiMethod?.id) {
-        const { error } = await supabase
+        const { data: updateData, error } = await supabase
           .from('payment_methods')
           .update(payload)
-          .eq('id', upiMethod.id);
+          .eq('id', upiMethod.id)
+          .select();
 
         if (error) {
           console.error("Update error:", error);
           throw error;
         }
+        console.log("UPI update result:", updateData);
         toast.success('UPI details updated successfully');
       } else {
-        const { error } = await supabase
+        const { data: insertData, error } = await supabase
           .from('payment_methods')
-          .insert(payload);
+          .insert(payload)
+          .select();
 
         if (error) {
           console.error("Insert error:", error);
           throw error;
         }
+        console.log("UPI insert result:", insertData);
         toast.success('UPI details saved successfully');
       }
       
@@ -245,7 +251,10 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
             },
             qr_code_url: qrUrl
           })
-          .eq('id', upiMethod.id);
+          .eq('id', upiMethod.id)
+          .select();
+
+        console.log("QR update result:", result);
       } else {
         const upiId = upiForm.getValues().upiId;
         if (upiId) {
@@ -261,7 +270,10 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
               qr_code_url: qrUrl,
               is_active: true,
               is_primary: true
-            });
+            })
+            .select();
+
+          console.log("QR insert result:", result);
         } else {
           toast.error("Please enter a UPI ID before saving QR code");
           return false;
