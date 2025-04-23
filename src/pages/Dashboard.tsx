@@ -18,7 +18,8 @@ import { BankDetails, UpiDetails } from '@/types/payment';
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   
-  const { data: profile, isLoading } = useQuery({
+  // Refetch profile data after avatar update, provide a way for the dashboard panel to react.
+  const { data: profile, isLoading, refetch } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -26,7 +27,7 @@ const Dashboard = () => {
         .select('*')
         .eq('id', user?.id)
         .single();
-        
+
       if (error) throw error;
       return data;
     },
@@ -242,7 +243,7 @@ const Dashboard = () => {
                 </TabsContent>
                 
                 <TabsContent value="edit">
-                  <ProfileEditForm initialData={profile} />
+                  <ProfileEditForm initialData={profile} onProfilePhotoUpdated={refetch} />
                 </TabsContent>
               </Tabs>
             </CardContent>

@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,11 +26,12 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 interface ProfileEditFormProps {
   initialData?: ProfileFormValues;
+  onProfilePhotoUpdated?: () => void;
 }
 
 const AVATAR_BUCKET = 'avatars';
 
-const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData }) => {
+const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfilePhotoUpdated }) => {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(initialData?.avatar_url || '');
@@ -46,7 +46,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData }) => {
     }
   });
 
-  // Handle the avatar upload and set final URL in profile
   const handleAvatarChange = async (file: File) => {
     setUploading(true);
     try {
@@ -66,17 +65,15 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData }) => {
 
       if (uploadError) throw uploadError;
 
-      // Build public URL
       const { data } = supabase
         .storage
         .from(AVATAR_BUCKET)
         .getPublicUrl(filePath);
       if (!data?.publicUrl) throw new Error('Could not get public URL for avatar');
       setAvatarUrl(data.publicUrl);
-
-      // Update form value and show preview
-      form.setValue('avatar_url', data.publicUrl);
+      form.setValue('avatar_url', data.publicUrl, { shouldDirty: true });
       toast.success('Avatar updated! Don\'t forget to save changes.');
+      if (onProfilePhotoUpdated) onProfilePhotoUpdated();
     } catch (error: any) {
       toast.error(error.message || 'Failed to upload avatar');
     } finally {
@@ -112,7 +109,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData }) => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         
-        {/* Profile photo field */}
         <div className="flex flex-col items-center gap-2 mb-4">
           <Avatar className="h-20 w-20">
             {avatarUrl
@@ -227,7 +223,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData }) => {
           )}
         />
 
-        {/* Hidden input to bind avatar_url to form data (for revert on submit) */}
         <Input type="hidden" {...form.register('avatar_url')} />
 
         <Button type="submit" disabled={form.formState.isSubmitting || uploading}>
