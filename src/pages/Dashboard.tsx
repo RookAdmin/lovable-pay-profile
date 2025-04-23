@@ -18,7 +18,7 @@ import { BankDetails, CardDetails, UpiDetails } from '@/types/payment';
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   
-  const { data: profile, isLoading, refetch } = useQuery({
+  const { data: profile, isLoading, refetch: refetchProfile } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -33,7 +33,7 @@ const Dashboard = () => {
     enabled: !!user?.id
   });
 
-  const { data: paymentMethods } = useQuery({
+  const { data: paymentMethods, refetch: refetchPaymentMethods } = useQuery({
     queryKey: ['payment_methods', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -65,6 +65,13 @@ const Dashboard = () => {
     const shareUrl = `${window.location.origin}/${profile?.username}`;
     navigator.clipboard.writeText(shareUrl);
     toast.success('Profile link copied to clipboard!');
+  };
+
+  const handleDataUpdate = async () => {
+    await Promise.all([
+      refetchProfile(),
+      refetchPaymentMethods()
+    ]);
   };
 
   if (isLoading) {
@@ -250,6 +257,7 @@ const Dashboard = () => {
                     bankDetails={bankDetails}
                     cardDetails={cardDetails}
                     qrCodeUrl={qrCodeUrl}
+                    onPaymentMethodUpdate={handleDataUpdate}
                   />
                 </TabsContent>
 
@@ -258,7 +266,7 @@ const Dashboard = () => {
                 </TabsContent>
                 
                 <TabsContent value="edit">
-                  <ProfileEditForm initialData={profile} onProfilePhotoUpdated={refetch} />
+                  <ProfileEditForm initialData={profile} onProfilePhotoUpdated={refetchProfile} />
                 </TabsContent>
               </Tabs>
             </CardContent>

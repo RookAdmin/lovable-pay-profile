@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -56,11 +56,12 @@ const getProfile = async (username: string) => {
   const cardMethod = paymentMethods?.find(m => m.type === 'card');
 
   // Get QR code URL - first check for qr_code_url directly on the payment method, then check in details
+  const upiMethod = paymentMethods?.find(m => m.type === 'upi');
   const upiDetails = upiMethod?.details as PaymentDetails | undefined;
   let qrCodeUrl: string | undefined = undefined;
   
   if (upiMethod) {
-    qrCodeUrl = upiMethod.qr_code_url as string || 
+    qrCodeUrl = upiMethod.qr_code_url || 
       (typeof upiDetails === 'object' && upiDetails !== null ? 
         upiDetails.qrCodeUrl : 
         undefined);
@@ -115,12 +116,18 @@ const getProfile = async (username: string) => {
 const Profile = () => {
   const { username } = useParams<{ username: string }>();
   
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['profile', username],
     queryFn: () => getProfile(username || ''),
-    enabled: !!username
+    enabled: !!username,
+    staleTime: 60000, // Consider data stale after 1 minute
   });
   
+  useEffect(() => {
+    // Refetch on mount to ensure we have the latest data
+    refetch();
+  }, [refetch]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">

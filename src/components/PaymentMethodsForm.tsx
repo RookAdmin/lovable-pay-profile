@@ -40,12 +40,14 @@ interface PaymentMethodsFormProps {
   upiMethod?: { id: string; details: UpiDetails };
   bankMethod?: { id: string; details: BankFormData };
   cardMethod?: { id: string; details: CardFormData };
+  onUpdate?: () => void;
 }
 
 const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({ 
   upiMethod, 
   bankMethod,
-  cardMethod
+  cardMethod,
+  onUpdate
 }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -122,7 +124,11 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         }
         toast.success('UPI details saved successfully');
       }
-      queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
+      await queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
+      
+      if (onUpdate) {
+        onUpdate();
+      }
     } catch (error) {
       console.error('Error saving UPI details:', error);
       toast.error('Failed to save UPI details');
@@ -216,40 +222,54 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
   const saveQrToSupabase = async (qrUrl: string) => {
     if (!user) return;
     let result;
-    if (upiMethod?.id) {
-      result = await supabase
-        .from('payment_methods')
-        .update({
-          details: { 
-            ...(upiMethod.details || {}),
-            qrCodeUrl: qrUrl 
-          },
-          qr_code_url: qrCodeUrl
-        })
-        .eq('id', upiMethod.id);
-    } else {
-      result = await supabase
-        .from('payment_methods')
-        .insert({
-          profile_id: user.id,
-          type: 'upi',
-          details: { 
-            upiId: '',
-            qrCodeUrl: qrUrl 
-          },
-          qr_code_url: qrCodeUrl,
-          is_active: true,
-          is_primary: true
-        });
-    }
+    
+    try {
+      if (upiMethod?.id) {
+        result = await supabase
+          .from('payment_methods')
+          .update({
+            details: { 
+              ...(upiMethod.details || {}),
+              qrCodeUrl: qrUrl 
+            },
+            qr_code_url: qrUrl
+          })
+          .eq('id', upiMethod.id);
+      } else {
+        result = await supabase
+          .from('payment_methods')
+          .insert({
+            profile_id: user.id,
+            type: 'upi',
+            details: { 
+              upiId: upiForm.getValues().upiId || '',
+              qrCodeUrl: qrUrl 
+            },
+            qr_code_url: qrCodeUrl,
+            is_active: true,
+            is_primary: true
+          });
+      }
 
-    if (result.error) {
-      console.error("Failed to save QR public URL immediately:", result.error);
+      if (result.error) {
+        console.error("Failed to save QR public URL:", result.error);
+        toast.error("Failed to save QR code image.");
+        return false;
+      } else {
+        toast.success("QR code saved!");
+        await queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
+        
+        if (onUpdate) {
+          onUpdate();
+        }
+        
+        return true;
+      }
+    } catch (error) {
+      console.error("Error saving QR to Supabase:", error);
       toast.error("Failed to save QR code image.");
-    } else {
-      toast.success("QR code saved!");
+      return false;
     }
-    queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
   };
 
   return (
@@ -294,10 +314,16 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                           toast.error("Failed to remove QR code");
                         } else {
                           queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
+                          if (onUpdate) {
+                            onUpdate();
+                          }
                           toast.success("QR code removed");
                         }
                       });
                   }
+                }}
+                onSave={(url) => {
+                  return saveQrToSupabase(url);
                 }}
               />
               <div className="text-xs text-muted-foreground text-center mt-1">

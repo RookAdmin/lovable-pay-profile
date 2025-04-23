@@ -15,6 +15,7 @@ interface PaymentSectionProps {
   cardDetails?: CardDetails;
   qrCodeUrl?: string;
   className?: string;
+  onPaymentMethodUpdate?: () => void;
 }
 
 const PaymentSection: React.FC<PaymentSectionProps> = ({
@@ -22,9 +23,17 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
   bankDetails,
   cardDetails,
   qrCodeUrl,
-  className = ''
+  className = '',
+  onPaymentMethodUpdate
 }) => {
   const [showForm, setShowForm] = useState(false);
+  
+  const handleFormToggle = () => {
+    setShowForm(!showForm);
+    if (showForm && onPaymentMethodUpdate) {
+      onPaymentMethodUpdate();
+    }
+  };
   
   return (
     <div className="space-y-6">
@@ -34,7 +43,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => setShowForm(!showForm)}
+            onClick={handleFormToggle}
           >
             {showForm ? 'Hide Form' : (
               <>
@@ -50,6 +59,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
               upiMethod={upiId ? { id: 'upi', details: { upiId, qrCodeUrl } } : undefined}
               bankMethod={bankDetails ? { id: 'bank', details: bankDetails } : undefined}
               cardMethod={cardDetails ? { id: 'card', details: cardDetails } : undefined}
+              onUpdate={onPaymentMethodUpdate}
             />
           ) : (
             <Tabs defaultValue="upi" className="w-full">
