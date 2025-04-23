@@ -7,7 +7,7 @@ const ProfileLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen w-full">
       <header className="w-full border-b border-gray-100 py-4">
-        <div className="container px-0">
+        <div className="container px-4">
           <Logo />
         </div>
       </header>
@@ -15,7 +15,7 @@ const ProfileLayout: React.FC = () => {
         <Outlet />
       </main>
       <footer className="w-full border-t border-gray-100 py-4">
-        <div className="container px-0 text-center">
+        <div className="container px-4 text-center">
           <p className="text-xs text-muted-foreground">
             Powered by <span className="gradient-text font-semibold">paym.me</span>
           </p>

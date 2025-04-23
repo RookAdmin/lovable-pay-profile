@@ -19,6 +19,7 @@ interface PaymentSectionProps {
   upiMethodId?: string;
   bankMethodId?: string;
   cardMethodId?: string;
+  isViewingMode?: boolean; // Added to force viewing mode
 }
 
 const PaymentSection: React.FC<PaymentSectionProps> = ({
@@ -30,7 +31,8 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
   onPaymentMethodUpdate,
   upiMethodId,
   bankMethodId,
-  cardMethodId
+  cardMethodId,
+  isViewingMode = false // Default to false
 }) => {
   const [showForm, setShowForm] = useState(false);
   
@@ -40,7 +42,8 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
     console.log("PaymentSection received bank details:", bankDetails);
     console.log("PaymentSection received card details:", cardDetails);
     console.log("PaymentSection upiMethodId:", upiMethodId);
-  }, [qrCodeUrl, upiId, bankDetails, cardDetails, upiMethodId]);
+    console.log("PaymentSection isViewingMode:", isViewingMode);
+  }, [qrCodeUrl, upiId, bankDetails, cardDetails, upiMethodId, isViewingMode]);
   
   const handleFormToggle = () => {
     setShowForm(!showForm);
@@ -49,15 +52,23 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
     }
   };
   
-  // Check if we're in the profile view mode (no onPaymentMethodUpdate provided)
-  const isViewingMode = !onPaymentMethodUpdate;
+  // Check if we're in the profile view mode (no onPaymentMethodUpdate provided or isViewingMode is true)
+  const isInViewMode = isViewingMode || !onPaymentMethodUpdate;
+  
+  // Determine the default tab based on available payment methods
+  const getDefaultTab = () => {
+    if (upiId) return "upi";
+    if (bankDetails) return "bank";
+    if (cardDetails) return "cards";
+    return "upi"; // Default to UPI tab
+  };
   
   return (
     <div className="space-y-6">
       <Card className={`shadow-md border-gray-100 ${className}`}>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl">Payment Methods</CardTitle>
-          {!isViewingMode && (
+          {!isInViewMode && (
             <Button 
               variant="outline" 
               size="sm" 
@@ -73,7 +84,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
           )}
         </CardHeader>
         <CardContent>
-          {(showForm && !isViewingMode) ? (
+          {(showForm && !isInViewMode) ? (
             <PaymentMethodsForm 
               upiMethod={upiId ? { 
                 id: upiMethodId || '', 
@@ -85,7 +96,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
               onUpdate={onPaymentMethodUpdate}
             />
           ) : (
-            <Tabs defaultValue="upi" className="w-full">
+            <Tabs defaultValue={getDefaultTab()} className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-4">
                 <TabsTrigger value="upi" className="flex items-center gap-2">
                   <QrCode size={16} />

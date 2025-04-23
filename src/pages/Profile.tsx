@@ -9,6 +9,7 @@ import SmartLinkSection from '@/components/SmartLinkSection';
 import type { Profile, PaymentMethod, SmartLink, SocialLink } from '@/types/profile';
 import { BankDetails, CardDetails, UpiDetails } from '@/types/payment';
 import { safelyConvertToUpiDetails } from '@/types/payment';
+import { toast } from 'sonner';
 
 interface PaymentDetails {
   upiId?: string;
@@ -38,8 +39,13 @@ const getProfile = async (username: string) => {
     throw error;
   }
   
-  if (!profile) throw new Error('Profile not found');
+  if (!profile) {
+    console.error("Profile not found for username:", username);
+    throw new Error('Profile not found');
+  }
 
+  console.log("Profile found:", profile);
+  
   // Fetch payment methods without authentication
   const { data: paymentMethods, error: paymentError } = await supabase
     .from('payment_methods')
@@ -82,12 +88,7 @@ const getProfile = async (username: string) => {
   let qrCodeUrl: string | undefined = undefined;
   
   if (upiMethod) {
-    qrCodeUrl = upiMethod.qr_code_url;
-    
-    if (!qrCodeUrl && upiDetails?.qrCodeUrl) {
-      qrCodeUrl = upiDetails.qrCodeUrl;
-    }
-    
+    qrCodeUrl = upiMethod.qr_code_url || (upiDetails?.qrCodeUrl || undefined);
     console.log("QR code URL found:", qrCodeUrl);
   }
 
@@ -145,11 +146,18 @@ const Profile = () => {
     queryFn: () => getProfile(username || ''),
     enabled: !!username,
     staleTime: 60000,
+    retry: 1,
+    onError: (err) => {
+      console.error("Error in profile query:", err);
+      toast.error("Failed to load profile");
+    }
   });
   
   useEffect(() => {
     console.log("Profile component mounted, username:", username);
-    refetch();
+    if (username) {
+      refetch();
+    }
   }, [username, refetch]);
 
   if (isLoading) {
@@ -192,9 +200,7 @@ const Profile = () => {
           bankDetails={data.bankDetails}
           cardDetails={data.cardDetails}
           qrCodeUrl={data.qrCodeUrl}
-          upiMethodId={data.upiMethodId}
-          bankMethodId={data.bankMethodId}
-          cardMethodId={data.cardMethodId}
+          isViewingMode={true} // Force viewing mode to hide edit buttons
         />
         <SmartLinkSection links={data.smartLinks} />
       </div>
