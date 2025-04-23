@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -27,7 +26,6 @@ interface PaymentDetails {
 const getProfile = async (username: string) => {
   console.log("Fetching profile for:", username);
   
-  // Fetch the profile data without authentication
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
@@ -46,7 +44,6 @@ const getProfile = async (username: string) => {
 
   console.log("Profile found:", profile);
   
-  // Fetch payment methods without authentication
   const { data: paymentMethods, error: paymentError } = await supabase
     .from('payment_methods')
     .select('*')
@@ -147,9 +144,11 @@ const Profile = () => {
     enabled: !!username,
     staleTime: 60000,
     retry: 1,
-    onError: (err) => {
-      console.error("Error in profile query:", err);
-      toast.error("Failed to load profile");
+    meta: {
+      onError: (err: Error) => {
+        console.error("Error in profile query:", err);
+        toast.error("Failed to load profile");
+      }
     }
   });
   
