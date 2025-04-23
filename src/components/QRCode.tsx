@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, Copy, Smartphone } from 'lucide-react';
@@ -20,13 +20,27 @@ const QRCode: React.FC<QRCodeProps> = ({
   type = 'upi',
   className = '' 
 }) => {
+  useEffect(() => {
+    console.log("QRCode component received logoUrl:", logoUrl);
+  }, [logoUrl]);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(value);
     toast.success('Copied to clipboard!');
   };
   
   const handleDownload = () => {
-    toast.success('QR code downloaded');
+    // If we have a custom QR logo URL, download that directly
+    if (logoUrl) {
+      const link = document.createElement('a');
+      link.href = logoUrl;
+      link.download = 'qrcode.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      toast.success('QR code downloaded');
+    }
   };
   
   const handleOpenUPI = () => {
@@ -49,7 +63,15 @@ const QRCode: React.FC<QRCodeProps> = ({
           style={{ width: size, height: size }}
         >
           {logoUrl ? (
-            <img src={logoUrl} alt="QR Code" className="w-full h-full object-contain" />
+            <img 
+              src={logoUrl} 
+              alt="QR Code" 
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                console.error("Failed to load QR code image:", e);
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
           ) : (
             <div className="absolute inset-0 p-4 grid grid-cols-7 grid-rows-7 gap-1">
               {/* Simulated QR code pattern */}

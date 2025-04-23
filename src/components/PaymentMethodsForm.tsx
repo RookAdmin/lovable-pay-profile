@@ -52,7 +52,13 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   
-  const [qrCodeUrl, setQrCodeUrl] = React.useState<string>(upiMethod?.details?.qrCodeUrl || "");
+  const [qrCodeUrl, setQrCodeUrl] = React.useState<string>(
+    upiMethod?.details?.qrCodeUrl || 
+    (upiMethod ? upiMethod.qr_code_url : "")
+  );
+
+  console.log("Initial QR Code URL:", qrCodeUrl);
+  console.log("UPI method:", upiMethod);
 
   const upiForm = useForm<UpiFormData>({
     resolver: zodResolver(upiSchema),
@@ -124,6 +130,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         }
         toast.success('UPI details saved successfully');
       }
+      
       await queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
       
       if (onUpdate) {
@@ -220,8 +227,10 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
   };
 
   const saveQrToSupabase = async (qrUrl: string) => {
-    if (!user) return;
+    if (!user) return false;
     let result;
+    
+    console.log("Saving QR to Supabase:", qrUrl);
     
     try {
       if (upiMethod?.id) {
@@ -236,19 +245,25 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
           })
           .eq('id', upiMethod.id);
       } else {
-        result = await supabase
-          .from('payment_methods')
-          .insert({
-            profile_id: user.id,
-            type: 'upi',
-            details: { 
-              upiId: upiForm.getValues().upiId || '',
-              qrCodeUrl: qrUrl 
-            },
-            qr_code_url: qrCodeUrl,
-            is_active: true,
-            is_primary: true
-          });
+        const upiId = upiForm.getValues().upiId;
+        if (upiId) {
+          result = await supabase
+            .from('payment_methods')
+            .insert({
+              profile_id: user.id,
+              type: 'upi',
+              details: { 
+                upiId: upiId,
+                qrCodeUrl: qrUrl 
+              },
+              qr_code_url: qrUrl,
+              is_active: true,
+              is_primary: true
+            });
+        } else {
+          toast.error("Please enter a UPI ID before saving QR code");
+          return false;
+        }
       }
 
       if (result.error) {
@@ -293,8 +308,8 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
               <QRUploader
                 initialUrl={qrCodeUrl}
                 onUpload={(url) => {
+                  console.log("QR code uploaded:", url);
                   setQrCodeUrl(url);
-                  saveQrToSupabase(url);
                 }}
                 onDelete={() => {
                   setQrCodeUrl("");

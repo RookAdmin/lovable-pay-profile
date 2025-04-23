@@ -23,6 +23,8 @@ interface PaymentDetails {
 }
 
 const getProfile = async (username: string) => {
+  console.log("Fetching profile for:", username);
+  
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
@@ -36,6 +38,8 @@ const getProfile = async (username: string) => {
     .from('payment_methods')
     .select('*')
     .eq('profile_id', profile.id);
+    
+  console.log("Payment methods fetched:", paymentMethods);
 
   const { data: smartLinks } = await supabase
     .from('smart_links')
@@ -58,13 +62,20 @@ const getProfile = async (username: string) => {
 
   // Get UPI details and QR code URL
   const upiDetails = upiMethod?.details as PaymentDetails | undefined;
+  
+  // Look for QR code in multiple locations
   let qrCodeUrl: string | undefined = undefined;
   
   if (upiMethod) {
-    qrCodeUrl = upiMethod.qr_code_url || 
-      (typeof upiDetails === 'object' && upiDetails !== null ? 
-        upiDetails.qrCodeUrl : 
-        undefined);
+    // First check for the dedicated qr_code_url field
+    qrCodeUrl = upiMethod.qr_code_url;
+    
+    // If not found, check in the details object
+    if (!qrCodeUrl && typeof upiDetails === 'object' && upiDetails !== null) {
+      qrCodeUrl = upiDetails.qrCodeUrl;
+    }
+    
+    console.log("QR code URL found:", qrCodeUrl);
   }
 
   // Safely type cast the payment details
@@ -143,6 +154,9 @@ const Profile = () => {
       </div>
     );
   }
+  
+  console.log("Profile data:", data);
+  console.log("QR code URL in data:", data.qrCodeUrl);
   
   return (
     <div className="container max-w-md px-4 py-8">

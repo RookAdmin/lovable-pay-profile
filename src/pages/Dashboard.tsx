@@ -42,6 +42,9 @@ const Dashboard = () => {
         .eq('profile_id', user?.id);
         
       if (error) throw error;
+      
+      console.log("Retrieved payment methods:", data);
+      
       return data || [];
     },
     enabled: !!user?.id
@@ -68,10 +71,12 @@ const Dashboard = () => {
   };
 
   const handleDataUpdate = async () => {
+    console.log("Refreshing data...");
     await Promise.all([
       refetchProfile(),
       refetchPaymentMethods()
     ]);
+    console.log("Data refreshed");
   };
 
   if (isLoading) {
@@ -83,11 +88,14 @@ const Dashboard = () => {
   }
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
+  console.log("UPI method found:", upiMethod);
   
   const qrCodeUrl = upiMethod?.qr_code_url || 
     (typeof upiMethod?.details === 'object' && upiMethod?.details !== null ? 
       (upiMethod.details as Record<string, unknown>).qrCodeUrl as string : 
       undefined);
+  
+  console.log("QR code URL:", qrCodeUrl);
 
   const upiDetails = upiMethod?.details && typeof upiMethod.details === 'object' ? 
     { upiId: (upiMethod.details as { upiId?: string }).upiId || '' } : 
@@ -253,7 +261,8 @@ const Dashboard = () => {
 
                 <TabsContent value="payment">
                   <PaymentSection
-                    upiId={upiDetails?.upiId}
+                    upiId={upiMethod?.details && typeof upiMethod.details === 'object' ? 
+                      (upiMethod.details as { upiId?: string }).upiId || '' : ''}
                     bankDetails={bankDetails}
                     cardDetails={cardDetails}
                     qrCodeUrl={qrCodeUrl}

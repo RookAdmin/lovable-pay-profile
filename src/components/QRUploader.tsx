@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Upload, Image, Save } from "lucide-react";
@@ -25,7 +25,8 @@ const QRUploader: React.FC<QRUploaderProps> = ({
   const [isSaving, setIsSaving] = useState(false);
 
   // Update fileUrl when initialUrl changes
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log("Initial URL changed:", initialUrl);
     if (initialUrl !== undefined) {
       setFileUrl(initialUrl);
     }
@@ -53,6 +54,8 @@ const QRUploader: React.FC<QRUploaderProps> = ({
       const ext = file.name.split(".").pop();
       const filePath = `qrs/${Date.now()}-${Math.random().toString(36).substr(2, 4)}.${ext}`;
       
+      console.log("Uploading to storage:", filePath);
+      
       const { error } = await supabase.storage.from("qrcodes").upload(filePath, file, {
         upsert: true,
         cacheControl: "3600",
@@ -66,13 +69,16 @@ const QRUploader: React.FC<QRUploaderProps> = ({
         
       if (!data?.publicUrl) throw new Error("Upload failed. No URL received.");
       
+      console.log("Upload successful, public URL:", data.publicUrl);
+      
       // Set local state and call parent's callback
       setFileUrl(data.publicUrl);
       onUpload(data.publicUrl);
       
       // Auto-save if onSave exists
       if (onSave) {
-        onSave(data.publicUrl);
+        console.log("Auto-saving QR code");
+        await onSave(data.publicUrl);
       }
       
       toast.success("QR code uploaded successfully");
@@ -92,8 +98,9 @@ const QRUploader: React.FC<QRUploaderProps> = ({
 
     setIsSaving(true);
     try {
+      console.log("Saving QR code:", fileUrl);
       if (onSave) {
-        onSave(fileUrl);
+        await onSave(fileUrl);
       }
       toast.success("QR code saved successfully");
     } catch (err) {

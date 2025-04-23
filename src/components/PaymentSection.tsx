@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import QRCode from './QRCode';
 import CopyField from './CopyField';
@@ -27,6 +27,10 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
   onPaymentMethodUpdate
 }) => {
   const [showForm, setShowForm] = useState(false);
+  
+  useEffect(() => {
+    console.log("PaymentSection received qrCodeUrl:", qrCodeUrl);
+  }, [qrCodeUrl]);
   
   const handleFormToggle = () => {
     setShowForm(!showForm);
@@ -56,7 +60,11 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
         <CardContent>
           {showForm ? (
             <PaymentMethodsForm 
-              upiMethod={upiId ? { id: 'upi', details: { upiId, qrCodeUrl } } : undefined}
+              upiMethod={upiId ? { 
+                id: 'upi', 
+                details: { upiId, qrCodeUrl },
+                qr_code_url: qrCodeUrl 
+              } : undefined}
               bankMethod={bankDetails ? { id: 'bank', details: bankDetails } : undefined}
               cardMethod={cardDetails ? { id: 'card', details: cardDetails } : undefined}
               onUpdate={onPaymentMethodUpdate}
