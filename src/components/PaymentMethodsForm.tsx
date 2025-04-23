@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -61,6 +60,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
 
   console.log("Initial QR Code URL:", qrCodeUrl);
   console.log("UPI method:", upiMethod);
+  console.log("UPI method ID:", upiMethod?.id);
 
   const upiForm = useForm<UpiFormData>({
     resolver: zodResolver(upiSchema),
@@ -111,8 +111,9 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
       };
 
       console.log("Full payload for UPI save:", payload);
+      console.log("UPI method ID for update:", upiMethod?.id);
 
-      if (upiMethod?.id) {
+      if (upiMethod?.id && upiMethod.id.length > 5) {
         const { data: updateData, error } = await supabase
           .from('payment_methods')
           .update(payload)
@@ -239,9 +240,10 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
     let result;
     
     console.log("Saving QR to Supabase:", qrUrl);
+    console.log("UPI method ID for QR save:", upiMethod?.id);
     
     try {
-      if (upiMethod?.id) {
+      if (upiMethod?.id && upiMethod.id.length > 5) {
         result = await supabase
           .from('payment_methods')
           .update({
@@ -280,7 +282,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         }
       }
 
-      if (result.error) {
+      if (result?.error) {
         console.error("Failed to save QR public URL:", result.error);
         toast.error("Failed to save QR code image.");
         return false;

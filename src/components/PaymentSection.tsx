@@ -16,6 +16,9 @@ interface PaymentSectionProps {
   qrCodeUrl?: string;
   className?: string;
   onPaymentMethodUpdate?: () => void;
+  upiMethodId?: string;
+  bankMethodId?: string;
+  cardMethodId?: string;
 }
 
 const PaymentSection: React.FC<PaymentSectionProps> = ({
@@ -24,13 +27,17 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
   cardDetails,
   qrCodeUrl,
   className = '',
-  onPaymentMethodUpdate
+  onPaymentMethodUpdate,
+  upiMethodId,
+  bankMethodId,
+  cardMethodId
 }) => {
   const [showForm, setShowForm] = useState(false);
   
   useEffect(() => {
     console.log("PaymentSection received qrCodeUrl:", qrCodeUrl);
-  }, [qrCodeUrl]);
+    console.log("PaymentSection upiMethodId:", upiMethodId);
+  }, [qrCodeUrl, upiMethodId]);
   
   const handleFormToggle = () => {
     setShowForm(!showForm);
@@ -61,12 +68,12 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
           {showForm ? (
             <PaymentMethodsForm 
               upiMethod={upiId ? { 
-                id: 'upi', 
+                id: upiMethodId || '', 
                 details: { upiId, qrCodeUrl: qrCodeUrl },
                 qr_code_url: qrCodeUrl 
               } : undefined}
-              bankMethod={bankDetails ? { id: 'bank', details: bankDetails } : undefined}
-              cardMethod={cardDetails ? { id: 'card', details: cardDetails } : undefined}
+              bankMethod={bankDetails && bankMethodId ? { id: bankMethodId, details: bankDetails } : undefined}
+              cardMethod={cardDetails && cardMethodId ? { id: cardMethodId, details: cardDetails } : undefined}
               onUpdate={onPaymentMethodUpdate}
             />
           ) : (

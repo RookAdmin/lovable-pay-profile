@@ -78,7 +78,12 @@ const QRUploader: React.FC<QRUploaderProps> = ({
       // Auto-save if onSave exists
       if (onSave) {
         console.log("Auto-saving QR code");
-        await onSave(data.publicUrl);
+        const saveResult = await onSave(data.publicUrl);
+        if (saveResult === true) {
+          console.log("Auto-save successful");
+        } else {
+          console.log("Auto-save failed or returned non-true value");
+        }
       }
       
       toast.success("QR code uploaded successfully");
@@ -101,8 +106,11 @@ const QRUploader: React.FC<QRUploaderProps> = ({
       console.log("Saving QR code:", fileUrl);
       if (onSave) {
         const result = await onSave(fileUrl);
+        console.log("Save QR result:", result);
         if (result === true) {
           toast.success("QR code saved successfully");
+        } else {
+          toast.error("Failed to save QR code");
         }
       }
     } catch (err) {

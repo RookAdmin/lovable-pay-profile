@@ -114,7 +114,10 @@ const getProfile = async (username: string) => {
     upiId: upiDetails?.upiId,
     bankDetails,
     cardDetails,
-    qrCodeUrl
+    qrCodeUrl,
+    upiMethodId: upiMethod?.id,
+    bankMethodId: bankMethod?.id,
+    cardMethodId: cardMethod?.id
   };
 };
 
@@ -168,6 +171,9 @@ const Profile = () => {
           bankDetails={data.bankDetails}
           cardDetails={data.cardDetails}
           qrCodeUrl={data.qrCodeUrl}
+          upiMethodId={data.upiMethodId}
+          bankMethodId={data.bankMethodId}
+          cardMethodId={data.cardMethodId}
         />
         <SmartLinkSection links={data.smartLinks} />
       </div>

@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
 import { SmartLink } from '@/types/profile';
-import { BankDetails, CardDetails, UpiDetails } from '@/types/payment';
+import { BankDetails, CardDetails, UpiDetails, safelyConvertToUpiDetails } from '@/types/payment';
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -267,6 +267,9 @@ const Dashboard = () => {
                     cardDetails={cardDetails}
                     qrCodeUrl={qrCodeUrl}
                     onPaymentMethodUpdate={handleDataUpdate}
+                    upiMethodId={upiMethod?.id}
+                    bankMethodId={bankMethod?.id}
+                    cardMethodId={cardMethod?.id}
                   />
                 </TabsContent>
 
@@ -287,10 +290,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-function safelyConvertToUpiDetails(details: any): UpiDetails {
-  return {
-    upiId: (details as { upiId?: string }).upiId || '',
-    qrCodeUrl: (details as { qrCodeUrl?: string }).qrCodeUrl || ''
-  };
-}
