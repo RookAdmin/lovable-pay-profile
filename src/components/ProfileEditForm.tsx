@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { Camera, Image } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const profileSchema = z.object({
   display_name: z.string().min(2, 'Display name must be at least 2 characters'),
@@ -17,7 +19,8 @@ const profileSchema = z.object({
   website_url: z.string().url().optional().or(z.literal('')),
   instagram_url: z.string().url().optional().or(z.literal('')),
   twitter_url: z.string().url().optional().or(z.literal('')),
-  linkedin_url: z.string().url().optional().or(z.literal(''))
+  linkedin_url: z.string().url().optional().or(z.literal('')),
+  avatar_url: z.string().optional().or(z.literal('')),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -26,25 +29,75 @@ interface ProfileEditFormProps {
   initialData?: ProfileFormValues;
 }
 
+const AVATAR_BUCKET = 'avatars';
+
 const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData }) => {
   const { user } = useAuth();
+  const [uploading, setUploading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(initialData?.avatar_url || '');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const inputFileRef = useRef<HTMLInputElement | null>(null);
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: initialData || {
-      display_name: '',
-      bio: '',
-      website_url: '',
-      instagram_url: '',
-      twitter_url: '',
-      linkedin_url: ''
+    defaultValues: {
+      ...initialData,
+      avatar_url: initialData?.avatar_url || '',
     }
   });
 
+  // Handle the avatar upload and set final URL in profile
+  const handleAvatarChange = async (file: File) => {
+    setUploading(true);
+    try {
+      if (!user?.id) {
+        toast.error("User not found");
+        return;
+      }
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase
+        .storage
+        .from(AVATAR_BUCKET)
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Build public URL
+      const { data } = supabase
+        .storage
+        .from(AVATAR_BUCKET)
+        .getPublicUrl(filePath);
+      if (!data?.publicUrl) throw new Error('Could not get public URL for avatar');
+      setAvatarUrl(data.publicUrl);
+
+      // Update form value and show preview
+      form.setValue('avatar_url', data.publicUrl);
+      toast.success('Avatar updated! Don\'t forget to save changes.');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to upload avatar');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setSelectedFile(file || null);
+    if (file) {
+      handleAvatarChange(file);
+    }
+  };
+
   const onSubmit = async (data: ProfileFormValues) => {
     try {
+      const toUpdate = { ...data, avatar_url: avatarUrl };
       const { error } = await supabase
         .from('profiles')
-        .update(data)
+        .update(toUpdate)
         .eq('id', user?.id)
         .single();
 
@@ -58,6 +111,38 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData }) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        
+        {/* Profile photo field */}
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <Avatar className="h-20 w-20">
+            {avatarUrl
+              ? <AvatarImage src={avatarUrl} alt="Profile photo" />
+              : <AvatarFallback>
+                  <Camera size={28} />
+                </AvatarFallback>
+            }
+          </Avatar>
+          <input
+            ref={inputFileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={onSelectFile}
+            disabled={uploading}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1 mt-2"
+            disabled={uploading}
+            onClick={() => inputFileRef.current?.click()}
+          >
+            <Image size={16} />
+            {uploading ? 'Uploading...' : (avatarUrl ? 'Change Photo' : 'Upload Photo')}
+          </Button>
+        </div>
+
         <FormField
           control={form.control}
           name="display_name"
@@ -142,7 +227,12 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData }) => {
           )}
         />
 
-        <Button type="submit">Save Changes</Button>
+        {/* Hidden input to bind avatar_url to form data (for revert on submit) */}
+        <Input type="hidden" {...form.register('avatar_url')} />
+
+        <Button type="submit" disabled={form.formState.isSubmitting || uploading}>
+          {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
+        </Button>
       </form>
     </Form>
   );

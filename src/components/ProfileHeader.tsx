@@ -40,10 +40,13 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   return (
     <div className="flex flex-col items-center text-center">
       <Avatar className="h-24 w-24 mb-4">
-        <AvatarImage src={avatarUrl} alt={displayName} />
-        <AvatarFallback className="bg-gradient-primary text-white text-lg">
-          {displayName.substring(0, 2).toUpperCase()}
-        </AvatarFallback>
+        {avatarUrl ? (
+          <AvatarImage src={avatarUrl} alt={displayName} />
+        ) : (
+          <AvatarFallback className="bg-gradient-primary text-white text-lg">
+            {displayName.substring(0, 2).toUpperCase()}
+          </AvatarFallback>
+        )}
       </Avatar>
       
       <div className="flex items-center gap-2 mb-1">

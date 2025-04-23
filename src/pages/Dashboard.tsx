@@ -105,14 +105,17 @@ const Dashboard = () => {
     })) || [];
 
   return (
-    <div className="container px-0 py-0 bg-lightblue min-h-screen w-full">
-      <div className="flex flex-col md:flex-row w-full">
+    <div className="container-fluid px-0 py-0 bg-lightblue min-h-screen w-full">
+      <div className="flex flex-col md:flex-row w-full min-h-screen">
         <div className="w-full md:w-64 shrink-0">
           <Card className="sticky top-8 bg-card border-cyan shadow-lg">
             <CardContent className="p-4">
               <div className="flex flex-col items-center mb-6 pt-2">
                 <Avatar className="h-20 w-20 mb-3 border-4 border-cyan">
-                  <AvatarImage src={profile?.avatar_url} alt={profile?.display_name || user?.email} />
+                  <AvatarImage 
+                    src={profile?.avatar_url} 
+                    alt={profile?.display_name || user?.email}
+                  />
                   <AvatarFallback>
                     {(profile?.display_name || user?.email || '').substring(0, 2).toUpperCase()}
                   </AvatarFallback>
