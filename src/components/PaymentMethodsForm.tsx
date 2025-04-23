@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -94,11 +95,16 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
       const payload = {
         profile_id: user.id,
         type: 'upi',
-        details: { ...data, qrCodeUrl },
+        details: { 
+          upiId: data.upiId,
+          qrCodeUrl: qrCodeUrl 
+        },
         qr_code_url: qrCodeUrl || null,
         is_active: true,
         is_primary: true
       };
+
+      console.log("Saving UPI with payload:", payload);
 
       if (upiMethod?.id) {
         const { error } = await supabase
@@ -106,14 +112,20 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
           .update(payload)
           .eq('id', upiMethod.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Update error:", error);
+          throw error;
+        }
         toast.success('UPI details updated successfully');
       } else {
         const { error } = await supabase
           .from('payment_methods')
           .insert(payload);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Insert error:", error);
+          throw error;
+        }
         toast.success('UPI details saved successfully');
       }
       queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
@@ -253,8 +265,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                     </FormItem>
                   )}
                 />
-                {/* hidden field for qr */}
-                <input type="hidden" value={qrCodeUrl} readOnly name="qrCodeUrl" />
                 <Button type="submit" className="w-full">
                   {upiMethod?.id ? 'Update UPI Details' : 'Save UPI Details'}
                 </Button>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -19,7 +20,6 @@ interface PaymentDetails {
   expiryMonth?: string;
   expiryYear?: string;
   qrCodeUrl?: string;
-  qr_code_url?: string;
 }
 
 const getProfile = async (username: string) => {
@@ -55,14 +55,14 @@ const getProfile = async (username: string) => {
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');
   const cardMethod = paymentMethods?.find(m => m.type === 'card');
 
-  // NEW: get qr code url (prefer from qr_code_url field, else in details)
+  // Get QR code URL - first check for qr_code_url directly on the payment method, then check in details
   const upiDetails = upiMethod?.details as PaymentDetails | undefined;
   let qrCodeUrl: string | undefined = undefined;
   
   if (upiMethod) {
     qrCodeUrl = upiMethod.qr_code_url as string || 
       (typeof upiDetails === 'object' && upiDetails !== null ? 
-        upiDetails.qrCodeUrl || upiDetails.qr_code_url : 
+        upiDetails.qrCodeUrl : 
         undefined);
   }
 

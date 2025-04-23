@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,7 +61,6 @@ const Dashboard = () => {
     enabled: !!user?.id
   });
   
-  // Add the missing handleShare function
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/${profile?.username}`;
     navigator.clipboard.writeText(shareUrl);
@@ -84,7 +82,7 @@ const Dashboard = () => {
       (upiMethod.details as Record<string, unknown>).qrCodeUrl as string : 
       undefined);
 
-  const upiId = upiMethod?.details && typeof upiMethod.details === 'object' ? 
+  const upiDetails = upiMethod?.details && typeof upiMethod.details === 'object' ? 
     { upiId: (upiMethod.details as { upiId?: string }).upiId || '' } : 
     undefined;
 
@@ -248,7 +246,7 @@ const Dashboard = () => {
 
                 <TabsContent value="payment">
                   <PaymentSection
-                    upiId={upiId?.upiId}
+                    upiId={upiDetails?.upiId}
                     bankDetails={bankDetails}
                     cardDetails={cardDetails}
                     qrCodeUrl={qrCodeUrl}
