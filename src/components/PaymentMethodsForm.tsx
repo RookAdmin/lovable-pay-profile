@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -37,7 +38,7 @@ type BankFormData = z.infer<typeof bankSchema>;
 type CardFormData = z.infer<typeof cardSchema>;
 
 interface PaymentMethodsFormProps {
-  upiMethod?: { id: string; details: UpiDetails };
+  upiMethod?: { id: string; details: UpiDetails; qr_code_url?: string };
   bankMethod?: { id: string; details: BankFormData };
   cardMethod?: { id: string; details: CardFormData };
   onUpdate?: () => void;
@@ -54,7 +55,8 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
   
   const [qrCodeUrl, setQrCodeUrl] = React.useState<string>(
     upiMethod?.details?.qrCodeUrl || 
-    (upiMethod ? upiMethod.qr_code_url : "")
+    upiMethod?.qr_code_url || 
+    ""
   );
 
   console.log("Initial QR Code URL:", qrCodeUrl);
