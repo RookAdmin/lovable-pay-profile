@@ -8,6 +8,7 @@ export interface BankDetails {
 
 export interface UpiDetails {
   upiId: string;
+  qrCodeUrl?: string;
 }
 
 export interface CardDetails {

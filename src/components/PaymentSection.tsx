@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import QRCode from './QRCode';
@@ -6,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreditCard, Banknote, QrCode, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PaymentMethodsForm from './PaymentMethodsForm';
-import { BankDetails, CardDetails } from '@/types/payment';
+import { BankDetails, CardDetails, UpiDetails } from '@/types/payment';
 
 interface PaymentSectionProps {
   upiId?: string;

@@ -61,12 +61,6 @@ const Dashboard = () => {
     enabled: !!user?.id
   });
 
-  const handleShare = () => {
-    const shareUrl = `${window.location.origin}/${profile?.username}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success('Profile link copied to clipboard!');
-  };
-
   if (isLoading) {
     return (
       <div className="container py-8">
@@ -76,9 +70,13 @@ const Dashboard = () => {
   }
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
-  const qrCodeUrl = upiMethod?.qr_code_url || upiMethod?.details?.qrCodeUrl;
+  
+  const qrCodeUrl = upiMethod?.qr_code_url || 
+    (typeof upiMethod?.details === 'object' && upiMethod?.details !== null ? 
+      (upiMethod.details as Record<string, unknown>).qrCodeUrl as string : 
+      undefined);
 
-  const upiId: UpiDetails | undefined = upiMethod?.details ? 
+  const upiId = upiMethod?.details && typeof upiMethod.details === 'object' ? 
     { upiId: (upiMethod.details as { upiId?: string }).upiId || '' } : 
     undefined;
 

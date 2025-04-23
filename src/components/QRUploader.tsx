@@ -86,4 +86,3 @@ const QRUploader: React.FC<QRUploaderProps> = ({
 };
 
 export default QRUploader;
-

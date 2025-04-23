@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,14 @@ const QRCode: React.FC<QRCodeProps> = ({
   };
   
   const handleOpenUPI = () => {
+    // Implement UPI deep link to open payment apps
+    const encodedValue = encodeURIComponent(value);
+    const upiURL = `upi://pay?pa=${encodedValue}`;
+    
+    // On mobile devices, this will open the UPI app
+    // On desktop, it will typically do nothing or show an error
+    window.location.href = upiURL;
+    
     toast.success('Opening UPI app');
   };
   

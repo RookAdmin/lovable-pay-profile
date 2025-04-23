@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import QRUploader from "./QRUploader";
+import { UpiDetails } from '@/types/payment';
 
 // Define validation schemas
 const upiSchema = z.object({
@@ -37,7 +38,7 @@ type BankFormData = z.infer<typeof bankSchema>;
 type CardFormData = z.infer<typeof cardSchema>;
 
 interface PaymentMethodsFormProps {
-  upiMethod?: { id: string; details: UpiFormData };
+  upiMethod?: { id: string; details: UpiDetails };
   bankMethod?: { id: string; details: BankFormData };
   cardMethod?: { id: string; details: CardFormData };
 }
@@ -51,7 +52,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
   const queryClient = useQueryClient();
   
   // UPI QR management
-  const [qrCodeUrl, setQrCodeUrl] = React.useState<string>(upiMethod?.details?.qrCodeUrl || upiMethod?.details?.qr_code_url || "");
+  const [qrCodeUrl, setQrCodeUrl] = React.useState<string>(upiMethod?.details?.qrCodeUrl || "");
 
   // Initialize UPI form
   const upiForm = useForm<UpiFormData>({

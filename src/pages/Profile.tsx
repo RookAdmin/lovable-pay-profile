@@ -57,7 +57,14 @@ const getProfile = async (username: string) => {
 
   // NEW: get qr code url (prefer from qr_code_url field, else in details)
   const upiDetails = upiMethod?.details as PaymentDetails | undefined;
-  let qrCodeUrl: string | undefined = (upiMethod?.qr_code_url as string) || upiDetails?.qrCodeUrl;
+  let qrCodeUrl: string | undefined = undefined;
+  
+  if (upiMethod) {
+    qrCodeUrl = upiMethod.qr_code_url as string || 
+      (typeof upiDetails === 'object' && upiDetails !== null ? 
+        upiDetails.qrCodeUrl || upiDetails.qr_code_url : 
+        undefined);
+  }
 
   // Safely type cast the payment details
   const paymentDetails = bankMethod?.details as PaymentDetails | undefined;
