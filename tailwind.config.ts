@@ -13,9 +13,9 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: '2rem',
+      padding: '0',  // Remove padding
       screens: {
-        '2xl': '1400px'
+        '2xl': '100%'  // Ensure full width
       }
     },
     extend: {
