@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,17 +14,7 @@ import { Link } from 'react-router-dom';
 import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
 import { SmartLink } from '@/types/profile';
-
-interface UpiDetails {
-  upiId: string;
-}
-
-interface BankDetails {
-  accountNumber: string;
-  ifsc: string;
-  accountName: string;
-  bankName: string;
-}
+import { BankDetails, UpiDetails } from '@/types/payment';
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -86,64 +77,33 @@ const Dashboard = () => {
   }
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
-  let upiId: string | undefined;
-  if (
-    upiMethod?.details &&
-    typeof upiMethod.details === "object" &&
-    !Array.isArray(upiMethod.details) &&
-    (upiMethod.details as any).upiId
-  ) {
-    upiId = (upiMethod.details as { upiId?: string }).upiId;
-  }
+  const upiId: UpiDetails | undefined = upiMethod?.details ? 
+    { upiId: (upiMethod.details as { upiId?: string }).upiId || '' } : 
+    undefined;
 
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');
-  let bankDetails:
-    | { accountNumber?: string; ifsc?: string; accountName?: string; bankName?: string }
-    | undefined;
-  if (
-    bankMethod?.details &&
-    typeof bankMethod.details === "object" &&
-    !Array.isArray(bankMethod.details)
-  ) {
-    const det = bankMethod.details as
-      | { accountNumber?: string; ifsc?: string; accountName?: string; bankName?: string }
-      | Record<string, unknown>;
-    if (
-      det.accountNumber &&
-      det.ifsc &&
-      det.accountName &&
-      det.bankName
-    ) {
-      bankDetails = {
-        accountNumber: det.accountNumber as string,
-        ifsc: det.ifsc as string,
-        accountName: det.accountName as string,
-        bankName: det.bankName as string
-      };
-    }
-  }
+  const bankDetails: BankDetails | undefined = bankMethod?.details ? {
+    accountNumber: (bankMethod.details as { accountNumber?: string }).accountNumber || '',
+    ifsc: (bankMethod.details as { ifsc?: string }).ifsc || '',
+    accountName: (bankMethod.details as { accountName?: string }).accountName || '',
+    bankName: (bankMethod.details as { bankName?: string }).bankName || ''
+  } : undefined;
 
-  const typedSmartLinks: SmartLink[] =
-    Array.isArray(smartLinks)
-      ? smartLinks.map(link => ({
-          id: link.id,
-          title: link.title,
-          amount: Number(link.amount),
-          currency: link.currency,
-          icon:
-            link.icon === "heart" ||
-            link.icon === "coffee" ||
-            link.icon === "zap" ||
-            link.icon === "card"
-              ? link.icon
-              : "heart",
-          gradient: !!link.gradient,
-          profileId: link.profile_id,
-          isActive: link.is_active,
-          createdAt: link.created_at,
-          updatedAt: link.updated_at
-        }))
-      : [];
+  const typedSmartLinks: SmartLink[] = 
+    smartLinks?.map(link => ({
+      id: link.id,
+      title: link.title,
+      amount: Number(link.amount),
+      currency: link.currency,
+      icon: link.icon === 'heart' || link.icon === 'coffee' || link.icon === 'zap' || link.icon === 'card' 
+        ? link.icon 
+        : 'heart',
+      gradient: !!link.gradient,
+      profileId: link.profile_id,
+      isActive: link.is_active,
+      createdAt: link.created_at,
+      updatedAt: link.updated_at
+    })) || [];
 
   return (
     <div className="container py-8 bg-lightblue min-h-screen">
@@ -270,7 +230,7 @@ const Dashboard = () => {
 
                 <TabsContent value="payment">
                   <PaymentSection
-                    upiId={upiId}
+                    upiId={upiId?.upiId}
                     bankDetails={bankDetails}
                   />
                 </TabsContent>
