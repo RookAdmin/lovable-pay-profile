@@ -24,6 +24,13 @@ const QRUploader: React.FC<QRUploaderProps> = ({
   const [fileUrl, setFileUrl] = useState(initialUrl);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Update fileUrl when initialUrl changes
+  React.useEffect(() => {
+    if (initialUrl !== undefined) {
+      setFileUrl(initialUrl);
+    }
+  }, [initialUrl]);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -62,6 +69,12 @@ const QRUploader: React.FC<QRUploaderProps> = ({
       // Set local state and call parent's callback
       setFileUrl(data.publicUrl);
       onUpload(data.publicUrl);
+      
+      // Auto-save if onSave exists
+      if (onSave) {
+        onSave(data.publicUrl);
+      }
+      
       toast.success("QR code uploaded successfully");
     } catch (err) {
       console.error("QR upload error:", err);
