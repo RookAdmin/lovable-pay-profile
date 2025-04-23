@@ -7,6 +7,7 @@ import ProfileHeader from '@/components/ProfileHeader';
 import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
 import type { Profile, PaymentMethod, SmartLink, SocialLink } from '@/types/profile';
+import { BankDetails, CardDetails } from '@/types/payment';
 
 interface PaymentDetails {
   upiId?: string;
@@ -14,14 +15,10 @@ interface PaymentDetails {
   ifsc?: string;
   accountName?: string;
   bankName?: string;
-}
-
-// Create an interface that matches the expected BankDetails in PaymentSection
-interface BankDetails {
-  accountNumber: string;
-  ifsc: string;
-  accountName: string;
-  bankName: string;
+  cardNumber?: string;
+  nameOnCard?: string;
+  expiryMonth?: string;
+  expiryYear?: string;
 }
 
 const getProfile = async (username: string) => {
@@ -55,13 +52,16 @@ const getProfile = async (username: string) => {
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
   const bankMethod = paymentMethods?.find(m => m.type === 'bank');
+  const cardMethod = paymentMethods?.find(m => m.type === 'card');
   
   // Safely type cast the payment details
   const upiDetails = upiMethod?.details as PaymentDetails | undefined;
   const paymentDetails = bankMethod?.details as PaymentDetails | undefined;
+  const cardPaymentDetails = cardMethod?.details as PaymentDetails | undefined;
   
-  // Create a properly typed bankDetails object that meets the BankDetails interface requirements
+  // Create properly typed objects that meet the interface requirements
   let bankDetails: BankDetails | undefined;
+  let cardDetails: CardDetails | undefined;
   
   if (paymentDetails?.accountNumber && paymentDetails?.ifsc && 
       paymentDetails?.accountName && paymentDetails?.bankName) {
@@ -70,6 +70,16 @@ const getProfile = async (username: string) => {
       ifsc: paymentDetails.ifsc,
       accountName: paymentDetails.accountName,
       bankName: paymentDetails.bankName
+    };
+  }
+
+  if (cardPaymentDetails?.cardNumber && cardPaymentDetails?.nameOnCard && 
+      cardPaymentDetails?.expiryMonth && cardPaymentDetails?.expiryYear) {
+    cardDetails = {
+      cardNumber: cardPaymentDetails.cardNumber,
+      nameOnCard: cardPaymentDetails.nameOnCard,
+      expiryMonth: cardPaymentDetails.expiryMonth,
+      expiryYear: cardPaymentDetails.expiryYear
     };
   }
   
@@ -85,7 +95,8 @@ const getProfile = async (username: string) => {
     paymentMethods: paymentMethods || [],
     smartLinks: typedSmartLinks,
     upiId: upiDetails?.upiId,
-    bankDetails
+    bankDetails,
+    cardDetails
   };
 };
 
@@ -129,6 +140,7 @@ const Profile = () => {
         <PaymentSection
           upiId={data.upiId}
           bankDetails={data.bankDetails}
+          cardDetails={data.cardDetails}
         />
         
         <SmartLinkSection links={data.smartLinks} />

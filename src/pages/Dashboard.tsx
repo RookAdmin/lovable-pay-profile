@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +14,7 @@ import { Link } from 'react-router-dom';
 import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
 import { SmartLink } from '@/types/profile';
-import { BankDetails, UpiDetails } from '@/types/payment';
+import { BankDetails, CardDetails, UpiDetails } from '@/types/payment';
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -77,16 +78,25 @@ const Dashboard = () => {
   }
 
   const upiMethod = paymentMethods?.find(m => m.type === 'upi');
+  const bankMethod = paymentMethods?.find(m => m.type === 'bank');
+  const cardMethod = paymentMethods?.find(m => m.type === 'card');
+  
   const upiId: UpiDetails | undefined = upiMethod?.details ? 
     { upiId: (upiMethod.details as { upiId?: string }).upiId || '' } : 
     undefined;
 
-  const bankMethod = paymentMethods?.find(m => m.type === 'bank');
   const bankDetails: BankDetails | undefined = bankMethod?.details ? {
     accountNumber: (bankMethod.details as { accountNumber?: string }).accountNumber || '',
     ifsc: (bankMethod.details as { ifsc?: string }).ifsc || '',
     accountName: (bankMethod.details as { accountName?: string }).accountName || '',
     bankName: (bankMethod.details as { bankName?: string }).bankName || ''
+  } : undefined;
+
+  const cardDetails: CardDetails | undefined = cardMethod?.details ? {
+    cardNumber: (cardMethod.details as { cardNumber?: string }).cardNumber || '',
+    nameOnCard: (cardMethod.details as { nameOnCard?: string }).nameOnCard || '',
+    expiryMonth: (cardMethod.details as { expiryMonth?: string }).expiryMonth || '',
+    expiryYear: (cardMethod.details as { expiryYear?: string }).expiryYear || ''
   } : undefined;
 
   const typedSmartLinks: SmartLink[] = 
@@ -235,6 +245,7 @@ const Dashboard = () => {
                   <PaymentSection
                     upiId={upiId?.upiId}
                     bankDetails={bankDetails}
+                    cardDetails={cardDetails}
                   />
                 </TabsContent>
 

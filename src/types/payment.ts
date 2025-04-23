@@ -9,3 +9,18 @@ export interface BankDetails {
 export interface UpiDetails {
   upiId: string;
 }
+
+export interface CardDetails {
+  cardNumber: string;
+  nameOnCard: string;
+  expiryMonth: string;
+  expiryYear: string;
+}
+
+export type PaymentMethod = {
+  id: string;
+  type: 'upi' | 'bank' | 'card';
+  details: UpiDetails | BankDetails | CardDetails;
+  isActive: boolean;
+  isPrimary: boolean;
+};

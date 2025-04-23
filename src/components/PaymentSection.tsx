@@ -7,23 +7,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreditCard, Banknote, QrCode, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PaymentMethodsForm from './PaymentMethodsForm';
-
-interface BankDetails {
-  accountNumber: string;
-  ifsc: string;
-  accountName: string;
-  bankName: string;
-}
+import { BankDetails, CardDetails } from '@/types/payment';
 
 interface PaymentSectionProps {
   upiId?: string;
   bankDetails?: BankDetails;
+  cardDetails?: CardDetails;
   className?: string;
 }
 
 const PaymentSection: React.FC<PaymentSectionProps> = ({
   upiId = '',
   bankDetails,
+  cardDetails,
   className = ''
 }) => {
   const [showForm, setShowForm] = useState(false);
@@ -41,7 +37,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
             {showForm ? 'Hide Form' : (
               <>
                 <PlusCircle size={16} className="mr-2" />
-                {(!upiId && !bankDetails) ? 'Add Payment Method' : 'Edit Payment Methods'}
+                {(!upiId && !bankDetails && !cardDetails) ? 'Add Payment Method' : 'Edit Payment Methods'}
               </>
             )}
           </Button>
@@ -51,6 +47,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
             <PaymentMethodsForm 
               upiMethod={upiId ? { id: 'upi', details: { upiId } } : undefined}
               bankMethod={bankDetails ? { id: 'bank', details: bankDetails } : undefined}
+              cardMethod={cardDetails ? { id: 'card', details: cardDetails } : undefined}
             />
           ) : (
             <Tabs defaultValue="upi" className="w-full">
@@ -114,9 +111,33 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
               </TabsContent>
               
               <TabsContent value="cards" className="space-y-4">
-                <div className="text-center py-8 text-muted-foreground">
-                  Credit card payment methods coming soon!
-                </div>
+                {cardDetails ? (
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-6 rounded-xl text-white shadow-lg">
+                      <div className="flex justify-between items-center mb-8">
+                        <div className="text-lg font-bold">Payment Card</div>
+                        <div className="text-sm">Secured</div>
+                      </div>
+                      <div className="mb-2 font-mono text-lg">
+                        {cardDetails.cardNumber}
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="text-xs opacity-80">CARD HOLDER</div>
+                          <div>{cardDetails.nameOnCard.toUpperCase()}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs opacity-80">EXPIRES</div>
+                          <div>{cardDetails.expiryMonth}/{cardDetails.expiryYear}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No card details available. Add a card to display here.
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           )}
