@@ -53,6 +53,7 @@ const getProfile = async (username: string) => {
       
     if (paymentError) {
       console.error("Error fetching payment methods:", paymentError);
+      throw paymentError; // Throw error to trigger error handler
     }
       
     console.log("Payment methods fetched:", paymentMethods);
@@ -65,6 +66,7 @@ const getProfile = async (username: string) => {
       
     if (smartLinksError) {
       console.error("Error fetching smart links:", smartLinksError);
+      throw smartLinksError; // Throw error to trigger error handler
     }
 
     const socialLinks: SocialLink[] = [
@@ -159,7 +161,7 @@ const Profile = () => {
     queryFn: () => getProfile(username || ''),
     enabled: !!username,
     staleTime: 60000,
-    retry: 1,
+    retry: 2, // Increased retry attempts
     meta: {
       onError: (err: Error) => {
         console.error("Error in profile query:", err);
@@ -215,7 +217,7 @@ const Profile = () => {
           bankDetails={data.bankDetails}
           cardDetails={data.cardDetails}
           qrCodeUrl={data.qrCodeUrl}
-          isViewingMode={true} // Force viewing mode to hide edit buttons
+          isViewingMode={true}
         />
         <SmartLinkSection links={data.smartLinks} />
       </div>
