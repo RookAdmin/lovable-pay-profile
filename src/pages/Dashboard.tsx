@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -179,7 +180,13 @@ const Dashboard = () => {
                     variant="ghost"
                     className="w-full justify-start hover:glass hover:border-none transition-all duration-300"
                     size="sm"
-                    onClick={() => document.querySelector(`[data-value="${item.to.replace('#', '')}"]`)?.click()}
+                    onClick={() => {
+                      // Fix: Cast element to HTMLElement before calling click()
+                      const element = document.querySelector(`[data-value="${item.to.replace('#', '')}"]`);
+                      if (element) {
+                        (element as HTMLElement).click();
+                      }
+                    }}
                   >
                     <item.icon size={18} className="mr-2" />
                     {item.label}
