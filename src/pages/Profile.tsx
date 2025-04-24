@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProfileData } from '@/hooks/useProfileData';
@@ -33,7 +32,7 @@ const Profile = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-xl text-muted-foreground">Loading...</p>
+        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -42,7 +41,10 @@ const Profile = () => {
     console.error("Error in Profile component:", error);
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-xl text-muted-foreground">Profile not found</p>
+        <div className="text-center space-y-4">
+          <p className="text-2xl font-semibold text-muted-foreground">Profile not found</p>
+          <p className="text-sm text-muted-foreground/80">The requested profile could not be loaded</p>
+        </div>
       </div>
     );
   }
@@ -58,28 +60,34 @@ const Profile = () => {
   });
   
   return (
-    <div className="container max-w-md px-4 py-8">
-      <ProfileHeader
-        username={data.profile.username}
-        displayName={data.profile.display_name}
-        bio={data.profile.bio}
-        avatarUrl={data.profile.avatar_url}
-        isVerified={data.profile.is_verified}
-        socialLinks={data.socialLinks}
-      />
-      
-      <div className="mt-8 space-y-6">
-        <PaymentSection
-          upiId={data.upiId}
-          bankDetails={data.bankDetails}
-          cardDetails={data.cardDetails}
-          qrCodeUrl={data.qrCodeUrl}
-          isViewingMode={true}
-        />
-        <SmartLinkSection 
-          links={data.smartLinks} 
-          upiId={data.upiId}
-        />
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <div className="container max-w-2xl px-4 py-12 mx-auto space-y-8">
+        <div className="glass p-8 rounded-2xl backdrop-blur-lg border border-white/10">
+          <ProfileHeader
+            username={data.profile.username}
+            displayName={data.profile.display_name}
+            bio={data.profile.bio}
+            avatarUrl={data.profile.avatar_url}
+            isVerified={data.profile.is_verified}
+            socialLinks={data.socialLinks}
+          />
+        </div>
+        
+        <div className="space-y-6">
+          <PaymentSection
+            upiId={data.upiId}
+            bankDetails={data.bankDetails}
+            cardDetails={data.cardDetails}
+            qrCodeUrl={data.qrCodeUrl}
+            isViewingMode={true}
+            className="glass"
+          />
+          <SmartLinkSection 
+            links={data.smartLinks} 
+            upiId={data.upiId}
+            className="glass"
+          />
+        </div>
       </div>
     </div>
   );

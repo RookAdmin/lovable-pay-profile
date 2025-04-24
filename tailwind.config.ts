@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -13,9 +12,9 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: '0',  // Remove padding
+      padding: '0',
       screens: {
-        '2xl': '100%'  // Ensure full width
+        '2xl': '100%'
       }
     },
     extend: {
@@ -33,23 +32,23 @@ export default {
         foreground: 'hsl(var(--foreground))',
 
         primary: {
-          DEFAULT: "#0097A7",           // Cyan
-          foreground: "#D4F1F4",        // Light blue for text on cyan
+          DEFAULT: "#0097A7",
+          foreground: "#D4F1F4",
         },
         secondary: {
-          DEFAULT: "#005F6A",           // Deep teal
-          foreground: "#D4F1F4",        // Light blue
+          DEFAULT: "#005F6A",
+          foreground: "#D4F1F4",
         },
         muted: {
-          DEFAULT: "#D4F1F4",           // Light blue
+          DEFAULT: "#D4F1F4",
           foreground: "#005F6A",
         },
         card: {
-          DEFAULT: "#ffffff",           // White cards to lift above backgrounds
-          foreground: "#003D40",        // Strongest for contrast
+          DEFAULT: "#ffffff",
+          foreground: "#003D40",
         },
         accent: {
-          DEFAULT: "#003D40",           // Darkest for accent
+          DEFAULT: "#003D40",
           foreground: "#D4F1F4",
         },
         destructive: {
@@ -60,22 +59,10 @@ export default {
           DEFAULT: "#fff",
           foreground: "#003D40"
         },
-        sidebar: {
-          DEFAULT: "#D4F1F4",
-          foreground: "#003D40",
-          primary: "#0097A7",
-          'primary-foreground': "#D4F1F4",
-          accent: "#005F6A",
-          'accent-foreground': "#D4F1F4",
-          border: "#D4F1F4",
-          ring: "#0097A7"
-        },
-        brand: {
-          cyan: "#0097A7",
-          lightblue: "#D4F1F4",
-          teal: "#005F6A",
-          darkteal: "#003D40",
-        },
+      },
+      backgroundImage: {
+        'gradient-app': 'linear-gradient(135deg, #D4F1F4 0%, #0097A7 100%)',
+        'gradient-card': 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
       },
       borderRadius: {
         lg: "var(--radius)",

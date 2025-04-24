@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, CreditCard, Wallet, BarChart, Settings, LogOut, Share2, QrCode, LinkIcon } from 'lucide-react';
+import { User, CreditCard, Wallet, BarChart, Settings, LogOut, Share2, QrCode, LinkIcon, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import ProfileEditForm from '@/components/ProfileEditForm';
@@ -81,8 +81,10 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="container py-8">
-        <p>Loading...</p>
+      <div className="container-fluid px-0 py-0 bg-gradient-to-br from-background via-muted to-background min-h-screen w-full">
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
       </div>
     );
   }
@@ -134,27 +136,27 @@ const Dashboard = () => {
     })) || [];
 
   return (
-    <div className="container-fluid px-0 py-0 bg-lightblue min-h-screen w-full">
+    <div className="container-fluid px-0 py-0 bg-gradient-to-br from-background via-muted to-background min-h-screen w-full">
       <div className="flex flex-col md:flex-row w-full min-h-screen">
-        <div className="w-full md:w-64 shrink-0">
-          <Card className="sticky top-8 bg-card border-cyan shadow-lg">
-            <CardContent className="p-4">
-              <div className="flex flex-col items-center mb-6 pt-2">
-                <Avatar className="h-20 w-20 mb-3 border-4 border-cyan">
+        <div className="w-full md:w-64 shrink-0 p-4">
+          <Card className="sticky top-8 glass border-none shadow-xl">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center mb-8 pt-2">
+                <Avatar className="h-24 w-24 mb-4 ring-2 ring-primary ring-offset-2 ring-offset-background">
                   <AvatarImage 
                     src={profile?.avatar_url} 
                     alt={profile?.display_name || user?.email}
                   />
-                  <AvatarFallback>
+                  <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-primary-foreground">
                     {(profile?.display_name || user?.email || '').substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <h2 className="text-xl font-semibold text-teal">{profile?.display_name || user?.email}</h2>
-                <p className="text-sm text-secondary">@{profile?.username}</p>
+                <h2 className="text-2xl font-bold gradient-text mb-1">{profile?.display_name || user?.email}</h2>
+                <p className="text-sm text-muted-foreground mb-4">@{profile?.username}</p>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="mt-2 border-cyan text-cyan"
+                  className="w-full glass border-none shadow-sm hover:shadow-md transition-all duration-300"
                   onClick={handleShare}
                 >
                   <Share2 size={16} className="mr-2" />
@@ -162,38 +164,29 @@ const Dashboard = () => {
                 </Button>
               </div>
               
-              <nav className="space-y-1">
-                <Button variant="ghost" className="w-full justify-start" size="sm">
-                  <User size={18} className="mr-2" />
-                  Overview
-                </Button>
-                <Button variant="ghost" className="w-full justify-start" size="sm">
-                  <CreditCard size={18} className="mr-2" />
-                  Payment Methods
-                </Button>
-                <Button variant="ghost" className="w-full justify-start" size="sm">
-                  <Wallet size={18} className="mr-2" />
-                  Transactions
-                </Button>
-                <Button variant="ghost" className="w-full justify-start" size="sm">
-                  <QrCode size={18} className="mr-2" />
-                  QR Codes
-                </Button>
-                <Button variant="ghost" className="w-full justify-start" size="sm">
-                  <LinkIcon size={18} className="mr-2" />
-                  Smart Links
-                </Button>
-                <Button variant="ghost" className="w-full justify-start" size="sm">
-                  <BarChart size={18} className="mr-2" />
-                  Analytics
-                </Button>
-                <Button variant="ghost" className="w-full justify-start" size="sm">
-                  <Settings size={18} className="mr-2" />
-                  Settings
-                </Button>
+              <nav className="space-y-1.5">
+                {[
+                  { icon: LayoutDashboard, label: "Overview" },
+                  { icon: CreditCard, label: "Payment Methods" },
+                  { icon: Wallet, label: "Transactions" },
+                  { icon: QrCode, label: "QR Codes" },
+                  { icon: Link, label: "Smart Links" },
+                  { icon: BarChart, label: "Analytics" },
+                  { icon: Settings, label: "Settings" },
+                ].map((item) => (
+                  <Button
+                    key={item.label}
+                    variant="ghost"
+                    className="w-full justify-start hover:glass hover:border-none transition-all duration-300"
+                    size="sm"
+                  >
+                    <item.icon size={18} className="mr-2" />
+                    {item.label}
+                  </Button>
+                ))}
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start text-red-500" 
+                  className="w-full justify-start text-destructive hover:text-destructive hover:glass hover:border-none transition-all duration-300" 
                   size="sm"
                   onClick={() => signOut()}
                 >
@@ -205,14 +198,14 @@ const Dashboard = () => {
           </Card>
         </div>
         
-        <div className="flex-1">
-          <Card className="bg-card shadow-lg border-cyan">
+        <div className="flex-1 p-4">
+          <Card className="glass border-none shadow-xl">
             <CardHeader>
-              <CardTitle>Dashboard</CardTitle>
+              <CardTitle className="text-2xl font-bold gradient-text">Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="overview">
-                <TabsList>
+              <Tabs defaultValue="overview" className="w-full">
+                <TabsList className="w-full grid grid-cols-4 mb-8 glass border-none">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="payment">Payment Methods</TabsTrigger>
                   <TabsTrigger value="smart-links">Smart Links</TabsTrigger>
