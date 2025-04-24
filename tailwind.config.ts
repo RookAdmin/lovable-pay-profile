@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -64,7 +63,9 @@ export default {
       backgroundImage: {
         'gradient-app': 'linear-gradient(135deg, #D4F1F4 0%, #0097A7 100%)',
         'gradient-card': 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-        'card-soft': 'linear-gradient(135deg, #D4F1F4 0%, #005F6A 100%)'
+        'card-soft': 'linear-gradient(135deg, #D4F1F4 0%, #005F6A 100%)',
+        'heading-gradient': 'linear-gradient(135deg, #1A1F2C 0%, #403E43 50%, #333333 100%)',
+        'heading-soft-gradient': 'linear-gradient(135deg, #221F26 0%, #403E43 50%, #222222 100%)',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -85,6 +86,9 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      textColor: {
+        'gradient-dark': 'linear-gradient(135deg, #1A1F2C 0%, #403E43 100%)',
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
