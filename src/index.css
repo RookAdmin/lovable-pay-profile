@@ -86,7 +86,7 @@
   }
   
   .glass {
-    @apply bg-gradient-card backdrop-blur-md shadow-lg border border-white/20 rounded-2xl;
+    @apply bg-white/10 backdrop-blur-md shadow-lg border border-white/20 rounded-2xl;
   }
   
   .glass-hover {
@@ -94,6 +94,6 @@
   }
   
   .card-gradient {
-    @apply bg-gradient-card;
+    @apply bg-gradient-to-br from-white/10 to-white/5;
   }
 }

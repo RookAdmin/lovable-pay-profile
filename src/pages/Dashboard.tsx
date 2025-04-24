@@ -166,19 +166,20 @@ const Dashboard = () => {
               
               <nav className="space-y-1.5">
                 {[
-                  { icon: LayoutDashboard, label: "Overview" },
-                  { icon: CreditCard, label: "Payment Methods" },
-                  { icon: Wallet, label: "Transactions" },
-                  { icon: QrCode, label: "QR Codes" },
-                  { icon: Link, label: "Smart Links" },
-                  { icon: BarChart, label: "Analytics" },
-                  { icon: Settings, label: "Settings" },
+                  { icon: LayoutDashboard, label: "Overview", to: "#overview" },
+                  { icon: CreditCard, label: "Payment Methods", to: "#payment" },
+                  { icon: Wallet, label: "Transactions", to: "#" },
+                  { icon: QrCode, label: "QR Codes", to: "#" },
+                  { icon: LinkIcon, label: "Smart Links", to: "#smart-links" },
+                  { icon: BarChart, label: "Analytics", to: "#" },
+                  { icon: Settings, label: "Settings", to: "#edit" },
                 ].map((item) => (
                   <Button
                     key={item.label}
                     variant="ghost"
                     className="w-full justify-start hover:glass hover:border-none transition-all duration-300"
                     size="sm"
+                    onClick={() => document.querySelector(`[data-value="${item.to.replace('#', '')}"]`)?.click()}
                   >
                     <item.icon size={18} className="mr-2" />
                     {item.label}
@@ -206,10 +207,10 @@ const Dashboard = () => {
             <CardContent>
               <Tabs defaultValue="overview" className="w-full">
                 <TabsList className="w-full grid grid-cols-4 mb-8 glass border-none">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="payment">Payment Methods</TabsTrigger>
-                  <TabsTrigger value="smart-links">Smart Links</TabsTrigger>
-                  <TabsTrigger value="edit">Edit Profile</TabsTrigger>
+                  <TabsTrigger value="overview" data-value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="payment" data-value="payment">Payment Methods</TabsTrigger>
+                  <TabsTrigger value="smart-links" data-value="smart-links">Smart Links</TabsTrigger>
+                  <TabsTrigger value="edit" data-value="edit">Edit Profile</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="overview">
