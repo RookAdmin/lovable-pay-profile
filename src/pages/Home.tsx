@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -269,8 +270,9 @@ const Home = () => {
                 key={i}
                 className="group relative overflow-hidden rounded-2xl"
               >
-                <div className="absolute inset-0 bg-gradient-to-br opacity-80 transition-opacity duration-300 group-hover:opacity-90"
-                     className={`bg-gradient-to-br ${item.gradient}`} />
+                <div 
+                  className={`absolute inset-0 bg-gradient-to-br opacity-80 transition-opacity duration-300 group-hover:opacity-90 ${item.gradient}`}
+                />
                 
                 <img 
                   src={item.img}
