@@ -66,6 +66,7 @@ export type Database = {
           twitter_url: string | null
           updated_at: string
           username: string
+          username_updated_at: string | null
           website_url: string | null
         }
         Insert: {
@@ -80,6 +81,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string
           username: string
+          username_updated_at?: string | null
           website_url?: string | null
         }
         Update: {
@@ -94,6 +96,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string
           username?: string
+          username_updated_at?: string | null
           website_url?: string | null
         }
         Relationships: []

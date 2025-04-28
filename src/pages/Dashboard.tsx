@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +22,7 @@ const Dashboard = () => {
   const [isUpiValid, setIsUpiValid] = useState(true);
   const [editingProfile, setEditingProfile] = useState(false);
   
-  const { data: profile, isLoading, refetch: refetchProfile } = useQuery({
+  const { data: profile, isLoading, refetch: refetchProfileQuery } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -37,6 +36,10 @@ const Dashboard = () => {
     },
     enabled: !!user?.id
   });
+
+  const refetchProfile = async (): Promise<void> => {
+    await refetchProfileQuery();
+  };
 
   const { data: paymentMethods, refetch: refetchPaymentMethods } = useQuery({
     queryKey: ['payment_methods', user?.id],
@@ -188,7 +191,6 @@ const Dashboard = () => {
                     className="w-full justify-start hover:glass hover:border-none transition-all duration-300"
                     size="sm"
                     onClick={() => {
-                      // Fix: Cast element to HTMLElement before calling click()
                       const element = document.querySelector(`[data-value="${item.to.replace('#', '')}"]`);
                       if (element) {
                         (element as HTMLElement).click();

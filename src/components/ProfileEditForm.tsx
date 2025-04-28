@@ -14,7 +14,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const profileSchema = z.object({
   display_name: z.string().min(2, 'Display name must be at least 2 characters'),
-  bio: z.string().optional(),
+  bio: z.string().optional().or(z.literal('')),
   website_url: z.string().url().optional().or(z.literal('')),
   instagram_url: z.string().url().optional().or(z.literal('')),
   twitter_url: z.string().url().optional().or(z.literal('')),
@@ -26,12 +26,13 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 interface ProfileEditFormProps {
   initialData?: ProfileFormValues;
-  onProfilePhotoUpdated?: () => void;
+  onProfilePhotoUpdated?: () => Promise<void>;
+  onClose?: () => void;
 }
 
 const AVATAR_BUCKET = 'avatars';
 
-const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfilePhotoUpdated }) => {
+const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfilePhotoUpdated, onClose }) => {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(initialData?.avatar_url || '');
@@ -100,6 +101,9 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
 
       if (error) throw error;
       toast.success('Profile updated successfully');
+      if (onClose) {
+        onClose();
+      }
     } catch (error: any) {
       toast.error(error.message || 'Failed to update profile');
     }
