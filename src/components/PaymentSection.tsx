@@ -7,6 +7,7 @@ import { CreditCard, Banknote, QrCode, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PaymentMethodsForm from './PaymentMethodsForm';
 import { BankDetails, CardDetails, UpiDetails } from '@/types/payment';
+import DynamicQRCode from './DynamicQRCode';
 
 interface PaymentSectionProps {
   upiId?: string;
