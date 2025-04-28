@@ -21,13 +21,12 @@ const Logo: React.FC<LogoProps> = ({
           alt="Paym.me Logo"
           className="h-8 w-auto"
         />
-        /* {withTagline && (
-          // <span className="text-xs text-muted-foreground mt-0.5">Privacy-first payments</span>
-        )} */
+        {withTagline && (
+          <span className="text-xs text-muted-foreground mt-0.5">Privacy-first payments</span>
+        )}
       </div>
     </Link>
   );
 };
 
 export default Logo;
-
