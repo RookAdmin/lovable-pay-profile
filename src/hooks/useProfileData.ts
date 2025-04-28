@@ -101,10 +101,8 @@ const getProfile = async (username: string) => {
     }
 
     const paymentDetails = bankMethod?.details as PaymentDetails | undefined;
-    const cardPaymentDetails = cardMethod?.details as PaymentDetails | undefined;
     
     let bankDetails: BankDetails | undefined;
-    let cardDetails: CardDetails | undefined;
     
     if (paymentDetails?.accountNumber && paymentDetails?.ifsc && 
         paymentDetails?.accountName && paymentDetails?.bankName) {
@@ -116,15 +114,7 @@ const getProfile = async (username: string) => {
       };
     }
 
-    if (cardPaymentDetails?.cardNumber && cardPaymentDetails?.nameOnCard && 
-        cardPaymentDetails?.expiryMonth && cardPaymentDetails?.expiryYear) {
-      cardDetails = {
-        cardNumber: cardPaymentDetails.cardNumber,
-        nameOnCard: cardPaymentDetails.nameOnCard,
-        expiryMonth: cardPaymentDetails.expiryMonth,
-        expiryYear: cardPaymentDetails.expiryYear
-      };
-    }
+    // Card details no longer needed as per user request
     
     const typedSmartLinks = smartLinks?.map(link => ({
       ...link,
@@ -138,11 +128,11 @@ const getProfile = async (username: string) => {
       smartLinks: typedSmartLinks,
       upiId: upiDetails?.upiId,
       bankDetails,
-      cardDetails,
+      cardDetails: undefined, // No longer returning card details as per user request
       qrCodeUrl,
       upiMethodId: upiMethod?.id,
       bankMethodId: bankMethod?.id,
-      cardMethodId: cardMethod?.id
+      cardMethodId: undefined // No longer returning card method id as per user request
     };
   } catch (error) {
     console.error("Error in getProfile:", error);

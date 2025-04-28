@@ -21,7 +21,7 @@ interface PaymentSectionProps {
   upiMethodId?: string;
   bankMethodId?: string;
   cardMethodId?: string;
-  isViewingMode?: boolean; // Added to force viewing mode
+  isViewingMode?: boolean;
 }
 
 const PaymentSection: React.FC<PaymentSectionProps> = ({
@@ -34,7 +34,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
   upiMethodId,
   bankMethodId,
   cardMethodId,
-  isViewingMode = false // Default to false
+  isViewingMode = false
 }) => {
   const [showForm, setShowForm] = useState(false);
   
@@ -158,6 +158,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
         </CardContent>
       </Card>
       
+      {/* I'm removing the transaction payment integration cards from public view */}
       {!isInViewMode && (
         <div className="pt-4 border-t border-gray-200">
           <h3 className="text-lg font-semibold mb-4 text-[#333333]">Transaction Payment Integration</h3>
