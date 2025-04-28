@@ -25,7 +25,6 @@ const Profile = () => {
         displayName: data.profile.display_name,
         hasUpiId: !!data.upiId,
         hasBankDetails: !!data.bankDetails,
-        hasCardDetails: !!data.cardDetails,
         hasQrCode: !!data.qrCodeUrl,
       });
     }
@@ -60,7 +59,6 @@ const Profile = () => {
     upiId: data.upiId,
     hasQrCode: !!data.qrCodeUrl,
     hasBankDetails: !!data.bankDetails,
-    hasCardDetails: !!data.cardDetails,
     smartLinksCount: data.smartLinks.length
   });
   
@@ -100,7 +98,6 @@ const Profile = () => {
             <PaymentSection
               upiId={data.upiId}
               bankDetails={data.bankDetails}
-              cardDetails={data.cardDetails}
               qrCodeUrl={data.qrCodeUrl}
               isViewingMode={true}
               className="glass p-6 rounded-2xl backdrop-blur-lg border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"

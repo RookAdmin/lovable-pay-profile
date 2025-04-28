@@ -11,10 +11,6 @@ interface PaymentDetails {
   ifsc?: string;
   accountName?: string;
   bankName?: string;
-  cardNumber?: string;
-  nameOnCard?: string;
-  expiryMonth?: string;
-  expiryYear?: string;
   qrCodeUrl?: string;
 }
 
@@ -22,6 +18,7 @@ const getProfile = async (username: string) => {
   console.log("Fetching profile for:", username);
   
   try {
+    // Get public profile data
     const { data: profile, error } = await supabase
       .from('profiles')
       .select('*')
@@ -40,7 +37,7 @@ const getProfile = async (username: string) => {
 
     console.log("Profile found:", profile);
     
-    // Using PUBLIC access to payment_methods without requiring authentication
+    // Fetch payment methods - make sure this isn't restricted by RLS
     const { data: paymentMethods, error: paymentError } = await supabase
       .from('payment_methods')
       .select('*')
@@ -54,6 +51,7 @@ const getProfile = async (username: string) => {
       
     console.log("Payment methods fetched:", paymentMethods || []);
 
+    // Fetch smart links
     const { data: smartLinks, error: smartLinksError } = await supabase
       .from('smart_links')
       .select('*')
@@ -76,9 +74,8 @@ const getProfile = async (username: string) => {
 
     const upiMethod = paymentMethods?.find(m => m.type === 'upi');
     const bankMethod = paymentMethods?.find(m => m.type === 'bank');
-    const cardMethod = paymentMethods?.find(m => m.type === 'card');
     
-    console.log("Found payment methods:", { upiMethod, bankMethod, cardMethod });
+    console.log("Found payment methods:", { upiMethod, bankMethod });
     
     let upiDetails: UpiDetails | undefined;
     if (upiMethod?.details) {
