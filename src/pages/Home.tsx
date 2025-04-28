@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -22,7 +21,6 @@ const Home = () => {
   const [scrollY, setScrollY] = useState(0);
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   
-  // Parallax effect
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
@@ -39,7 +37,6 @@ const Home = () => {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section with Parallax */}
       <section className="relative h-screen flex items-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-gradient-to-br from-lightblue to-cyan opacity-70 -z-10"
@@ -100,7 +97,6 @@ const Home = () => {
           </div>
         </div>
         
-        {/* Scroll indicator */}
         {showScrollIndicator && (
           <div 
             className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce transition-opacity"
@@ -111,7 +107,6 @@ const Home = () => {
         )}
       </section>
       
-      {/* Features Section with Card Animation */}
       <section className="py-24 bg-white relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547945413-497e1b99dac0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5"
@@ -164,8 +159,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* How It Works Section with Animated Steps */}
+      
       <section className="py-24 bg-gradient-to-br from-[#D4F1F4]/50 to-white relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547621706-1a9c79d5c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5"
@@ -180,7 +174,6 @@ const Home = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-10 max-w-5xl mx-auto relative">
-            {/* Connector line */}
             <div className="absolute top-24 left-0 w-full h-1 bg-primary/30 hidden md:block" />
             
             {[
@@ -224,7 +217,6 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Use Cases Section with Hover Effects */}
       <section className="py-24 bg-white relative overflow-hidden">
         <div className="container px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center mb-16">
@@ -234,37 +226,72 @@ const Home = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
-              { title: "Content Creators", desc: "Collect tips and payments from your audience", img: "https://images.unsplash.com/photo-1521302200778-33c7db3a231b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
-              { title: "Freelancers", desc: "Receive client payments professionally", img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
-              { title: "Small Businesses", desc: "Share payment details with customers easily", img: "https://images.unsplash.com/photo-1560438718-eb61ede255eb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
-              { title: "Event Organizers", desc: "Collect contributions and fees simply", img: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
-              { title: "Service Providers", desc: "Streamline payment collection", img: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
-              { title: "Individuals", desc: "Request money from friends and family with dignity", img: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" },
+              {
+                title: "Content Creators",
+                desc: "Collect tips and payments from your audience",
+                img: "https://images.unsplash.com/photo-1593956825893-c28bd7dde3c9?w=800&auto=format&fit=crop&q=60",
+                gradient: "from-[#FEC6A1] to-[#D946EF]"
+              },
+              {
+                title: "Freelancers",
+                desc: "Receive client payments professionally",
+                img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&auto=format&fit=crop&q=60",
+                gradient: "from-[#D3E4FD] to-[#0EA5E9]"
+              },
+              {
+                title: "Small Businesses",
+                desc: "Share payment details with customers easily",
+                img: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&auto=format&fit=crop&q=60",
+                gradient: "from-[#F2FCE2] to-[#8B5CF6]"
+              },
+              {
+                title: "Event Organizers",
+                desc: "Collect contributions and fees simply",
+                img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=60",
+                gradient: "from-[#FFDEE2] to-[#F97316]"
+              },
+              {
+                title: "Service Providers",
+                desc: "Streamline payment collection",
+                img: "https://images.unsplash.com/photo-1557426272-fc759fdf7a8d?w=800&auto=format&fit=crop&q=60",
+                gradient: "from-[#E5DEFF] to-[#1EAEDB]"
+              },
+              {
+                title: "Individuals",
+                desc: "Request money from friends and family with dignity",
+                img: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&auto=format&fit=crop&q=60",
+                gradient: "from-[#FEF7CD] to-[#9b87f5]"
+              },
             ].map((item, i) => (
-              <Card 
-                key={i} 
-                className="overflow-hidden group hover:shadow-lg transition-all duration-300"
+              <div 
+                key={i}
+                className="group relative overflow-hidden rounded-2xl"
               >
-                <div className="h-32 overflow-hidden">
-                  <img 
-                    src={item.img} 
-                    alt={item.title}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                  />
+                <div className="absolute inset-0 bg-gradient-to-br opacity-80 transition-opacity duration-300 group-hover:opacity-90"
+                     className={`bg-gradient-to-br ${item.gradient}`} />
+                
+                <img 
+                  src={item.img}
+                  alt={item.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                
+                <div className="relative p-8 min-h-[320px] flex flex-col justify-end text-white">
+                  <div className="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-300">
+                    <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
+                    <p className="text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {item.desc}
+                    </p>
+                  </div>
                 </div>
-                <CardContent className="p-6 bg-gradient-to-br from-white to-[#D4F1F4]/20">
-                  <h3 className="text-xl font-semibold mb-2 text-[#003D40] group-hover:text-primary transition-colors">{item.title}</h3>
-                  <p className="text-[#005F6A]">{item.desc}</p>
-                </CardContent>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
       </section>
       
-      {/* Testimonials Section with Fade-in Cards */}
       <section className="py-24 bg-gradient-to-br from-[#D4F1F4]/30 to-white relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547945026-a788b13c73f7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5"
@@ -333,13 +360,11 @@ const Home = () => {
         </div>
       </section>
       
-      {/* CTA Section with Animated Background */}
       <section className="py-24 bg-[#003D40] text-white relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547621113-e4bb2a19bdd6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center opacity-10"
         />
         
-        {/* Animated shapes */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
           <div className="absolute w-64 h-64 rounded-full bg-[#0097A7]/10 -top-20 -left-20 animate-pulse" style={{ animationDuration: '10s' }} />
           <div className="absolute w-96 h-96 rounded-full bg-[#0097A7]/10 bottom-20 right-10 animate-pulse" style={{ animationDuration: '15s', animationDelay: '1s' }} />
