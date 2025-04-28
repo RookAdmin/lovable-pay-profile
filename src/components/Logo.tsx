@@ -22,7 +22,7 @@ const Logo: React.FC<LogoProps> = ({
           className="h-8 w-auto"
         />
         {withTagline && (
-          <span className="text-xs text-muted-foreground mt-0.5">Privacy-first payments</span>
+          // <span className="text-xs text-muted-foreground mt-0.5">Privacy-first payments</span>
         )}
       </div>
     </Link>
