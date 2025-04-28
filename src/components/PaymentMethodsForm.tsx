@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -25,28 +26,18 @@ const bankSchema = z.object({
   bankName: z.string().min(2, 'Bank name must be at least 2 characters')
 });
 
-const cardSchema = z.object({
-  cardNumber: z.string().min(16, 'Card number must be at least 16 digits').max(19),
-  nameOnCard: z.string().min(2, 'Name on card must be at least 2 characters'),
-  expiryMonth: z.string().min(1).max(2).regex(/^(0?[1-9]|1[0-2])$/, 'Invalid month'),
-  expiryYear: z.string().min(2).regex(/^\d{2}$/, 'Must be 2 digits')
-});
-
 type UpiFormData = z.infer<typeof upiSchema>;
 type BankFormData = z.infer<typeof bankSchema>;
-type CardFormData = z.infer<typeof cardSchema>;
 
 interface PaymentMethodsFormProps {
   upiMethod?: { id: string; details: UpiDetails; qr_code_url?: string };
   bankMethod?: { id: string; details: BankFormData };
-  cardMethod?: { id: string; details: CardFormData };
   onUpdate?: () => void;
 }
 
 const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({ 
   upiMethod, 
   bankMethod,
-  cardMethod,
   onUpdate
 }) => {
   const { user } = useAuth();
@@ -76,16 +67,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
       ifsc: bankMethod?.details?.ifsc || '',
       accountName: bankMethod?.details?.accountName || '',
       bankName: bankMethod?.details?.bankName || ''
-    }
-  });
-
-  const cardForm = useForm<CardFormData>({
-    resolver: zodResolver(cardSchema),
-    defaultValues: {
-      cardNumber: cardMethod?.details?.cardNumber || '',
-      nameOnCard: cardMethod?.details?.nameOnCard || '',
-      expiryMonth: cardMethod?.details?.expiryMonth || '',
-      expiryYear: cardMethod?.details?.expiryYear || ''
     }
   });
 
@@ -183,55 +164,13 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         toast.success('Bank details saved successfully');
       }
       queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
+      
+      if (onUpdate) {
+        onUpdate();
+      }
     } catch (error) {
       console.error('Error saving bank details:', error);
       toast.error('Failed to save bank details');
-    }
-  };
-
-  const handleCardSubmit = async (data: CardFormData) => {
-    try {
-      if (!user) {
-        toast.error('You must be logged in to save payment methods');
-        return;
-      }
-
-      const maskedCardNumber = data.cardNumber.replace(/^\d{12}/, '************');
-      const maskedData = {
-        ...data,
-        cardNumber: maskedCardNumber
-      };
-
-      const payload = {
-        profile_id: user.id,
-        type: 'card',
-        details: maskedData,
-        is_active: true,
-        is_primary: false
-      };
-
-      if (cardMethod?.id) {
-        const { error } = await supabase
-          .from('payment_methods')
-          .update(payload)
-          .eq('id', cardMethod.id);
-
-        if (error) throw error;
-        toast.success('Card details updated successfully');
-      } else {
-        const { error } = await supabase
-          .from('payment_methods')
-          .insert(payload);
-
-        if (error) throw error;
-        toast.success('Card details saved successfully');
-      }
-
-      queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
-      cardForm.reset();
-    } catch (error) {
-      console.error('Error saving card details:', error);
-      toast.error('Failed to save card details');
     }
   };
 
@@ -316,7 +255,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
           <TabsList className="mb-4">
             <TabsTrigger value="upi">UPI</TabsTrigger>
             <TabsTrigger value="bank">Bank Account</TabsTrigger>
-            <TabsTrigger value="card">Card</TabsTrigger>
           </TabsList>
           
           <TabsContent value="upi">
@@ -444,102 +382,6 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                 
                 <Button type="submit" className="w-full">
                   {bankMethod?.id ? 'Update Bank Details' : 'Save Bank Details'}
-                </Button>
-              </form>
-            </Form>
-          </TabsContent>
-
-          <TabsContent value="card">
-            <Form {...cardForm}>
-              <form onSubmit={cardForm.handleSubmit(handleCardSubmit)} className="space-y-4">
-                <FormField
-                  control={cardForm.control}
-                  name="cardNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Card Number</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="1234 5678 9012 3456" 
-                          {...field} 
-                          maxLength={19}
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\s/g, '');
-                            const formattedValue = value
-                              .replace(/\D/g, '')
-                              .replace(/(.{4})/g, '$1 ')
-                              .trim();
-                            field.onChange(formattedValue);
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={cardForm.control}
-                  name="nameOnCard"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name on Card</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter name as on card" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={cardForm.control}
-                    name="expiryMonth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Expiry Month</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="MM" 
-                            {...field}
-                            maxLength={2}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, '');
-                              field.onChange(value);
-                            }} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={cardForm.control}
-                    name="expiryYear"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Expiry Year</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="YY" 
-                            {...field} 
-                            maxLength={2}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, '');
-                              field.onChange(value);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <Button type="submit" className="w-full">
-                  {cardMethod?.id ? 'Update Card Details' : 'Save Card Details'}
                 </Button>
               </form>
             </Form>
