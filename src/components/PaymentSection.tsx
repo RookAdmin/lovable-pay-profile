@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import QRCode from './QRCode';
@@ -115,11 +114,10 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
               <TabsContent value="upi" className="space-y-4">
                 {upiId ? (
                   <div className="flex flex-col items-center">
-                    <QRCode 
+                    <DynamicQRCode 
                       value={upiId} 
                       type="upi" 
                       className="mb-4"
-                      logoUrl={qrCodeUrl}
                     />
                     <CopyField label="UPI ID" value={upiId} className="w-full" />
                   </div>
