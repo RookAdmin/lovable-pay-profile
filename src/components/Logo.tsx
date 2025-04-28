@@ -16,9 +16,11 @@ const Logo: React.FC<LogoProps> = ({
   return (
     <Link to="/" className={`flex items-center ${className}`}>
       <div className="flex flex-col">
-        <span className={`text-2xl font-bold ${variant === 'white' ? 'text-white' : 'gradient-text'}`}>
-          paym<span className="text-brand-purple">.me</span>
-        </span>
+        <img 
+          src="/lovable-uploads/c34235af-7981-4a49-9a23-5176a93e9a81.png"
+          alt="Paym.me Logo"
+          className="h-8 w-auto"
+        />
         {withTagline && (
           <span className="text-xs text-muted-foreground mt-0.5">Privacy-first payments</span>
         )}
@@ -28,3 +30,4 @@ const Logo: React.FC<LogoProps> = ({
 };
 
 export default Logo;
+
