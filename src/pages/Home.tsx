@@ -3,7 +3,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Zap, User, UserCheck, PlusSquare, ArrowRight, MessageSquare, CreditCard } from 'lucide-react';
+import { 
+  Shield, 
+  Zap, 
+  User, 
+  UserCheck, 
+  PlusSquare, 
+  ArrowRight, 
+  MessageSquare, 
+  CreditCard,
+  Share2 
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Home = () => {
