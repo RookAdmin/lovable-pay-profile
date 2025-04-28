@@ -12,6 +12,7 @@ export interface Profile {
   linkedinUrl?: string;
   createdAt: string;
   updatedAt: string;
+  usernameUpdatedAt?: string; // Added to track username changes
 }
 
 export interface PaymentMethod {

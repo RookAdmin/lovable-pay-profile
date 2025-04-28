@@ -12,9 +12,16 @@ const Navbar: React.FC = () => {
   return (
     <header className="w-full bg-white border-b border-gray-100">
       <div className="container flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-        <Link to="/">
-          <Logo withTagline />
-        </Link>
+        <div className="flex items-center">
+          <Link to="/">
+            <Logo withTagline />
+          </Link>
+          
+          <nav className="hidden md:flex ml-8 space-x-6">
+            <Link to="/pricing" className="text-[#555555] hover:text-primary">Pricing</Link>
+            <Link to="/blog" className="text-[#555555] hover:text-primary">Blog</Link>
+          </nav>
+        </div>
         
         <div className="flex items-center space-x-2">
           {user ? (

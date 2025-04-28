@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, CreditCard, Wallet, BarChart, Settings, LogOut, Share2, QrCode, LinkIcon, LayoutDashboard } from 'lucide-react';
+import { User, Wallet, BarChart, Settings, LogOut, Share2, QrCode, LinkIcon, LayoutDashboard, Pencil } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import ProfileEditForm from '@/components/ProfileEditForm';
@@ -15,9 +15,13 @@ import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
 import { SmartLink } from '@/types/profile';
 import { BankDetails, CardDetails, UpiDetails, safelyConvertToUpiDetails } from '@/types/payment';
+import UpiVerificationField from '@/components/UpiVerificationField';
+import SettingsForm from '@/components/SettingsForm';
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
+  const [isUpiValid, setIsUpiValid] = useState(true);
+  const [editingProfile, setEditingProfile] = useState(false);
   
   const { data: profile, isLoading, refetch: refetchProfile } = useQuery({
     queryKey: ['profile', user?.id],
@@ -142,7 +146,7 @@ const Dashboard = () => {
         <div className="w-full md:w-64 shrink-0 p-4">
           <Card className="sticky top-8 glass border-none shadow-xl">
             <CardContent className="p-6">
-              <div className="flex flex-col items-center mb-8 pt-2">
+              <div className="flex flex-col items-center mb-8 pt-2 relative">
                 <Avatar className="h-24 w-24 mb-4 ring-2 ring-primary ring-offset-2 ring-offset-background">
                   <AvatarImage 
                     src={profile?.avatar_url} 
@@ -152,8 +156,14 @@ const Dashboard = () => {
                     {(profile?.display_name || user?.email || '').substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <h2 className="text-2xl font-bold gradient-text mb-1">{profile?.display_name || user?.email}</h2>
-                <p className="text-sm text-muted-foreground mb-4">@{profile?.username}</p>
+                <button 
+                  onClick={() => setEditingProfile(true)}
+                  className="absolute top-0 right-0 bg-white/80 p-2 rounded-full hover:bg-primary/20 transition-colors"
+                >
+                  <Pencil size={16} />
+                </button>
+                <h2 className="text-2xl font-bold text-[#333333] mb-1">{profile?.display_name || user?.email}</h2>
+                <p className="text-sm text-[#555555] mb-4">@{profile?.username}</p>
                 <Button
                   variant="outline"
                   size="sm"
@@ -168,12 +178,9 @@ const Dashboard = () => {
               <nav className="space-y-1.5">
                 {[
                   { icon: LayoutDashboard, label: "Overview", to: "#overview" },
-                  { icon: CreditCard, label: "Payment Methods", to: "#payment" },
-                  { icon: Wallet, label: "Transactions", to: "#" },
-                  { icon: QrCode, label: "QR Codes", to: "#" },
+                  { icon: QrCode, label: "Payment Methods", to: "#payment" },
                   { icon: LinkIcon, label: "Smart Links", to: "#smart-links" },
-                  { icon: BarChart, label: "Analytics", to: "#" },
-                  { icon: Settings, label: "Settings", to: "#edit" },
+                  { icon: Settings, label: "Settings", to: "#settings" },
                 ].map((item) => (
                   <Button
                     key={item.label}
@@ -209,7 +216,7 @@ const Dashboard = () => {
         <div className="flex-1 p-4">
           <Card className="glass border-none shadow-xl">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold gradient-text">Dashboard</CardTitle>
+              <CardTitle className="text-2xl font-bold text-[#333333]">Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="overview" className="w-full">
@@ -217,18 +224,19 @@ const Dashboard = () => {
                   <TabsTrigger value="overview" data-value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="payment" data-value="payment">Payment Methods</TabsTrigger>
                   <TabsTrigger value="smart-links" data-value="smart-links">Smart Links</TabsTrigger>
-                  <TabsTrigger value="edit" data-value="edit">Edit Profile</TabsTrigger>
+                  <TabsTrigger value="settings" data-value="settings">Settings</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="overview">
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">Welcome, {profile?.display_name || user?.email}!</h3>
-                      <p className="text-muted-foreground">
+                      <h3 className="text-lg font-semibold mb-2 text-[#333333]">Welcome, {profile?.display_name || user?.email}!</h3>
+                      <p className="text-[#555555]">
                         Your public profile is available at:{' '}
                         <Link 
                           to={`/${profile?.username}`} 
                           className="text-primary hover:underline"
+                          target="_blank"
                         >
                           {window.location.origin}/{profile?.username}
                         </Link>
@@ -236,24 +244,24 @@ const Dashboard = () => {
                     </div>
                     
                     <div>
-                      <h4 className="font-medium mb-2">Bio</h4>
-                      <p>{profile?.bio || 'No bio added yet.'}</p>
+                      <h4 className="font-medium mb-2 text-[#333333]">Bio</h4>
+                      <p className="text-[#555555]">{profile?.bio || 'No bio added yet.'}</p>
                     </div>
                     
                     <div>
-                      <h4 className="font-medium mb-2">Social Links</h4>
+                      <h4 className="font-medium mb-2 text-[#333333]">Social Links</h4>
                       <div className="space-y-2">
                         {profile?.website_url && (
-                          <p>Website: <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.website_url}</a></p>
+                          <p className="text-[#555555]">Website: <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.website_url}</a></p>
                         )}
                         {profile?.twitter_url && (
-                          <p>Twitter: <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.twitter_url}</a></p>
+                          <p className="text-[#555555]">Twitter: <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.twitter_url}</a></p>
                         )}
                         {profile?.instagram_url && (
-                          <p>Instagram: <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.instagram_url}</a></p>
+                          <p className="text-[#555555]">Instagram: <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.instagram_url}</a></p>
                         )}
                         {profile?.linkedin_url && (
-                          <p>LinkedIn: <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.linkedin_url}</a></p>
+                          <p className="text-[#555555]">LinkedIn: <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.linkedin_url}</a></p>
                         )}
                       </div>
                     </div>
@@ -261,27 +269,107 @@ const Dashboard = () => {
                 </TabsContent>
 
                 <TabsContent value="payment">
-                  <PaymentSection
-                    upiId={upiMethod?.details && typeof upiMethod.details === 'object' ? 
-                      (upiMethod.details as { upiId?: string }).upiId || '' : ''}
-                    bankDetails={bankDetails}
-                    cardDetails={cardDetails}
-                    qrCodeUrl={qrCodeUrl}
-                    onPaymentMethodUpdate={handleDataUpdate}
-                    upiMethodId={upiMethod?.id}
-                    bankMethodId={bankMethod?.id}
-                    cardMethodId={cardMethod?.id}
-                  />
+                  <div className="space-y-8">
+                    <UpiVerificationField
+                      upiId={upiMethod?.details && typeof upiMethod.details === 'object' ? 
+                        (upiMethod.details as { upiId?: string }).upiId || '' : ''}
+                      onChange={(value) => console.log("UPI ID changed:", value)}
+                      onValidate={(valid) => setIsUpiValid(valid)}
+                      className="max-w-md"
+                    />
+                    
+                    <PaymentSection
+                      upiId={upiMethod?.details && typeof upiMethod.details === 'object' ? 
+                        (upiMethod.details as { upiId?: string }).upiId || '' : ''}
+                      bankDetails={bankDetails}
+                      cardDetails={cardDetails}
+                      qrCodeUrl={qrCodeUrl}
+                      onPaymentMethodUpdate={handleDataUpdate}
+                      upiMethodId={upiMethod?.id}
+                      bankMethodId={bankMethod?.id}
+                      cardMethodId={cardMethod?.id}
+                    />
+                    
+                    <div className="pt-4 border-t border-gray-200">
+                      <h3 className="text-lg font-semibold mb-4 text-[#333333]">Transaction Payment Integration</h3>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <Card>
+                          <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center">
+                                <img src="https://razorpay.com/favicon.png" alt="Razorpay" className="w-8 h-8 mr-2" />
+                                <h4 className="text-[#333333] font-medium">Razorpay</h4>
+                              </div>
+                              <div>
+                                <Button variant="outline" size="sm">Configure</Button>
+                              </div>
+                            </div>
+                            <p className="text-sm text-[#555555] mb-4">
+                              Connect your Razorpay account to accept direct payments from your profile page.
+                            </p>
+                            <div className="text-xs text-[#666666]">
+                              Status: <span className="text-yellow-600 font-medium">Not Configured</span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card>
+                          <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center">
+                                <img src="https://stripe.com/favicon.ico" alt="Stripe" className="w-8 h-8 mr-2" />
+                                <h4 className="text-[#333333] font-medium">Stripe</h4>
+                              </div>
+                              <div>
+                                <Button variant="outline" size="sm">Configure</Button>
+                              </div>
+                            </div>
+                            <p className="text-sm text-[#555555] mb-4">
+                              Connect your Stripe account to accept international payments from your profile.
+                            </p>
+                            <div className="text-xs text-[#666666]">
+                              Status: <span className="text-yellow-600 font-medium">Not Configured</span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="smart-links">
                   <SmartLinkSection links={typedSmartLinks} />
                 </TabsContent>
                 
-                <TabsContent value="edit">
-                  <ProfileEditForm initialData={profile} onProfilePhotoUpdated={refetchProfile} />
+                <TabsContent value="settings">
+                  <SettingsForm initialData={profile} refetchProfile={refetchProfile} />
                 </TabsContent>
               </Tabs>
+              
+              {editingProfile && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                  <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <CardHeader>
+                      <CardTitle className="text-[#333333]">Edit Your Profile</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ProfileEditForm 
+                        initialData={profile} 
+                        onProfilePhotoUpdated={refetchProfile}
+                        onClose={() => setEditingProfile(false)}
+                      />
+                      <div className="flex justify-end mt-4">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setEditingProfile(false)}
+                        >
+                          Close
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

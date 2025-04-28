@@ -12,6 +12,10 @@ import { Login, Signup } from "./pages/AuthPages";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Pricing from "./pages/Pricing";
+import Blog from "./pages/Blog";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +32,10 @@ const App = () => (
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="pricing" element={<Pricing />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="terms-of-service" element={<TermsOfService />} />
             </Route>
             
             <Route path="/" element={<ProfileLayout />}>

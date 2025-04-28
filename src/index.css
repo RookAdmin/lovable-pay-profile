@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -81,7 +82,7 @@
 
 @layer components {
   .gradient-text {
-    @apply text-transparent bg-clip-text bg-gradient-app font-bold;
+    @apply text-[#333333] font-bold;
   }
   
   .glass {
@@ -97,14 +98,14 @@
   }
 
   .gradient-heading {
-    @apply text-transparent bg-clip-text bg-gradient-to-br from-darkteal via-teal to-cyan font-bold;
+    @apply text-[#333333] font-bold tracking-tight;
   }
 
   .dark-heading {
-    @apply text-foreground font-bold tracking-tight;
+    @apply text-[#333333] font-bold tracking-tight;
   }
 
   .soft-gradient-heading {
-    @apply text-transparent bg-clip-text bg-gradient-to-br from-[#1A1F2C] via-[#403E43] to-[#333333] font-bold;
+    @apply text-[#333333] font-bold;
   }
 }
