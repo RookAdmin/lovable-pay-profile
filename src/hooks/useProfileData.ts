@@ -36,7 +36,7 @@ const getProfile = async (username: string) => {
     }
 
     console.log("Profile found:", profile);
-    console.log("Profile ID - ",profile.id)
+    console.log("Profile ID - ",profile.id);
     // Fetch payment methods - make sure this isn't restricted by RLS
     const { data: paymentMethods, error: paymentError } = await supabase
       .from('payment_methods')
