@@ -234,7 +234,7 @@ const Home = () => {
               {
                 title: "Content Creators",
                 desc: "Collect tips and payments from your audience",
-                img: "https://images.unsplash.com/photo-1593956825893-c28bd7dde3c9?w=800&auto=format&fit=crop&q=60",
+                img: "https://img.freepik.com/free-photo/vlogger-recording-video-using-professional-microphone_482257-7846.jpg?t=st=1745932677~exp=1745936277~hmac=5cd170cd9c706bca629218059abf1ae014b01b704781d29a5838d88f15a76d86&w=1380",
                 gradient: "from-[#FEC6A1] to-[#D946EF]"
               },
               {
