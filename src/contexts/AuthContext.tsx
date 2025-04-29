@@ -55,6 +55,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, username: string) => {
     try {
+      // Check if username is already taken
+      const { data: existingUser, error: checkError } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .single();
+      
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 means no rows returned
+        throw checkError;
+      }
+      
+      if (existingUser) {
+        toast.error('Username is already taken. Please choose another one.');
+        throw new Error('Username already taken');
+      }
+      
+      // If username is available, proceed with sign up
       const { error } = await supabase.auth.signUp({ 
         email, 
         password,
@@ -64,7 +81,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       });
+      
       if (error) throw error;
+      
+      // Update the profile record directly to ensure username is set
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ username })
+        .eq('username', email.split('@')[0]);
+        
+      if (profileError) {
+        console.error('Error updating profile username:', profileError);
+        // We don't throw here to allow signup to complete
+      }
+      
       toast.success('Account created! Please check your email for confirmation.');
     } catch (error: any) {
       toast.error(error.message || 'Failed to sign up');

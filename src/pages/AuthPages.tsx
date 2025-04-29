@@ -36,16 +36,19 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
       } else {
         if (!formData.username) {
           toast.error('Username is required');
+          setIsSubmitting(false);
           return;
         }
         
         // Validate username
         if (formData.username.length < 5 || /\s/.test(formData.username) || /[^a-zA-Z0-9_]/.test(formData.username)) {
           toast.error('Username must be at least 5 characters with no spaces or special characters');
+          setIsSubmitting(false);
           return;
         }
         
         await signUp(formData.email, formData.password, formData.username);
+        toast.success('Account created successfully! Please log in.');
         navigate('/login');
       }
     } catch (error) {
