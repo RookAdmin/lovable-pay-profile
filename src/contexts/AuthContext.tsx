@@ -85,6 +85,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
       
       // Update the profile record directly to ensure username is set
+      // Note: We need to target the user by their ID which we don't have yet,
+      // so we'll update by email which should be unique
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ username })
