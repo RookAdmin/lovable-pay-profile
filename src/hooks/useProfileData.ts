@@ -143,7 +143,7 @@ export const useProfileData = (username: string | undefined) => {
     queryFn: () => getProfile(username || ''),
     enabled: !!username,
     staleTime: 60000, 
-    retry: 5, // Increased retry attempts
+    retry: 5, // Increased retry attempts for better reliability in public access
     retryDelay: attempt => Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000), // Exponential backoff
     meta: {
       onError: (err: Error) => {
