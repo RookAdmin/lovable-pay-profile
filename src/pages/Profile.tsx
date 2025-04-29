@@ -26,6 +26,7 @@ const Profile = () => {
         hasUpiId: !!data.upiId,
         hasBankDetails: !!data.bankDetails,
         hasQrCode: !!data.qrCodeUrl,
+        smartLinksCount: data.smartLinks.length
       });
     }
   }, [data]);
