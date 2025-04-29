@@ -36,12 +36,13 @@ const getProfile = async (username: string) => {
     }
 
     console.log("Profile found:", profile);
-    
+    console.log("Profile ID - ",profile.id)
     // Fetch payment methods - make sure this isn't restricted by RLS
     const { data: paymentMethods, error: paymentError } = await supabase
       .from('payment_methods')
       .select('*')
-      .eq('profile_id', profile.id);
+      .eq('profile_id', profile.id)
+      .eq('is_active', true);
       
     if (paymentError) {
       console.error("Error fetching payment methods:", paymentError);
