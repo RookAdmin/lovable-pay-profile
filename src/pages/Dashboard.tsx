@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Wallet, BarChart, Settings, LogOut, Share2, QrCode, LinkIcon, LayoutDashboard, Pencil } from 'lucide-react';
+import { User, Wallet, BarChart, Settings, LogOut, Share2, QrCode, LinkIcon, LayoutDashboard, Pencil, Edit } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import ProfileEditForm from '@/components/ProfileEditForm';
@@ -231,19 +231,29 @@ const Dashboard = () => {
                 
                 <TabsContent value="overview">
                   <div className="space-y-4">
-                    <div>
+                    <div className="flex justify-between items-center">
                       <h3 className="text-lg font-semibold mb-2 text-[#333333]">Welcome, {profile?.display_name || user?.email}!</h3>
-                      <p className="text-[#555555]">
-                        Your public profile is available at:{' '}
-                        <Link 
-                          to={`/${profile?.username}`} 
-                          className="text-primary hover:underline"
-                          target="_blank"
-                        >
-                          {window.location.origin}/{profile?.username}
-                        </Link>
-                      </p>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex items-center gap-1"
+                        onClick={() => setEditingProfile(true)}
+                      >
+                        <Edit size={16} />
+                        Edit Profile
+                      </Button>
                     </div>
+                    
+                    <p className="text-[#555555]">
+                      Your public profile is available at:{' '}
+                      <Link 
+                        to={`/${profile?.username}`} 
+                        className="text-primary hover:underline"
+                        target="_blank"
+                      >
+                        {window.location.origin}/{profile?.username}
+                      </Link>
+                    </p>
                     
                     <div>
                       <h4 className="font-medium mb-2 text-[#333333]">Bio</h4>
