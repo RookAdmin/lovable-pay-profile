@@ -112,14 +112,17 @@ const getProfile = async (username: string) => {
       };
     }
     
+    // Properly type the smart links
+    const typedSmartLinks = smartLinks?.map(link => ({
+      ...link,
+      icon: link.icon as SmartLink['icon']
+    })) || [];
+    
     return {
       profile,
       socialLinks,
       paymentMethods: paymentMethods || [],
-      smartLinks: typedSmartLinks = smartLinks?.map(link => ({
-        ...link,
-        icon: link.icon as SmartLink['icon']
-      })) || [],
+      smartLinks: typedSmartLinks,
       upiId: upiDetails?.upiId,
       bankDetails,
       cardDetails: undefined, // No longer returning card details as per user request
