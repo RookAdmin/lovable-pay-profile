@@ -35,9 +35,10 @@ const getProfile = async (username: string) => {
       throw new Error('Profile not found');
     }
 
-    console.log("Profile found123:", profile);
-    console.log("Profile ID - ",profile.id);
-    // Fetch payment methods - make sure this isn't restricted by RLS
+    console.log("Profile found:", profile);
+    console.log("Profile ID -", profile.id);
+    
+    // Fetch payment methods - make sure this works for public access
     const { data: paymentMethods, error: paymentError } = await supabase
       .from('payment_methods')
       .select('*')
@@ -110,19 +111,15 @@ const getProfile = async (username: string) => {
         bankName: paymentDetails.bankName
       };
     }
-
-    // Card details no longer needed as per user request
     
-    const typedSmartLinks = smartLinks?.map(link => ({
-      ...link,
-      icon: link.icon as SmartLink['icon']
-    })) || [];
-
     return {
       profile,
       socialLinks,
       paymentMethods: paymentMethods || [],
-      smartLinks: typedSmartLinks,
+      smartLinks: typedSmartLinks = smartLinks?.map(link => ({
+        ...link,
+        icon: link.icon as SmartLink['icon']
+      })) || [],
       upiId: upiDetails?.upiId,
       bankDetails,
       cardDetails: undefined, // No longer returning card details as per user request

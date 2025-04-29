@@ -56,7 +56,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
     toast.info(`${service} configuration will be available soon!`);
   };
   
-  // Check if we're in the profile view mode (no onPaymentMethodUpdate provided or isViewingMode is true)
+  // Check if we're in the profile view mode (public profile view)
   const isInViewMode = isViewingMode || !onPaymentMethodUpdate;
   
   // Determine the default tab based on available payment methods
