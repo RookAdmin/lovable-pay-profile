@@ -108,59 +108,7 @@ const Home = () => {
         )}
       </section>
       
-      <section className="py-24 bg-white relative overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547945413-497e1b99dac0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5"
-        />
-        
-        <div className="container px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#005F6A]">
-              Why Choose Paym.me?
-            </h2>
-            <p className="text-lg md:text-xl text-[#005F6A]/80">
-              A complete payment identity solution that puts your privacy first
-            </p>
-          </div>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Shield,
-                title: "Privacy-First",
-                desc: "No need to share personal contact info. Only show payment methods.",
-              },
-              {
-                icon: Zap,
-                title: "Smart Links",
-                desc: "Create one-click payment links with custom amounts and messages.",
-              },
-              {
-                icon: User,
-                title: "Your Identity",
-                desc: "Customize your page with your brand, photo, and social links.",
-              },
-            ].map((feature, i) => (
-              <Card 
-                key={i} 
-                className="bg-white border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-cyan/5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-                <CardContent className="pt-8 pb-6 relative">
-                  <div className="rounded-full bg-primary/10 p-4 w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                    <feature.icon className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-3 text-[#003D40]">{feature.title}</h3>
-                  <p className="text-[#005F6A] text-lg">
-                    {feature.desc}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-      
+            
       <section className="py-24 bg-gradient-to-br from-[#D4F1F4]/50 to-white relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547621706-1a9c79d5c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5"
@@ -217,6 +165,60 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547945413-497e1b99dac0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5"
+        />
+        
+        <div className="container px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#005F6A]">
+              Why Choose Paym.me?
+            </h2>
+            <p className="text-lg md:text-xl text-[#005F6A]/80">
+              A complete payment identity solution that puts your privacy first
+            </p>
+          </div>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Shield,
+                title: "Privacy-First",
+                desc: "No need to share personal contact info. Only show payment methods.",
+              },
+              {
+                icon: Zap,
+                title: "Smart Links",
+                desc: "Create one-click payment links with custom amounts and messages.",
+              },
+              {
+                icon: User,
+                title: "Your Identity",
+                desc: "Customize your page with your brand, photo, and social links.",
+              },
+            ].map((feature, i) => (
+              <Card 
+                key={i} 
+                className="bg-white border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-cyan/5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                <CardContent className="pt-8 pb-6 relative">
+                  <div className="rounded-full bg-primary/10 p-4 w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                    <feature.icon className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-2xl font-semibold mb-3 text-[#003D40]">{feature.title}</h3>
+                  <p className="text-[#005F6A] text-lg">
+                    {feature.desc}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       
       <section className="py-24 bg-white relative overflow-hidden">
         <div className="container px-4 relative z-10">
