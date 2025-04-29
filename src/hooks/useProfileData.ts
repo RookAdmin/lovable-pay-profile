@@ -41,7 +41,7 @@ const getProfile = async (username: string) => {
     const { data: paymentMethods, error: paymentError } = await supabase
       .from('payment_methods')
       .select('*')
-      .eq('profile_id', profile.id)
+      .eq('username', username)
       .eq('is_active', true); // Only get active payment methods
       
     if (paymentError) {
