@@ -72,30 +72,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       // If username is available, proceed with sign up
-      const { error } = await supabase.auth.signUp({ 
+      // Pass the username in the metadata so our trigger function can use it
+      const { error, data } = await supabase.auth.signUp({ 
         email, 
         password,
         options: {
           data: {
-            username: username,
+            username: username, // This will be used by the database trigger
           }
         }
       });
       
       if (error) throw error;
       
-      // Update the profile record directly to ensure username is set
-      // Note: We need to target the user by their ID which we don't have yet,
-      // so we'll update by email which should be unique
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ username })
-        .eq('username', email.split('@')[0]);
-        
-      if (profileError) {
-        console.error('Error updating profile username:', profileError);
-        // We don't throw here to allow signup to complete
-      }
+      // The database trigger will now use the username from metadata
+      // We don't need the profile update anymore since our trigger handles this
       
       toast.success('Account created! Please check your email for confirmation.');
     } catch (error: any) {
