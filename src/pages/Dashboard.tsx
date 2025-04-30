@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,7 +42,7 @@ import UpiVerificationField from "@/components/UpiVerificationField";
 import SettingsForm from "@/components/SettingsForm";
 import { VerificationSection } from "@/components/verification/VerificationSection";
 
-export default function Dashboard() {
+const Dashboard = () => {
   const { user, signOut } = useAuth();
   const [isUpiValid, setIsUpiValid] = useState(true);
   const [editingProfile, setEditingProfile] = useState(false);

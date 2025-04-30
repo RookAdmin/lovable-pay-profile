@@ -19,6 +19,7 @@ interface ProfileHeaderProps {
   onShare?: () => void;
   isOwner?: boolean;
   isMobile?: boolean;
+  verticalVerification?: boolean;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -31,7 +32,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   socialLinks = [],
   onShare,
   isOwner = false,
-  isMobile = false
+  isMobile = false,
+  verticalVerification = false
 }) => {
   const getSocialIcon = (platform: string) => {
     switch (platform) {
@@ -94,16 +96,31 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center justify-center gap-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-center">{displayName}</h1>
-          {isVerified && (
-            <VerificationBadge 
-              isVerified={isVerified} 
-              category={verificationCategory} 
-              size="md"
-            />
-          )}
-        </div>
+        {verticalVerification ? (
+          <>
+            <h1 className="text-2xl md:text-3xl font-bold text-center">{displayName}</h1>
+            {isVerified && (
+              <div className="flex justify-center">
+                <VerificationBadge 
+                  isVerified={isVerified} 
+                  category={verificationCategory} 
+                  size="md"
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="flex items-center justify-center gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-center">{displayName}</h1>
+            {isVerified && (
+              <VerificationBadge 
+                isVerified={isVerified} 
+                category={verificationCategory} 
+                size="md"
+              />
+            )}
+          </div>
+        )}
 
         <div className="text-muted-foreground font-medium">@{username}</div>
 
