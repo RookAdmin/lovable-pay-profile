@@ -342,7 +342,7 @@ const Dashboard = () => {
                   <div className="space-y-6">
                     <div className="flex justify-between items-center">
                       <h2 className="text-xl font-semibold">Welcome, {profile?.display_name}!</h2>
-                      <Button
+                      {/* <Button
                         variant="outline"
                         size="sm"
                         className="flex items-center gap-1"
@@ -350,7 +350,7 @@ const Dashboard = () => {
                       >
                         <Edit size={14} />
                         Edit Profile
-                      </Button>
+                      </Button> */}
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
