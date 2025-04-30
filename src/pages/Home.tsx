@@ -16,6 +16,11 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const Home = () => {
   const { user } = useAuth();
@@ -220,81 +225,165 @@ const Home = () => {
       </section>
 
       
-      <section className="py-24 bg-white relative overflow-hidden">
-        <div className="container px-4 relative z-10">
+      <section className="py-24 bg-white relative">
+        <div className="container px-4 mx-auto">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#005F6A]">Perfect For</h2>
             <p className="text-lg md:text-xl text-[#005F6A]/80">
               Anyone who collects payments and values their privacy
             </p>
           </div>
-          
-          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                title: "Content Creators",
-                desc: "Collect tips and payments from your audience",
-                img: "https://img.freepik.com/free-photo/vlogger-recording-video-using-professional-microphone_482257-7846.jpg?t=st=1745932677~exp=1745936277~hmac=5cd170cd9c706bca629218059abf1ae014b01b704781d29a5838d88f15a76d86&w=1380",
-                gradient: "from-[#FEC6A1] to-[#D946EF]"
-              },
-              {
-                title: "Freelancers",
-                desc: "Receive client payments professionally",
-                img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&auto=format&fit=crop&q=60",
-                gradient: "from-[#D3E4FD] to-[#0EA5E9]"
-              },
-              {
-                title: "Small Businesses",
-                desc: "Share payment details with customers easily",
-                img: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&auto=format&fit=crop&q=60",
-                gradient: "from-[#F2FCE2] to-[#8B5CF6]"
-              },
-              {
-                title: "Event Organizers",
-                desc: "Collect contributions and fees simply",
-                img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=60",
-                gradient: "from-[#FFDEE2] to-[#F97316]"
-              },
-              {
-                title: "Service Providers",
-                desc: "Streamline payment collection",
-                img: "https://images.unsplash.com/photo-1557426272-fc759fdf7a8d?w=800&auto=format&fit=crop&q=60",
-                gradient: "from-[#E5DEFF] to-[#1EAEDB]"
-              },
-              {
-                title: "Individuals",
-                desc: "Request money from friends and family with dignity",
-                img: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&auto=format&fit=crop&q=60",
-                gradient: "from-[#FEF7CD] to-[#9b87f5]"
-              },
-            ].map((item, i) => (
-              <div 
-                key={i}
-                className="group relative overflow-hidden rounded-2xl"
-              >
-                <div 
-                  className={`absolute inset-0 bg-gradient-to-br opacity-80 transition-opacity duration-300 group-hover:opacity-90 ${item.gradient}`}
-                />
-                
-                <img 
-                  src={item.img}
-                  alt={item.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                
-                <div className="relative p-8 min-h-[320px] flex flex-col justify-end text-white">
-                  <div className="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-300">
-                    <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
-                    <p className="text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {item.desc}
-                    </p>
+
+          <div className="relative px-4">
+            <Swiper
+              modules={[Autoplay, Navigation, Pagination]}
+              spaceBetween={24}
+              slidesPerView={1.2}
+              breakpoints={{
+                640: {
+                  slidesPerView: 1.5
+                },
+                768: {
+                  slidesPerView: 2.3
+                },
+                1024: {
+                  slidesPerView: 3.1
+                }
+              }}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+              }}
+              navigation={{
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+              }}
+              pagination={{
+                el: '.swiper-pagination',
+                clickable: true,
+              }}
+              loop={true}
+              className="!overflow-visible"
+            >
+              {[
+                {
+                  title: "Content Creators",
+                  desc: "Elegantly collect tips and payments from your audience",
+                  img: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                  accent: "#D946EF"
+                },
+                {
+                  title: "Freelancers",
+                  desc: "Receive client payments with professional simplicity",
+                  img: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                  accent: "#0EA5E9"
+                },
+                {
+                  title: "Small Businesses",
+                  desc: "Streamline payment collection with elegant solutions",
+                  img: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                  accent: "#8B5CF6"
+                },
+                {
+                  title: "Event Organizers",
+                  desc: "Effortlessly manage contributions and fees",
+                  img: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                  accent: "#F97316"
+                },
+                {
+                  title: "Consultants",
+                  desc: "Professional payment requests that reflect your brand",
+                  img: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                  accent: "#1EAEDB"
+                },
+                {
+                  title: "Individuals",
+                  desc: "Request money with grace and dignity",
+                  img: "https://images.unsplash.com/photo-1542103749-8ef59b94f47e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                  accent: "#9b87f5"
+                }
+              ].map((item, i) => (
+                <SwiperSlide key={i}>
+                  <div className="relative h-[420px] group overflow-hidden rounded-xl shadow-lg">
+                    {/* Image with overlay */}
+                    <div className="absolute inset-0 bg-black/20 z-10 transition-all duration-500 group-hover:bg-black/30"></div>
+                    <img 
+                      src={item.img}
+                      alt={item.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    
+                    {/* Content */}
+                    <div className="absolute bottom-0 left-0 right-0 z-20 p-8 text-white">
+                      <div className="mb-2">
+                        <span 
+                          className="inline-block w-12 h-1 mb-3 transition-all duration-500 group-hover:w-16"
+                          style={{ backgroundColor: item.accent }}
+                        ></span>
+                      </div>
+                      <h3 className="text-4xl font-light mb-3">{item.title}</h3>
+                      <p className="text-white/90 opacity-0 transform translate-y-4 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100">
+                        {item.desc}
+                      </p>
+                    </div>
+                    
+                    {/* Accent bar */}
+                    <div 
+                      className="absolute left-0 bottom-0 h-1 w-full z-30 transition-all duration-500 group-hover:h-2"
+                      style={{ backgroundColor: item.accent }}
+                    ></div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* Navigation arrows */}
+            <button className="swiper-button-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-gray-700 hover:text-[#005F6A] transition-colors hidden md:flex">
+              {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg> */}
+            </button>
+            <button className="swiper-button-next absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-gray-700 hover:text-[#005F6A] transition-colors hidden md:flex">
+              {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg> */}
+            </button>
+
+            {/* Pagination */}
+            <div className="swiper-pagination flex justify-center mt-8 space-x-2"></div>
           </div>
         </div>
       </section>
+
+
+<style>{`
+  .swiper-container {
+    padding: 0 60px;
+  }
+  .swiper-wrapper {
+    display: flex;
+    gap: 24px;
+  }
+  .swiper-slide {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+  .swiper-slide:hover {
+    transform: translateY(-8px);
+  }
+  .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: #E5E7EB;
+    opacity: 1;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+  .swiper-pagination-bullet-active {
+    width: 24px;
+    background: #005F6A;
+  }
+`}</style>
       
       <section className="py-24 bg-gradient-to-br from-[#D4F1F4]/30 to-white relative overflow-hidden">
         <div 
