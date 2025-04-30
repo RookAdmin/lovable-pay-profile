@@ -45,7 +45,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
       )}
     >
       <img 
-        src="/lovable-uploads/c375b9db-456c-4067-83cd-030f73cd3c87.png"
+        src="/lovable-uploads/2c53d21a-5f90-41e2-9d99-3f8dbe8c424d.png"
         alt="Verified"
         className="h-3 w-3"
       />
