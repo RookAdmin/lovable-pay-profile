@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -34,15 +33,13 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface IndividualFormProps {
   userId: string;
-  onSubmit: (data: FormValues, documents: Record<string, string>) => void;
+  onSubmit: (data: FormValues, documents?: Record<string, string>) => void;
   isLoading?: boolean;
   defaultValues?: Partial<FormValues>;
 }
 
 export function IndividualForm({ userId, onSubmit, isLoading = false, defaultValues }: IndividualFormProps) {
-  const [documents, setDocuments] = React.useState<Record<string, DocumentUpload>>({
-    aadhaarDocument: { file: new File([], "") }
-  });
+  const [documents, setDocuments] = React.useState<Record<string, DocumentUpload>>({});
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -64,27 +61,20 @@ export function IndividualForm({ userId, onSubmit, isLoading = false, defaultVal
   };
   
   const handleRemove = (docId: string) => {
-    setDocuments(prev => ({
-      ...prev,
-      [docId]: { file: new File([], "") }
-    }));
+    const newDocuments = { ...documents };
+    delete newDocuments[docId];
+    setDocuments(newDocuments);
   };
   
   const handleSubmit = (values: FormValues) => {
-    // Check if all required documents are uploaded
-    if (!documents.aadhaarDocument.path) {
-      form.setError("aadhaarNumber", { 
-        message: "Please upload your Aadhaar document" 
-      });
-      return;
-    }
+    // Create document paths only if documents exist
+    const documentPaths = Object.entries(documents).reduce((acc, [key, doc]) => {
+      if (doc.path) acc[key] = doc.path;
+      return acc;
+    }, {} as Record<string, string>);
     
-    const documentPaths: Record<string, string> = {};
-    Object.entries(documents).forEach(([key, doc]) => {
-      if (doc.path) documentPaths[key] = doc.path;
-    });
-    
-    onSubmit(values, documentPaths);
+    // Submit with or without documents
+    onSubmit(values, Object.keys(documentPaths).length > 0 ? documentPaths : undefined);
   };
   
   return (
@@ -213,19 +203,20 @@ export function IndividualForm({ userId, onSubmit, isLoading = false, defaultVal
             )}
           />
           
-          {/* Document uploads */}
-          {/* <div className="space-y-4 mt-6">
-            <h4 className="text-sm font-medium">Required Documents</h4>
+          {/* Optional document upload section */}
+          <div className="space-y-4 mt-6">
+            <h4 className="text-sm font-medium">Optional Documents</h4>
             <DocumentUploader
-              label="Aadhaar Card"
+              label="Aadhaar Card (Optional)"
               documentId="aadhaarDocument"
               accept="application/pdf,image/jpeg,image/png"
               onUpload={handleUpload}
               onRemove={handleRemove}
               document={documents.aadhaarDocument}
               userId={userId}
+              required={false}
             />
-          </div> */}
+          </div>
         </div>
         
         <div className="flex justify-end">
