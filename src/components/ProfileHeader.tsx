@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SocialLink } from '@/types/profile';
 import VerificationBadge from './verification/VerificationBadge';
-import { verification_category } from '@/integrations/supabase/types';
+import { VerificationType } from '@/types/verification';
 
 interface ProfileHeaderProps {
   username: string;
@@ -14,7 +14,7 @@ interface ProfileHeaderProps {
   avatarUrl?: string;
   bio?: string;
   isVerified: boolean;
-  verificationCategory?: verification_category;
+  verificationCategory?: VerificationType;
   socialLinks?: SocialLink[];
   onShare?: () => void;
   isOwner?: boolean;

@@ -4,9 +4,10 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Check } from 'lucide-react';
+import { VerificationType } from '@/types/verification';
 
 interface CategoryOption {
-  id: string;
+  id: VerificationType;
   title: string;
   description: string;
 }

@@ -4,11 +4,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { VerificationStatus as Status } from '@/types/verification';
+import { VerificationStatus } from '@/types/verification';
 import { format } from 'date-fns';
 
 interface VerificationStatusCardProps {
-  status: Status;
+  status: VerificationStatus;
   category: string;
   submittedAt: string;
   reviewedAt?: string;

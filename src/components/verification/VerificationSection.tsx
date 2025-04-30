@@ -18,11 +18,11 @@ import { LLPForm } from './LLPForm';
 import { CorporationForm } from './CorporationForm';
 import { VerificationStatusCard } from './VerificationStatus';
 import VerificationBadge from './VerificationBadge';
-import { verification_category, verification_status } from '@/integrations/supabase/types';
+import { VerificationType, VerificationStatus, VerificationRequest } from '@/types/verification';
 
 export function VerificationSection() {
   const { user } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState<verification_category>('individual');
+  const [selectedCategory, setSelectedCategory] = useState<VerificationType>('individual');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   
@@ -39,7 +39,7 @@ export function VerificationSection() {
         .single();
         
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "no rows returned" error
-      return data;
+      return data as VerificationRequest | null;
     },
     enabled: !!user?.id,
   });
@@ -63,7 +63,7 @@ export function VerificationSection() {
   // If user has a verification request, adjust UI based on status
   useEffect(() => {
     if (verificationRequest) {
-      setSelectedCategory(verificationRequest.category as verification_category);
+      setSelectedCategory(verificationRequest.category);
       
       // If status is pending or approved, show the status tab
       if (verificationRequest.status === 'pending' || verificationRequest.status === 'approved') {
@@ -87,7 +87,7 @@ export function VerificationSection() {
         .insert({
           profile_id: user.id,
           category: selectedCategory,
-          status: 'pending' as verification_status,
+          status: 'pending' as VerificationStatus,
           form_data: formData,
           documents: documents
         })
@@ -127,7 +127,7 @@ export function VerificationSection() {
               {isVerified && (
                 <VerificationBadge 
                   isVerified={true} 
-                  category={profile?.verification_category as verification_category} 
+                  category={profile?.verification_category as VerificationType} 
                   className="ml-2 inline-flex"
                 />
               )}
@@ -196,7 +196,7 @@ export function VerificationSection() {
                   <div className="space-y-8">
                     <CategorySelector 
                       value={selectedCategory} 
-                      onChange={(value) => setSelectedCategory(value as verification_category)} 
+                      onChange={(value) => setSelectedCategory(value as VerificationType)} 
                     />
                     
                     <div className="pt-4">
@@ -250,7 +250,7 @@ export function VerificationSection() {
             <TabsContent value="status" className="space-y-6">
               {verificationRequest ? (
                 <VerificationStatusCard 
-                  status={verificationRequest.status as verification_status}
+                  status={verificationRequest.status}
                   category={verificationRequest.category}
                   submittedAt={verificationRequest.submitted_at}
                   reviewedAt={verificationRequest.reviewed_at}
