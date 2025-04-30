@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -57,7 +56,7 @@ export function VerificationSection() {
       // Add a views property with default value if it doesn't exist
       return {
         ...data,
-        views: data.views || 0,
+        views: 0, // Set a default value for views
       };
     },
     enabled: !!user?.id,

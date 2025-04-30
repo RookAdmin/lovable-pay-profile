@@ -71,14 +71,7 @@ export function IndividualForm({ userId, onSubmit, isLoading = false, defaultVal
   };
   
   const handleSubmit = (values: FormValues) => {
-    // Check if all required documents are uploaded
-    if (!documents.aadhaarDocument.path) {
-      form.setError("aadhaarNumber", { 
-        message: "Please upload your Aadhaar document" 
-      });
-      return;
-    }
-    
+    // Document upload is now optional
     const documentPaths: Record<string, string> = {};
     Object.entries(documents).forEach(([key, doc]) => {
       if (doc.path) documentPaths[key] = doc.path;
@@ -213,11 +206,14 @@ export function IndividualForm({ userId, onSubmit, isLoading = false, defaultVal
             )}
           />
           
-          {/* Document uploads */}
+          {/* Document uploads - now optional */}
           <div className="space-y-4 mt-6">
-            <h4 className="text-sm font-medium">Required Documents</h4>
+            <h4 className="text-sm font-medium">Optional Documents</h4>
+            <p className="text-sm text-muted-foreground">
+              You can optionally upload your Aadhaar card for verification. This may speed up the verification process.
+            </p>
             <DocumentUploader
-              label="Aadhaar Card"
+              label="Aadhaar Card (Optional)"
               documentId="aadhaarDocument"
               accept="application/pdf,image/jpeg,image/png"
               onUpload={handleUpload}
