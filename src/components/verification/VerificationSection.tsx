@@ -30,16 +30,30 @@ export function VerificationSection() {
   const { data: verificationRequest, isLoading: isLoadingVerification, refetch: refetchVerification } = useQuery({
     queryKey: ['verification_request', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('verification_requests')
-        .select('*')
-        .eq('profile_id', user?.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('verification_requests')
+          .select('*')
+          .eq('profile_id', user?.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+          
+        if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "no rows returned" error
         
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "no rows returned" error
-      return data as VerificationRequest | null;
+        return data as VerificationRequest | null;
+      } catch (error: any) {
+        // If error is PGRST116, it means no rows returned, so return null
+        if (error.code === 'PGRST116') {
+          return null;
+        }
+        // If error is about the table not existing, handle it gracefully
+        if (error.message?.includes('relation "public.verification_requests" does not exist')) {
+          console.error('Verification requests table does not exist yet:', error);
+          return null;
+        }
+        throw error;
+      }
     },
     enabled: !!user?.id,
   });
@@ -124,10 +138,10 @@ export function VerificationSection() {
           <div>
             <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
               Account Verification
-              {isVerified && (
+              {isVerified && profile?.verification_category && (
                 <VerificationBadge 
                   isVerified={true} 
-                  category={profile?.verification_category as VerificationType} 
+                  category={profile.verification_category as VerificationType} 
                   className="ml-2 inline-flex"
                 />
               )}
@@ -157,7 +171,8 @@ export function VerificationSection() {
                   <BadgeCheck className="h-5 w-5" />
                   <AlertTitle>Your account is verified!</AlertTitle>
                   <AlertDescription>
-                    Your account has been successfully verified as {profile?.verification_category}.
+                    Your account has been successfully verified as {profile?.verification_category && 
+                      String(profile.verification_category).replace('_', ' ')}.
                     The verified badge will be displayed next to your name across the platform.
                   </AlertDescription>
                 </Alert>

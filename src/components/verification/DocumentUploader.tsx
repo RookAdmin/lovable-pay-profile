@@ -49,7 +49,10 @@ const DocumentUploader = ({
       // Upload file to Supabase Storage
       const { data, error } = await supabase.storage
         .from('verification_documents')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
         
       if (error) throw error;
       
@@ -57,6 +60,7 @@ const DocumentUploader = ({
       onUpload(documentId, data.path);
       toast.success('Document uploaded successfully');
     } catch (error: any) {
+      console.error('Upload error:', error);
       toast.error(`Error uploading document: ${error.message}`);
     } finally {
       setUploading(false);
