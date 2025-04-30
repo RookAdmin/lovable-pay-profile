@@ -43,6 +43,21 @@ const DocumentUploader = ({
     setUploading(true);
     
     try {
+      // First check if bucket exists, create it if it doesn't
+      const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+      
+      if (bucketError) {
+        throw bucketError;
+      }
+      
+      const bucketExists = buckets.some(bucket => bucket.name === 'verification_documents');
+      
+      if (!bucketExists) {
+        // We can't create buckets from the client, so we'll show an error
+        toast.error('Verification documents storage not configured');
+        throw new Error('Bucket "verification_documents" does not exist');
+      }
+      
       // Create a unique file path for the user
       const filePath = `${userId}/${documentId}_${new Date().getTime()}`;
       

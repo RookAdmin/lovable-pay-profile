@@ -1,8 +1,6 @@
 
-import { verification_category, verification_status } from "@/integrations/supabase/types";
-
-export type VerificationType = verification_category;
-export type VerificationStatus = verification_status;
+export type VerificationType = 'individual' | 'proprietorship' | 'private_limited' | 'llp' | 'corporation';
+export type VerificationStatus = 'not_submitted' | 'pending' | 'approved' | 'rejected';
 
 export interface VerificationRequest {
   id: string;

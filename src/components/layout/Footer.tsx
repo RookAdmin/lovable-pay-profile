@@ -1,9 +1,8 @@
+
 import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { Logo } from '@/components/Logo';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Link, useLocation } from 'react-router-dom';
+import Logo from '@/components/Logo';
 import { VerificationType } from '@/types/verification';
-import { verification_category } from '@/integrations/supabase/types';
 import VerificationBadge from '../verification/VerificationBadge';
 
 const Footer: React.FC = () => {
