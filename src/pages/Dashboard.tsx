@@ -41,7 +41,7 @@ import UpiVerificationField from "@/components/UpiVerificationField";
 import SettingsForm from "@/components/SettingsForm";
 import { VerificationSection } from "@/components/verification/VerificationSection";
 
-const Dashboard = () => {
+export default function Dashboard() {
   const { user, signOut } = useAuth();
   const [isUpiValid, setIsUpiValid] = useState(true);
   const [editingProfile, setEditingProfile] = useState(false);
