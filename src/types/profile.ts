@@ -1,4 +1,3 @@
-
 export interface Profile {
   id: string;
   username: string;
@@ -13,6 +12,7 @@ export interface Profile {
   createdAt: string;
   updatedAt: string;
   usernameUpdatedAt?: string; // Added to track username changes
+  views?: number; // Add views property
 }
 
 export interface PaymentMethod {

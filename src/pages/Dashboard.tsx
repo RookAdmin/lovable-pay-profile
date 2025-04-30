@@ -60,7 +60,12 @@ const Dashboard = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      
+      // Add views property with default value if it doesn't exist
+      return {
+        ...data,
+        views: data.views || 0
+      };
     },
     enabled: !!user?.id,
   });
