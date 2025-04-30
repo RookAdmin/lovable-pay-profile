@@ -1,6 +1,9 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '@/components/Logo';
+import { verification_category } from '@/integrations/supabase/types';
+import VerificationBadge from '../verification/VerificationBadge';
 
 const Footer: React.FC = () => {
   return (
@@ -29,7 +32,10 @@ const Footer: React.FC = () => {
               <ul className="space-y-2">
                 <li><Link to="/about" className="text-sm text-[#555555] hover:text-[#333333]">About</Link></li>
                 <li><Link to="/contact" className="text-sm text-[#555555] hover:text-[#333333]">Contact</Link></li>
-                <li><Link to="/blog" className="text-sm text-[#555555] hover:text-[#333333]">Blog</Link></li>
+                <li className="flex items-center">
+                  <Link to="/verification" className="text-sm text-[#555555] hover:text-[#333333] mr-1">Verification</Link>
+                  <VerificationBadge isVerified={true} category="individual" size="sm" />
+                </li>
               </ul>
             </div>
             
