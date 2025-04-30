@@ -84,7 +84,7 @@ const Profile = () => {
             username={data.profile.username}
             displayName={data.profile.display_name}
             bio={data.profile.bio}
-            avatarUrl={data.profile.avatar_url} </br>
+            avatarUrl={data.profile.avatar_url}
             isVerified={data.profile.is_verified}
             socialLinks={data.socialLinks}
           />
