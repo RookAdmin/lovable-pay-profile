@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Badge } from "@/components/ui/badge";
+import { BadgeCheck } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { VerificationType } from "@/types/verification";
@@ -44,11 +45,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
         className
       )}
     >
-      <img 
-        src="/lovable-uploads/1b205c8b-1ee9-4b09-bc83-bd90bdd9794b.png" 
-        alt="Verified" 
-        className="h-3 w-3" 
-      />
+      <BadgeCheck className="h-3 w-3" />
       {category ? `Verified ${categoryLabel[category]}` : "Verified"}
     </Badge>
   );
