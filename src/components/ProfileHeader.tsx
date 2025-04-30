@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LinkIcon, ExternalLink, CheckIcon } from 'lucide-react';
+import { LinkIcon, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { SocialLink } from '@/types/profile';
 import VerificationBadge from './verification/VerificationBadge';
 import { VerificationType } from '@/types/verification';
