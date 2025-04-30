@@ -214,7 +214,7 @@ export function IndividualForm({ userId, onSubmit, isLoading = false, defaultVal
           />
           
           {/* Document uploads */}
-          <div className="space-y-4 mt-6">
+          {/* <div className="space-y-4 mt-6">
             <h4 className="text-sm font-medium">Required Documents</h4>
             <DocumentUploader
               label="Aadhaar Card"
@@ -225,7 +225,7 @@ export function IndividualForm({ userId, onSubmit, isLoading = false, defaultVal
               document={documents.aadhaarDocument}
               userId={userId}
             />
-          </div>
+          </div> */}
         </div>
         
         <div className="flex justify-end">
