@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -78,10 +77,22 @@ const Dashboard = () => {
 
       if (error) throw error;
       
-      // Add views property with default value if it doesn't exist
+      // Transform the raw profile data to match our Profile interface
       return {
-        ...data,
-        views: data.views || 0
+        id: data.id,
+        username: data.username,
+        displayName: data.display_name,
+        bio: data.bio,
+        avatarUrl: data.avatar_url,
+        isVerified: data.is_verified,
+        instagramUrl: data.instagram_url,
+        twitterUrl: data.twitter_url,
+        websiteUrl: data.website_url,
+        linkedinUrl: data.linkedin_url,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+        usernameUpdatedAt: data.username_updated_at,
+        views: typeof data.views === 'number' ? data.views : 0 // Default to 0 if not present
       };
     },
     enabled: !!user?.id,
@@ -223,12 +234,12 @@ const Dashboard = () => {
                 <div className="relative">
                   <Avatar className="h-28 w-28 mb-4 ring-4 ring-white/50 dark:ring-gray-700/50 ring-offset-2 ring-offset-gray-100 dark:ring-offset-gray-800 shadow-lg">
                     <AvatarImage
-                      src={profile?.avatar_url}
-                      alt={profile?.display_name || user?.email}
+                      src={profile?.avatarUrl}
+                      alt={profile?.displayName || user?.email}
                       className="object-cover"
                     />
                     <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white font-medium text-3xl">
-                      {(profile?.display_name || user?.email || "")
+                      {(profile?.displayName || user?.email || "")
                         .substring(0, 2)
                         .toUpperCase()}
                     </AvatarFallback>
@@ -244,8 +255,8 @@ const Dashboard = () => {
                   </button>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1 text-center flex items-center gap-2">
-                  {profile?.display_name || user?.email}
-                  {profile?.is_verified && (
+                  {profile?.displayName || user?.email}
+                  {profile?.isVerified && (
                     <BadgeCheck size={20} className="text-green-500" />
                   )}
                 </h2>
@@ -329,7 +340,7 @@ const Dashboard = () => {
               {activeTab === "overview" && (
                 <div className="space-y-6">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold">Welcome, {profile?.display_name}!</h2>
+                    <h2 className="text-xl font-semibold">Welcome, {profile?.displayName}!</h2>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -463,7 +474,7 @@ const Dashboard = () => {
                             Social Links
                           </h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {profile?.website_url && (
+                            {profile?.websiteUrl && (
                               <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3">
                                   <LinkIcon
@@ -472,19 +483,19 @@ const Dashboard = () => {
                                   />
                                 </div>
                                 <a
-                                  href={profile.website_url}
+                                  href={profile.websiteUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
                                 >
-                                  {profile.website_url.replace(
+                                  {profile.websiteUrl.replace(
                                     /^https?:\/\//,
                                     ""
                                   )}
                                 </a>
                               </div>
                             )}
-                            {profile?.twitter_url && (
+                            {profile?.twitterUrl && (
                               <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 <div className="w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center mr-3">
                                   <svg
@@ -496,19 +507,19 @@ const Dashboard = () => {
                                   </svg>
                                 </div>
                                 <a
-                                  href={profile.twitter_url}
+                                  href={profile.twitterUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-gray-900 dark:text-white hover:underline text-sm font-medium"
                                 >
-                                  {profile.twitter_url
+                                  {profile.twitterUrl
                                     .replace(/^https?:\/\//, "")
                                     .replace("twitter.com/", "@")
                                     .replace("x.com/", "@")}
                                 </a>
                               </div>
                             )}
-                            {profile?.instagram_url && (
+                            {profile?.instagramUrl && (
                               <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 <div className="w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-900/50 flex items-center justify-center mr-3">
                                   <svg
@@ -520,18 +531,18 @@ const Dashboard = () => {
                                   </svg>
                                 </div>
                                 <a
-                                  href={profile.instagram_url}
+                                  href={profile.instagramUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-pink-600 dark:text-pink-400 hover:underline text-sm font-medium"
                                 >
-                                  {profile.instagram_url
+                                  {profile.instagramUrl
                                     .replace(/^https?:\/\//, "")
                                     .replace("instagram.com/", "@")}
                                 </a>
                               </div>
                             )}
-                            {profile?.linkedin_url && (
+                            {profile?.linkedinUrl && (
                               <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3">
                                   <svg
@@ -543,12 +554,12 @@ const Dashboard = () => {
                                   </svg>
                                 </div>
                                 <a
-                                  href={profile.linkedin_url}
+                                  href={profile.linkedinUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
                                 >
-                                  {profile.linkedin_url
+                                  {profile.linkedinUrl
                                     .replace(/^https?:\/\//, "")
                                     .replace("linkedin.com/in/", "")}
                                 </a>

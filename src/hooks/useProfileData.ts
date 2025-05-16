@@ -14,12 +14,30 @@ interface PaymentDetails {
   qrCodeUrl?: string;
 }
 
+// Define a type for the raw profile data from the database
+interface RawProfileData {
+  id: string;
+  username: string;
+  display_name: string;
+  bio?: string;
+  avatar_url?: string;
+  is_verified: boolean;
+  instagram_url?: string;
+  twitter_url?: string;
+  website_url?: string;
+  linkedin_url?: string;
+  created_at: string;
+  updated_at: string;
+  username_updated_at?: string;
+  views?: number; // Make this optional since it might not exist in older records
+}
+
 const getProfile = async (username: string) => {
   console.log("Fetching profile for:", username);
   
   try {
     // Get public profile data
-    const { data: profile, error } = await supabase
+    const { data: rawProfile, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('username', username)
@@ -30,19 +48,22 @@ const getProfile = async (username: string) => {
       throw error;
     }
     
-    if (!profile) {
+    if (!rawProfile) {
       console.error("Profile not found for username:", username);
       throw new Error('Profile not found');
     }
 
-    console.log("Profile found:", profile);
-    console.log("Profile ID -", profile.id);
+    // Cast the raw profile to our defined type
+    const rawProfileData = rawProfile as RawProfileData;
+    
+    console.log("Profile found:", rawProfileData);
+    console.log("Profile ID -", rawProfileData.id);
     
     // Fetch payment methods - make sure this works for public access
     const { data: paymentMethods, error: paymentError } = await supabase
       .from('payment_methods')
       .select('*')
-      .eq('profile_id', profile.id)
+      .eq('profile_id', rawProfileData.id)
       .eq('is_active', true);
       
     if (paymentError) {
@@ -56,7 +77,7 @@ const getProfile = async (username: string) => {
     const { data: smartLinks, error: smartLinksError } = await supabase
       .from('smart_links')
       .select('*')
-      .eq('profile_id', profile.id)
+      .eq('profile_id', rawProfileData.id)
       .eq('is_active', true);
       
     if (smartLinksError) {
@@ -67,10 +88,10 @@ const getProfile = async (username: string) => {
     console.log("Smart links fetched:", smartLinks || []);
 
     const socialLinks: SocialLink[] = [
-      profile.instagram_url && { platform: 'instagram', url: profile.instagram_url },
-      profile.twitter_url && { platform: 'twitter', url: profile.twitter_url },
-      profile.website_url && { platform: 'website', url: profile.website_url },
-      profile.linkedin_url && { platform: 'linkedin', url: profile.linkedin_url }
+      rawProfileData.instagram_url && { platform: 'instagram', url: rawProfileData.instagram_url },
+      rawProfileData.twitter_url && { platform: 'twitter', url: rawProfileData.twitter_url },
+      rawProfileData.website_url && { platform: 'website', url: rawProfileData.website_url },
+      rawProfileData.linkedin_url && { platform: 'linkedin', url: rawProfileData.linkedin_url }
     ].filter(Boolean) as SocialLink[];
 
     const upiMethod = paymentMethods?.find(m => m.type === 'upi');
@@ -126,14 +147,26 @@ const getProfile = async (username: string) => {
       updatedAt: link.updated_at
     })) || [];
     
-    // Include the views property with a default value if it doesn't exist
-    const profileWithViews = {
-      ...profile,
-      views: typeof profile.views === 'number' ? profile.views : 0
+    // Transform the raw profile data to match our Profile interface
+    const profile: Profile = {
+      id: rawProfileData.id,
+      username: rawProfileData.username,
+      displayName: rawProfileData.display_name,
+      bio: rawProfileData.bio,
+      avatarUrl: rawProfileData.avatar_url,
+      isVerified: rawProfileData.is_verified,
+      instagramUrl: rawProfileData.instagram_url,
+      twitterUrl: rawProfileData.twitter_url,
+      websiteUrl: rawProfileData.website_url,
+      linkedinUrl: rawProfileData.linkedin_url,
+      createdAt: rawProfileData.created_at,
+      updatedAt: rawProfileData.updated_at,
+      usernameUpdatedAt: rawProfileData.username_updated_at,
+      views: typeof rawProfileData.views === 'number' ? rawProfileData.views : 0 // Default to 0 if not present
     };
     
     return {
-      profile: profileWithViews,
+      profile,
       socialLinks,
       paymentMethods: paymentMethods || [],
       smartLinks: typedSmartLinks,
