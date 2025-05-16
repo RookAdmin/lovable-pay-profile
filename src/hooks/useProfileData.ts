@@ -118,11 +118,14 @@ const getProfile = async (username: string) => {
       icon: link.icon as SmartLink['icon']
     })) || [];
     
+    // Make sure to include the views property with a default value of 0
+    const profileWithViews = {
+      ...profile,
+      views: typeof profile.views === 'number' ? profile.views : 0
+    };
+    
     return {
-      profile: {
-        ...profile,
-        views: profile.views || 0 // Ensure views is always defined
-      },
+      profile: profileWithViews,
       socialLinks,
       paymentMethods: paymentMethods || [],
       smartLinks: typedSmartLinks,
