@@ -112,10 +112,18 @@ const getProfile = async (username: string) => {
       };
     }
     
-    // Properly type the smart links
-    const typedSmartLinks = smartLinks?.map(link => ({
-      ...link,
-      icon: link.icon as SmartLink['icon']
+    // Map database format to our frontend SmartLink interface format
+    const typedSmartLinks: SmartLink[] = smartLinks?.map(link => ({
+      id: link.id,
+      profileId: link.profile_id,
+      title: link.title,
+      amount: Number(link.amount),
+      currency: link.currency,
+      icon: link.icon as SmartLink['icon'],
+      gradient: !!link.gradient,
+      isActive: !!link.is_active,
+      createdAt: link.created_at,
+      updatedAt: link.updated_at
     })) || [];
     
     // Make sure to include the views property with a default value of 0

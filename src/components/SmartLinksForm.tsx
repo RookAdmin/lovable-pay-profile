@@ -14,6 +14,7 @@ import { Heart, Coffee, CreditCard, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { SmartLink } from '@/types/profile';
 
 const smartLinkSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -26,30 +27,30 @@ const smartLinkSchema = z.object({
 
 type SmartLinkFormData = z.infer<typeof smartLinkSchema>;
 
-interface SmartLink {
-  id: string;
-  title: string;
-  amount: number;
-  icon: 'heart' | 'coffee' | 'zap' | 'card';
-  gradient?: boolean;
-}
-
 interface SmartLinksFormProps {
+  initialData?: SmartLink | null;
   existingLinks?: SmartLink[];
+  onSubmitSuccess?: () => void;
+  onCancel?: () => void;
 }
 
-const SmartLinksForm: React.FC<SmartLinksFormProps> = ({ existingLinks = [] }) => {
+const SmartLinksForm: React.FC<SmartLinksFormProps> = ({ 
+  initialData = null, 
+  existingLinks = [],
+  onSubmitSuccess,
+  onCancel 
+}) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [editingLink, setEditingLink] = useState<SmartLink | null>(null);
+  const [editingLink, setEditingLink] = useState<SmartLink | null>(initialData);
   
   const form = useForm<SmartLinkFormData>({
     resolver: zodResolver(smartLinkSchema),
     defaultValues: {
-      title: '',
-      amount: '',
-      icon: 'heart',
-      gradient: false
+      title: initialData?.title || '',
+      amount: initialData ? initialData.amount.toString() : '',
+      icon: initialData?.icon || 'heart',
+      gradient: initialData?.gradient || false
     }
   });
 
@@ -95,6 +96,9 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({ existingLinks = [] }) =
       
       // Refresh smart links data
       queryClient.invalidateQueries({ queryKey: ['smart_links', user.id] });
+      
+      // Call success callback if provided
+      if (onSubmitSuccess) onSubmitSuccess();
     } catch (error) {
       console.error('Error saving smart link:', error);
       toast.error('Failed to save smart link');
@@ -250,7 +254,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({ existingLinks = [] }) =
                 {editingLink ? 'Update Link' : 'Create Link'}
               </Button>
               
-              {editingLink && (
+              {(editingLink || onCancel) && (
                 <Button
                   type="button"
                   variant="outline"
@@ -262,6 +266,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({ existingLinks = [] }) =
                       icon: 'heart',
                       gradient: false
                     });
+                    if (onCancel) onCancel();
                   }}
                 >
                   Cancel

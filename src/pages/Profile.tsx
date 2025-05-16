@@ -113,7 +113,6 @@ const Profile = () => {
           >
             <SmartLinkSection 
               links={data.smartLinks} 
-              upiId={data.upiId}
               className="glass p-6 rounded-2xl backdrop-blur-lg border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
             />
           </motion.div>
