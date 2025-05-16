@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -77,6 +78,10 @@ const Dashboard = () => {
 
       if (error) throw error;
       
+      // Check if views property exists in data before accessing it
+      // This fixes the TypeScript error
+      const viewsCount = data.views !== undefined ? data.views : 0;
+      
       // Transform the raw profile data to match our Profile interface
       const profileData: Profile = {
         id: data.id,
@@ -92,7 +97,7 @@ const Dashboard = () => {
         createdAt: data.created_at,
         updatedAt: data.updated_at,
         usernameUpdatedAt: data.username_updated_at,
-        views: typeof data.views === 'number' ? data.views : 0 // Default to 0 if not present
+        views: viewsCount // Use the safely extracted views count
       };
       
       return profileData;
