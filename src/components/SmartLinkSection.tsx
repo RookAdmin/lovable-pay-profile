@@ -13,7 +13,7 @@ import SmartLinksForm from "./SmartLinksForm";
 import SmartLinkPaymentGateway from "./SmartLinkPaymentGateway";
 
 // Add this function at the beginning of your file, or use the existing one if present
-const SmartLinkSection = ({ links = [] }: { links: SmartLink[] }) => {
+const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], className?: string }) => {
   // Check if user has a payment gateway integrated
   const [hasPaymentGateway, setHasPaymentGateway] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -80,7 +80,7 @@ const SmartLinkSection = ({ links = [] }: { links: SmartLink[] }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${className || ''}`}>
       {/* Payment Gateway Integration Notice */}
       {!hasPaymentGateway && <SmartLinkPaymentGateway />}
       

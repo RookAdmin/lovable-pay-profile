@@ -126,7 +126,7 @@ const getProfile = async (username: string) => {
       updatedAt: link.updated_at
     })) || [];
     
-    // Make sure to include the views property with a default value of 0
+    // Include the views property with a default value if it doesn't exist
     const profileWithViews = {
       ...profile,
       views: typeof profile.views === 'number' ? profile.views : 0

@@ -12,8 +12,8 @@ export interface Profile {
   linkedinUrl?: string;
   createdAt: string;
   updatedAt: string;
-  usernameUpdatedAt?: string; // Added to track username changes
-  views: number; // Changed from optional to required with a default value
+  usernameUpdatedAt?: string;
+  views: number; // Added views as a required field with number type
 }
 
 export interface PaymentMethod {
