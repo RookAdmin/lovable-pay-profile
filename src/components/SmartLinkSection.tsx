@@ -1,115 +1,174 @@
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Coffee, Heart, Zap, CreditCard, PlusCircle, Edit, Trash2, Copy, Check } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { SmartLink } from "@/types/profile";
+import SmartLinksForm from "./SmartLinksForm";
+import SmartLinkPaymentGateway from "./SmartLinkPaymentGateway";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Heart, Coffee, Zap, CreditCard, PlusCircle } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import SmartLinksForm from './SmartLinksForm';
+// Add this function at the beginning of your file, or use the existing one if present
+const SmartLinkSection = ({ links = [] }: { links: SmartLink[] }) => {
+  // Check if user has a payment gateway integrated
+  const [hasPaymentGateway, setHasPaymentGateway] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [editingLink, setEditingLink] = useState<SmartLink | null>(null);
 
-interface SmartLink {
-  id: string;
-  title: string;
-  amount: number;
-  currency: string;
-  icon: 'heart' | 'coffee' | 'zap' | 'card';
-  gradient?: boolean;
-}
+  // Check for payment gateway integration
+  const { data: paymentGateways } = useQuery({
+    queryKey: ["payment-gateways"],
+    queryFn: async () => {
+      // For now, we'll simulate this check - in a real app, 
+      // this would query for actual payment gateway integrations
+      return { hasIntegration: false };
+    },
+  });
 
-interface SmartLinkSectionProps {
-  links: SmartLink[];
-  className?: string;
-  upiId?: string;
-}
+  useEffect(() => {
+    // Update state when data changes
+    if (paymentGateways) {
+      setHasPaymentGateway(paymentGateways.hasIntegration);
+    }
+  }, [paymentGateways]);
 
-const SmartLinkSection: React.FC<SmartLinkSectionProps> = ({
-  links,
-  className = '',
-  upiId
-}) => {
-  const [showForm, setShowForm] = useState(false);
-  
-  const getIcon = (icon: string, size = 20) => {
+  const handleEdit = (link: SmartLink) => {
+    setEditingLink(link);
+    setOpenModal(true);
+  };
+
+  const handleDelete = async (linkId: string) => {
+    try {
+      const { error } = await supabase
+        .from('smart_links')
+        .delete()
+        .eq('id', linkId);
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success("Link deleted successfully!");
+    } catch (error: any) {
+      toast.error("Failed to delete link: " + error.message);
+    }
+  };
+
+  const copyLinkToClipboard = (linkId: string) => {
+    const link = `${window.location.origin}/link/${linkId}`;
+    navigator.clipboard.writeText(link);
+    toast.success("Link copied to clipboard!");
+  };
+
+  const getIconComponent = (icon: SmartLink['icon']) => {
     switch (icon) {
-      case 'heart': return <Heart size={size} />;
-      case 'coffee': return <Coffee size={size} />;
-      case 'zap': return <Zap size={size} />;
-      case 'card': return <CreditCard size={size} />;
-      default: return <Heart size={size} />;
+      case 'heart':
+        return Heart;
+      case 'coffee':
+        return Coffee;
+      case 'zap':
+        return Zap;
+      case 'card':
+        return CreditCard;
+      default:
+        return Heart;
     }
   };
-  
-  const handleLinkClick = (link: SmartLink) => {
-    if (!upiId) {
-      toast.error('No UPI ID available for payment');
-      return;
-    }
 
-    // Construct UPI payment URL
-    const amount = link.amount.toString();
-    const description = encodeURIComponent(link.title);
-    
-    // Format according to UPI deep linking specification
-    const upiUrl = `upi://pay?pa=${upiId}&pn=${description}&am=${amount}&cu=INR`;
-    
-    console.log("Opening UPI payment URL:", upiUrl);
-    
-    // Open the UPI URL which will redirect to the payment app
-    window.location.href = upiUrl;
-  };
-  
   return (
-    <Card className={`shadow-md border-gray-100 ${className}`}>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-xl">Smart Links</CardTitle>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => setShowForm(!showForm)}
-        >
-          {showForm ? 'Hide Form' : (
-            <>
-              <PlusCircle size={16} className="mr-2" />
-              {links.length === 0 ? 'Create Smart Link' : 'Manage Smart Links'}
-            </>
-          )}
-        </Button>
-      </CardHeader>
-      <CardContent>
-        {showForm ? (
-          <SmartLinksForm existingLinks={links} />
-        ) : (
-          <>
-            {links.length > 0 ? (
-              <div className="space-y-3">
-                {links.map((link) => (
-                  <button
-                    key={link.id}
-                    onClick={() => handleLinkClick(link)}
-                    className="w-full flex items-center gap-3 border rounded-lg p-3 hover:bg-gray-50 transition group"
-                  >
-                    <div className={`rounded-full p-2.5 ${link.gradient ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white' : 'bg-gray-100'}`}>
-                      {getIcon(link.icon)}
+    <div className="space-y-6">
+      {/* Payment Gateway Integration Notice */}
+      {!hasPaymentGateway && <SmartLinkPaymentGateway />}
+      
+      {/* The rest of your SmartLinkSection component */}
+      <Card className="shadow-md border-gray-100">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-xl">Smart Links</CardTitle>
+          <Button 
+            onClick={() => {
+              setEditingLink(null);
+              setOpenModal(true);
+            }}
+            size="sm"
+          >
+            <PlusCircle size={16} className="mr-2" />
+            Add Smart Link
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {links.map(link => {
+              const Icon = getIconComponent(link.icon);
+              return (
+                <Card key={link.id} className="shadow-sm hover:shadow-md transition-shadow duration-200">
+                  <CardContent className="p-3">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Icon size={16} className="text-gray-500" />
+                          <h3 className="text-sm font-semibold">{link.title}</h3>
+                        </div>
+                        <p className="text-xs text-gray-400">
+                          {link.currency} {link.amount}
+                        </p>
+                      </div>
+                      <Badge variant="secondary">
+                        {link.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
                     </div>
-                    <div className="flex-grow text-left">
-                      <p className="font-medium">{link.title}</p>
+                    <div className="flex justify-end space-x-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => copyLinkToClipboard(link.id)}
+                      >
+                        <Copy size={16} />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleEdit(link)}
+                      >
+                        <Edit size={16} />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => handleDelete(link.id)}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold">
-                        {link.currency}{link.amount}
-                      </p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                No smart links created yet. Create your first payment link to get started!
-              </div>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* SmartLink Form Dialog */}
+      <Dialog open={openModal} onOpenChange={setOpenModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-xl mb-4">
+              {editingLink ? "Edit Smart Link" : "Create New Smart Link"}
+            </DialogTitle>
+          </DialogHeader>
+          <SmartLinksForm 
+            initialData={editingLink} 
+            onSubmitSuccess={() => {
+              setOpenModal(false);
+              toast.success(editingLink ? "Link updated" : "Link created");
+            }}
+            onCancel={() => setOpenModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 

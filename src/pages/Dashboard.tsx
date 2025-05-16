@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,12 +23,13 @@ import {
   Check,
   ExternalLink,
   BadgeCheck,
+  Puzzle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import PaymentSection from "@/components/PaymentSection";
 import SmartLinkSection from "@/components/SmartLinkSection";
 import { SmartLink } from "@/types/profile";
@@ -41,12 +42,26 @@ import {
 import UpiVerificationField from "@/components/UpiVerificationField";
 import SettingsForm from "@/components/SettingsForm";
 import { VerificationSection } from "@/components/verification/VerificationSection";
+import AppsIntegrationsSection from "@/components/integrations/AppsIntegrationsSection";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
+  const location = useLocation();
   const [isUpiValid, setIsUpiValid] = useState(true);
   const [editingProfile, setEditingProfile] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(() => {
+    if (location.state?.activeTab) {
+      return location.state.activeTab;
+    }
+    return "overview";
+  });
+
+  // Clear location state after using it
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const {
     data: profile,
@@ -192,6 +207,7 @@ const Dashboard = () => {
     { icon: LayoutDashboard, label: "Overview", tabId: "overview" },
     { icon: QrCode, label: "Payment Methods", tabId: "payment" },
     { icon: LinkIcon, label: "Smart Links", tabId: "smart-links" },
+    { icon: Puzzle, label: "Apps & Integrations", tabId: "apps-integrations" },
     { icon: BadgeCheck, label: "Verification", tabId: "verification" },
     { icon: Settings, label: "Settings", tabId: "settings" },
   ];
@@ -682,6 +698,11 @@ const Dashboard = () => {
               {/* Smart Links Tab Content */}
               {activeTab === "smart-links" && (
                 <SmartLinkSection links={typedSmartLinks} />
+              )}
+              
+              {/* Apps and Integrations Tab Content */}
+              {activeTab === "apps-integrations" && (
+                <AppsIntegrationsSection />
               )}
 
               {/* Verification Tab Content */}
