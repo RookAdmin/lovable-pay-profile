@@ -119,7 +119,10 @@ const getProfile = async (username: string) => {
     })) || [];
     
     return {
-      profile,
+      profile: {
+        ...profile,
+        views: profile.views || 0 // Ensure views is always defined
+      },
       socialLinks,
       paymentMethods: paymentMethods || [],
       smartLinks: typedSmartLinks,
