@@ -82,7 +82,7 @@ const Blog = () => {
   return (
     <div className="container px-4 py-12 mx-auto">
       <div className="max-w-4xl mx-auto text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-cyan bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-cyan bg-clip-text text-black">
           Paym.me Blog
         </h1>
         <p className="text-lg text-muted-foreground">

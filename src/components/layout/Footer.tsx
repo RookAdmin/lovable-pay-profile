@@ -45,7 +45,7 @@ const Footer: React.FC = () => {
         
         <div className="border-t border-gray-200 mt-8 pt-6 text-center md:text-left">
           <p className="text-sm text-[#555555]">
-            © {new Date().getFullYear()} Paym.me. All rights reserved.
+            © {new Date().getFullYear()} Rook Platforms. All Rights Reserved.
           </p>
         </div>
       </div>
