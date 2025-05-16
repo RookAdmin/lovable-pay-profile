@@ -13,6 +13,7 @@ export interface Profile {
   createdAt: string;
   updatedAt: string;
   usernameUpdatedAt?: string; // Added to track username changes
+  views: number; // Changed from optional to required with a default value
 }
 
 export interface PaymentMethod {

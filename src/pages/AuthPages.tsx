@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Logo from '@/components/Logo';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
@@ -21,9 +22,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
     username: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -128,14 +134,24 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
                   </Link>
                 )}
               </div>
-              <Input 
-                id="password" 
-                name="password"
-                type="password" 
-                required 
-                value={formData.password}
-                onChange={handleChange}
-              />
+              <div className="relative">
+                <Input 
+                  id="password" 
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required 
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+                <button 
+                  type="button" 
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  onClick={togglePasswordVisibility}
+                  tabIndex={-1} // Don't include in tab order
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               {mode === 'signup' && (
                 <p className="text-xs text-muted-foreground">
                   Must be at least 8 characters

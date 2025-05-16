@@ -20,6 +20,8 @@ const Navbar: React.FC = () => {
           <nav className="hidden md:flex ml-8 space-x-6">
             <Link to="/pricing" className="text-[#555555] hover:text-primary">Pricing</Link>
             <Link to="/blog" className="text-[#555555] hover:text-primary">Blog</Link>
+            <Link to="/about" className="text-[#555555] hover:text-primary">About</Link>
+            <Link to="/contact" className="text-[#555555] hover:text-primary">Contact</Link>
           </nav>
         </div>
         

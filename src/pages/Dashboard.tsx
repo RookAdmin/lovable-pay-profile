@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Check,
   ExternalLink,
+  BadgeCheck,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +39,7 @@ import {
 } from "@/types/payment";
 import UpiVerificationField from "@/components/UpiVerificationField";
 import SettingsForm from "@/components/SettingsForm";
+import { VerificationSection } from "@/components/verification/VerificationSection";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -58,7 +60,12 @@ const Dashboard = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      
+      // Add views property with default value if it doesn't exist
+      return {
+        ...data,
+        views: data.views || 0
+      };
     },
     enabled: !!user?.id,
   });
@@ -204,8 +211,11 @@ const Dashboard = () => {
                     />
                   </button>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1 text-center">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1 text-center flex items-center gap-2">
                   {profile?.display_name || user?.email}
+                  {profile?.is_verified && (
+                    <BadgeCheck size={20} className="text-green-500" />
+                  )}
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                   @{profile?.username}
@@ -224,6 +234,7 @@ const Dashboard = () => {
                   { icon: LayoutDashboard, label: "Overview", to: "#overview" },
                   { icon: QrCode, label: "Payment Methods", to: "#payment" },
                   { icon: LinkIcon, label: "Smart Links", to: "#smart-links" },
+                  { icon: BadgeCheck, label: "Verification", to: "#verification" },
                   { icon: Settings, label: "Settings", to: "#settings" },
                 ].map((item) => (
                   <Button
@@ -292,7 +303,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-6">
               <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="w-full grid grid-cols-2 md:grid-cols-4 mb-8 bg-gray-100 dark:bg-gray-700/50 border-0 rounded-xl p-1 gap-1">
+                <TabsList className="w-full grid grid-cols-2 md:grid-cols-5 mb-8 bg-gray-100 dark:bg-gray-700/50 border-0 rounded-xl p-1 gap-1">
                   <TabsTrigger
                     value="overview"
                     className="text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-sm rounded-lg transition-all duration-300 py-2"
@@ -312,6 +323,12 @@ const Dashboard = () => {
                     Smart Links
                   </TabsTrigger>
                   <TabsTrigger
+                    value="verification"
+                    className="text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-sm rounded-lg transition-all duration-300 py-2"
+                  >
+                    Verification
+                  </TabsTrigger>
+                  <TabsTrigger
                     value="settings"
                     className="text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-sm rounded-lg transition-all duration-300 py-2"
                   >
@@ -322,6 +339,10 @@ const Dashboard = () => {
                 {/* Overview Tab */}
                 <TabsContent value="overview">
                   <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-xl font-semibold">Welcome, {profile?.display_name}!</h2>
+                    </div>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 shadow-sm mt-5 sm:mt-0 md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0">
                         <CardContent className="p-6">
@@ -472,30 +493,30 @@ const Dashboard = () => {
                                   </a>
                                 </div>
                               )}
-                            {profile?.twitter_url && (
-  <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-    <div className="w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center mr-3">
-      <svg
-        className="w-4 h-4 text-gray-900 dark:text-white"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
-      </svg>
-    </div>
-    <a
-      href={profile.twitter_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-gray-900 dark:text-white hover:underline text-sm font-medium"
-    >
-      {profile.twitter_url
-        .replace(/^https?:\/\//, "")
-        .replace("twitter.com/", "@")
-        .replace("x.com/", "@")}
-    </a>
-  </div>
-)}
+                              {profile?.twitter_url && (
+                                <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                  <div className="w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center mr-3">
+                                    <svg
+                                      className="w-4 h-4 text-gray-900 dark:text-white"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
+                                    </svg>
+                                  </div>
+                                  <a
+                                    href={profile.twitter_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-900 dark:text-white hover:underline text-sm font-medium"
+                                  >
+                                    {profile.twitter_url
+                                      .replace(/^https?:\/\//, "")
+                                      .replace("twitter.com/", "@")
+                                      .replace("x.com/", "@")}
+                                  </a>
+                                </div>
+                              )}
                               {profile?.instagram_url && (
                                 <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                   <div className="w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-900/50 flex items-center justify-center mr-3">
@@ -504,7 +525,7 @@ const Dashboard = () => {
                                       fill="currentColor"
                                       viewBox="0 0 24 24"
                                     >
-                                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.28.073-1.689.073-4.948 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
                                     </svg>
                                   </div>
                                   <a
@@ -688,6 +709,11 @@ const Dashboard = () => {
                   <SmartLinkSection links={typedSmartLinks} />
                 </TabsContent>
 
+                {/* Verification Tab */}
+                <TabsContent value="verification">
+                  <VerificationSection />
+                </TabsContent>
+
                 {/* Settings Tab */}
                 <TabsContent value="settings">
                   <SettingsForm
@@ -711,7 +737,7 @@ const Dashboard = () => {
                           className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                           <svg
-                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns="http://www3.org/2000/svg"
                             className="h-6 w-6"
                             fill="none"
                             viewBox="0 0 24 24"

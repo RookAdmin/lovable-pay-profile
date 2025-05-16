@@ -87,6 +87,7 @@ const Profile = () => {
             avatarUrl={data.profile.avatar_url}
             isVerified={data.profile.is_verified}
             socialLinks={data.socialLinks}
+            verticalVerification={true}
           />
         </motion.div>
         
