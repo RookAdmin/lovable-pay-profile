@@ -31,10 +31,10 @@ const Footer: React.FC = () => {
               <ul className="space-y-2">
                 <li><Link to="/about" className="text-sm text-[#555555] hover:text-[#333333]">About</Link></li>
                 <li><Link to="/contact" className="text-sm text-[#555555] hover:text-[#333333]">Contact</Link></li>
-                {/* <li className="flex items-center">
+                <li className="flex items-center">
                   <Link to="/verification" className="text-sm text-[#555555] hover:text-[#333333] mr-1">Verification</Link>
                   <BadgeCheck className="h-4 w-4 text-green-500" />
-                </li> */}
+                </li>
               </ul>
             </div>
             
