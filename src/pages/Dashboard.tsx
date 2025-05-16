@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,6 +46,7 @@ const Dashboard = () => {
   const { user, signOut } = useAuth();
   const [isUpiValid, setIsUpiValid] = useState(true);
   const [editingProfile, setEditingProfile] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const {
     data: profile,
@@ -69,6 +71,11 @@ const Dashboard = () => {
     },
     enabled: !!user?.id,
   });
+
+  // Handle navigation item click
+  const handleNavItemClick = (tabId) => {
+    setActiveTab(tabId);
+  };
 
   const refetchProfile = async (): Promise<void> => {
     await refetchProfileQuery();
@@ -180,6 +187,15 @@ const Dashboard = () => {
       updatedAt: link.updated_at,
     })) || [];
 
+  // Navigation items configuration
+  const navigationItems = [
+    { icon: LayoutDashboard, label: "Overview", tabId: "overview" },
+    { icon: QrCode, label: "Payment Methods", tabId: "payment" },
+    { icon: LinkIcon, label: "Smart Links", tabId: "smart-links" },
+    { icon: BadgeCheck, label: "Verification", tabId: "verification" },
+    { icon: Settings, label: "Settings", tabId: "settings" },
+  ];
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="flex flex-col md:flex-row w-full min-h-screen">
@@ -230,26 +246,17 @@ const Dashboard = () => {
               </div>
 
               <nav className="space-y-2">
-                {[
-                  { icon: LayoutDashboard, label: "Overview", to: "#overview" },
-                  { icon: QrCode, label: "Payment Methods", to: "#payment" },
-                  { icon: LinkIcon, label: "Smart Links", to: "#smart-links" },
-                  { icon: BadgeCheck, label: "Verification", to: "#verification" },
-                  { icon: Settings, label: "Settings", to: "#settings" },
-                ].map((item) => (
+                {navigationItems.map((item) => (
                   <Button
                     key={item.label}
                     variant="ghost"
-                    className="w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-300 rounded-lg py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                    className={`w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-300 rounded-lg py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary ${
+                      activeTab === item.tabId
+                        ? "bg-gray-100 dark:bg-gray-700/50 text-primary dark:text-primary font-medium"
+                        : ""
+                    }`}
                     size="sm"
-                    onClick={() => {
-                      const element = document.querySelector(
-                        `[data-value="${item.to.replace("#", "")}"]`
-                      );
-                      if (element) {
-                        (element as HTMLElement).click();
-                      }
-                    }}
+                    onClick={() => handleNavItemClick(item.tabId)}
                   >
                     <item.icon size={18} className="mr-3" />
                     {item.label}
@@ -276,7 +283,7 @@ const Dashboard = () => {
             <CardHeader className="border-b border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">
-                  Dashboard
+                  {navigationItems.find(item => item.tabId === activeTab)?.label || "Dashboard"}
                 </CardTitle>
                 <div className="flex space-x-2">
                   <Button
@@ -302,426 +309,393 @@ const Dashboard = () => {
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="w-full grid grid-cols-2 md:grid-cols-5 mb-8 bg-gray-100 dark:bg-gray-700/50 border-0 rounded-xl p-1 gap-1">
-                  <TabsTrigger
-                    value="overview"
-                    className="text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-sm rounded-lg transition-all duration-300 py-2"
-                  >
-                    Overview
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="payment"
-                    className="text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-sm rounded-lg transition-all duration-300 py-2"
-                  >
-                    Payment
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="smart-links"
-                    className="text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-sm rounded-lg transition-all duration-300 py-2"
-                  >
-                    Smart Links
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="verification"
-                    className="text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-sm rounded-lg transition-all duration-300 py-2"
-                  >
-                    Verification
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="settings"
-                    className="text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-sm rounded-lg transition-all duration-300 py-2"
-                  >
-                    Settings
-                  </TabsTrigger>
-                </TabsList>
-
-                {/* Overview Tab */}
-                <TabsContent value="overview">
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-center">
-                      <h2 className="text-xl font-semibold">Welcome, {profile?.display_name}!</h2>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 shadow-sm mt-5 sm:mt-0 md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0">
-                        <CardContent className="p-6">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                                Smart Links
-                              </p>
-                              <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
-                                {typedSmartLinks.length}
-                              </h3>
-                            </div>
-                            <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
-                              <LinkIcon size={20} />
-                            </div>
-                          </div>
-                          <div className="mt-4">
-                            <Button
-                              variant="link"
-                              size="sm"
-                              className="text-blue-600 dark:text-blue-400 p-0 h-auto"
-                            >
-                              View all <ArrowRight size={16} className="ml-1" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 shadow-sm">
-                        <CardContent className="p-6">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm text-green-600 dark:text-green-400 font-medium">
-                                Payment Methods
-                              </p>
-                              <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
-                                {paymentMethods?.length || 0}
-                              </h3>
-                            </div>
-                            <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400">
-                              <Wallet size={20} />
-                            </div>
-                          </div>
-                          <div className="mt-4">
-                            <Button
-                              variant="link"
-                              size="sm"
-                              className="text-green-600 dark:text-green-400 p-0 h-auto"
-                            >
-                              Configure{" "}
-                              <ArrowRight size={16} className="ml-1" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 shadow-sm">
-                        <CardContent className="p-6">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
-                                Profile Views
-                              </p>
-                              <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
-                                {profile?.views || 0}
-                              </h3>
-                            </div>
-                            <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
-                              <BarChart size={20} />
-                            </div>
-                          </div>
-                          <div className="mt-4">
-                            <Button
-                              variant="link"
-                              size="sm"
-                              className="text-purple-600 dark:text-purple-400 p-0 h-auto"
-                            >
-                              Analytics{" "}
-                              <ArrowRight size={16} className="ml-1" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    <Card className="border-0 shadow-sm">
-                      <CardHeader>
-                        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
-                          Profile Overview
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-6">
+              {/* Overview Tab Content */}
+              {activeTab === "overview" && (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-semibold">Welcome, {profile?.display_name}!</h2>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 shadow-sm mt-5 sm:mt-0 md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="font-medium mb-3 text-gray-700 dark:text-gray-300">
-                              Bio
-                            </h4>
-                            <p className="text-gray-600 dark:text-gray-400">
-                              {profile?.bio || "No bio added yet."}
+                            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                              Smart Links
                             </p>
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                              {typedSmartLinks.length}
+                            </h3>
                           </div>
-
-                          <div className="w-full">
-                            <h4 className="font-medium mb-3 text-gray-700 dark:text-gray-300">
-                              Profile Link
-                            </h4>
-                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                              <div className="flex-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg sm:min-w-0">
-                                <p className="text-gray-800 dark:text-gray-200 font-mono text-sm truncate">
-                                  {window.location.origin}/{profile?.username}
-                                </p>
-                              </div>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleShare}
-                                className="w-full sm:w-auto border-gray-300 dark:border-gray-600"
-                              >
-                                <Share2 size={16} className="mr-2" />
-                                Copy
-                              </Button>
-                            </div>
+                          <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                            <LinkIcon size={20} />
                           </div>
+                        </div>
+                        <div className="mt-4">
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="text-blue-600 dark:text-blue-400 p-0 h-auto"
+                            onClick={() => handleNavItemClick("smart-links")}
+                          >
+                            View all <ArrowRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
 
+                    <Card className="border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 shadow-sm">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="font-medium mb-3 text-gray-700 dark:text-gray-300">
-                              Social Links
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {profile?.website_url && (
-                                <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3">
-                                    <LinkIcon
-                                      size={16}
-                                      className="text-blue-600 dark:text-blue-400"
-                                    />
-                                  </div>
-                                  <a
-                                    href={profile.website_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
-                                  >
-                                    {profile.website_url.replace(
-                                      /^https?:\/\//,
-                                      ""
-                                    )}
-                                  </a>
-                                </div>
-                              )}
-                              {profile?.twitter_url && (
-                                <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                  <div className="w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center mr-3">
-                                    <svg
-                                      className="w-4 h-4 text-gray-900 dark:text-white"
-                                      fill="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
-                                    </svg>
-                                  </div>
-                                  <a
-                                    href={profile.twitter_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-gray-900 dark:text-white hover:underline text-sm font-medium"
-                                  >
-                                    {profile.twitter_url
-                                      .replace(/^https?:\/\//, "")
-                                      .replace("twitter.com/", "@")
-                                      .replace("x.com/", "@")}
-                                  </a>
-                                </div>
-                              )}
-                              {profile?.instagram_url && (
-                                <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                  <div className="w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-900/50 flex items-center justify-center mr-3">
-                                    <svg
-                                      className="w-4 h-4 text-pink-600 dark:text-pink-400"
-                                      fill="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.28.073-1.689.073-4.948 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-                                    </svg>
-                                  </div>
-                                  <a
-                                    href={profile.instagram_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-pink-600 dark:text-pink-400 hover:underline text-sm font-medium"
-                                  >
-                                    {profile.instagram_url
-                                      .replace(/^https?:\/\//, "")
-                                      .replace("instagram.com/", "@")}
-                                  </a>
-                                </div>
-                              )}
-                              {profile?.linkedin_url && (
-                                <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3">
-                                    <svg
-                                      className="w-4 h-4 text-blue-600 dark:text-blue-400"
-                                      fill="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                                    </svg>
-                                  </div>
-                                  <a
-                                    href={profile.linkedin_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
-                                  >
-                                    {profile.linkedin_url
-                                      .replace(/^https?:\/\//, "")
-                                      .replace("linkedin.com/in/", "")}
-                                  </a>
-                                </div>
-                              )}
-                            </div>
+                            <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+                              Payment Methods
+                            </p>
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                              {paymentMethods?.length || 0}
+                            </h3>
+                          </div>
+                          <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400">
+                            <Wallet size={20} />
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </TabsContent>
-
-                {/* Payment Tab */}
-                <TabsContent value="payment">
-                  <div className="space-y-8">
-                    <Card className="border-0 shadow-sm">
-                      <CardHeader>
-                        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
-                          Payment Verification
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <UpiVerificationField
-                          upiId={
-                            upiMethod?.details &&
-                            typeof upiMethod.details === "object"
-                              ? (upiMethod.details as { upiId?: string })
-                                  .upiId || ""
-                              : ""
-                          }
-                          onChange={(value) =>
-                            console.log("UPI ID changed:", value)
-                          }
-                          onValidate={(valid) => setIsUpiValid(valid)}
-                          className="max-w-md"
-                        />
+                        <div className="mt-4">
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="text-green-600 dark:text-green-400 p-0 h-auto"
+                            onClick={() => handleNavItemClick("payment")}
+                          >
+                            Configure{" "}
+                            <ArrowRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
 
-                    <PaymentSection
-                      upiId={
-                        upiMethod?.details &&
-                        typeof upiMethod.details === "object"
-                          ? (upiMethod.details as { upiId?: string }).upiId ||
-                            ""
-                          : ""
-                      }
-                      bankDetails={bankDetails}
-                      cardDetails={cardDetails}
-                      qrCodeUrl={qrCodeUrl}
-                      onPaymentMethodUpdate={handleDataUpdate}
-                      upiMethodId={upiMethod?.id}
-                      bankMethodId={bankMethod?.id}
-                      cardMethodId={cardMethod?.id}
-                    />
-
-                    <Card className="border-0 shadow-sm">
-                      <CardHeader>
-                        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
-                          Payment Integrations
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid md:grid-cols-2 gap-6">
-                          <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 shadow-sm hover:shadow-md transition-all duration-300">
-                            <CardContent className="p-6">
-                              <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center">
-                                  <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center shadow-sm mr-3">
-                                    <img
-                                      src="https://razorpay.com/favicon.png"
-                                      alt="Razorpay"
-                                      className="w-6 h-6"
-                                    />
-                                  </div>
-                                  <h4 className="text-gray-800 dark:text-white font-medium">
-                                    Razorpay
-                                  </h4>
-                                </div>
-                                <div>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-blue-200 dark:border-blue-900/50 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                                  >
-                                    Configure
-                                  </Button>
-                                </div>
-                              </div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                Connect your Razorpay account to accept direct
-                                payments from your profile page.
-                              </p>
-                              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                                <div className="w-2 h-2 rounded-full bg-yellow-500 mr-2"></div>
-                                <span className="font-medium">
-                                  Not Configured
-                                </span>
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          <Card className="border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 shadow-sm hover:shadow-md transition-all duration-300">
-                            <CardContent className="p-6">
-                              <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center">
-                                  <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center shadow-sm mr-3">
-                                    <img
-                                      src="https://stripe.com/favicon.ico"
-                                      alt="Stripe"
-                                      className="w-6 h-6"
-                                    />
-                                  </div>
-                                  <h4 className="text-gray-800 dark:text-white font-medium">
-                                    Stripe
-                                  </h4>
-                                </div>
-                                <div>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-purple-200 dark:border-purple-900/50 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                                  >
-                                    Configure
-                                  </Button>
-                                </div>
-                              </div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                Connect your Stripe account to accept
-                                international payments from your profile.
-                              </p>
-                              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                                <div className="w-2 h-2 rounded-full bg-yellow-500 mr-2"></div>
-                                <span className="font-medium">
-                                  Not Configured
-                                </span>
-                              </div>
-                            </CardContent>
-                          </Card>
+                    <Card className="border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 shadow-sm">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
+                              Profile Views
+                            </p>
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                              {profile?.views || 0}
+                            </h3>
+                          </div>
+                          <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
+                            <BarChart size={20} />
+                          </div>
+                        </div>
+                        <div className="mt-4">
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="text-purple-600 dark:text-purple-400 p-0 h-auto"
+                          >
+                            Analytics{" "}
+                            <ArrowRight size={16} className="ml-1" />
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
                   </div>
-                </TabsContent>
 
-                {/* Smart Links Tab */}
-                <TabsContent value="smart-links">
-                  <SmartLinkSection links={typedSmartLinks} />
-                </TabsContent>
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
+                        Profile Overview
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-medium mb-3 text-gray-700 dark:text-gray-300">
+                            Bio
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-400">
+                            {profile?.bio || "No bio added yet."}
+                          </p>
+                        </div>
 
-                {/* Verification Tab */}
-                <TabsContent value="verification">
-                  <VerificationSection />
-                </TabsContent>
+                        <div className="w-full">
+                          <h4 className="font-medium mb-3 text-gray-700 dark:text-gray-300">
+                            Profile Link
+                          </h4>
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <div className="flex-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg sm:min-w-0">
+                              <p className="text-gray-800 dark:text-gray-200 font-mono text-sm truncate">
+                                {window.location.origin}/{profile?.username}
+                              </p>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleShare}
+                              className="w-full sm:w-auto border-gray-300 dark:border-gray-600"
+                            >
+                              <Share2 size={16} className="mr-2" />
+                              Copy
+                            </Button>
+                          </div>
+                        </div>
 
-                {/* Settings Tab */}
-                <TabsContent value="settings">
-                  <SettingsForm
-                    initialData={profile}
-                    refetchProfile={refetchProfile}
+                        <div>
+                          <h4 className="font-medium mb-3 text-gray-700 dark:text-gray-300">
+                            Social Links
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {profile?.website_url && (
+                              <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3">
+                                  <LinkIcon
+                                    size={16}
+                                    className="text-blue-600 dark:text-blue-400"
+                                  />
+                                </div>
+                                <a
+                                  href={profile.website_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+                                >
+                                  {profile.website_url.replace(
+                                    /^https?:\/\//,
+                                    ""
+                                  )}
+                                </a>
+                              </div>
+                            )}
+                            {profile?.twitter_url && (
+                              <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center mr-3">
+                                  <svg
+                                    className="w-4 h-4 text-gray-900 dark:text-white"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
+                                  </svg>
+                                </div>
+                                <a
+                                  href={profile.twitter_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-gray-900 dark:text-white hover:underline text-sm font-medium"
+                                >
+                                  {profile.twitter_url
+                                    .replace(/^https?:\/\//, "")
+                                    .replace("twitter.com/", "@")
+                                    .replace("x.com/", "@")}
+                                </a>
+                              </div>
+                            )}
+                            {profile?.instagram_url && (
+                              <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-900/50 flex items-center justify-center mr-3">
+                                  <svg
+                                    className="w-4 h-4 text-pink-600 dark:text-pink-400"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.28.073-1.689.073-4.948 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                                  </svg>
+                                </div>
+                                <a
+                                  href={profile.instagram_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-pink-600 dark:text-pink-400 hover:underline text-sm font-medium"
+                                >
+                                  {profile.instagram_url
+                                    .replace(/^https?:\/\//, "")
+                                    .replace("instagram.com/", "@")}
+                                </a>
+                              </div>
+                            )}
+                            {profile?.linkedin_url && (
+                              <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3">
+                                  <svg
+                                    className="w-4 h-4 text-blue-600 dark:text-blue-400"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                                  </svg>
+                                </div>
+                                <a
+                                  href={profile.linkedin_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+                                >
+                                  {profile.linkedin_url
+                                    .replace(/^https?:\/\//, "")
+                                    .replace("linkedin.com/in/", "")}
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {/* Payment Methods Tab Content */}
+              {activeTab === "payment" && (
+                <div className="space-y-8">
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
+                        Payment Verification
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <UpiVerificationField
+                        upiId={
+                          upiMethod?.details &&
+                          typeof upiMethod.details === "object"
+                            ? (upiMethod.details as { upiId?: string })
+                                .upiId || ""
+                            : ""
+                        }
+                        onChange={(value) =>
+                          console.log("UPI ID changed:", value)
+                        }
+                        onValidate={(valid) => setIsUpiValid(valid)}
+                        className="max-w-md"
+                      />
+                    </CardContent>
+                  </Card>
+
+                  <PaymentSection
+                    upiId={
+                      upiMethod?.details &&
+                      typeof upiMethod.details === "object"
+                        ? (upiMethod.details as { upiId?: string }).upiId ||
+                          ""
+                        : ""
+                    }
+                    bankDetails={bankDetails}
+                    cardDetails={cardDetails}
+                    qrCodeUrl={qrCodeUrl}
+                    onPaymentMethodUpdate={handleDataUpdate}
+                    upiMethodId={upiMethod?.id}
+                    bankMethodId={bankMethod?.id}
+                    cardMethodId={cardMethod?.id}
                   />
-                </TabsContent>
-              </Tabs>
+
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
+                        Payment Integrations
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 shadow-sm hover:shadow-md transition-all duration-300">
+                          <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center">
+                                <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center shadow-sm mr-3">
+                                  <img
+                                    src="https://razorpay.com/favicon.png"
+                                    alt="Razorpay"
+                                    className="w-6 h-6"
+                                  />
+                                </div>
+                                <h4 className="text-gray-800 dark:text-white font-medium">
+                                  Razorpay
+                                </h4>
+                              </div>
+                              <div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-blue-200 dark:border-blue-900/50 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                >
+                                  Configure
+                                </Button>
+                              </div>
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                              Connect your Razorpay account to accept direct
+                              payments from your profile page.
+                            </p>
+                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                              <div className="w-2 h-2 rounded-full bg-yellow-500 mr-2"></div>
+                              <span className="font-medium">
+                                Not Configured
+                              </span>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 shadow-sm hover:shadow-md transition-all duration-300">
+                          <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center">
+                                <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center shadow-sm mr-3">
+                                  <img
+                                    src="https://stripe.com/favicon.ico"
+                                    alt="Stripe"
+                                    className="w-6 h-6"
+                                  />
+                                </div>
+                                <h4 className="text-gray-800 dark:text-white font-medium">
+                                  Stripe
+                                </h4>
+                              </div>
+                              <div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-purple-200 dark:border-purple-900/50 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                                >
+                                  Configure
+                                </Button>
+                              </div>
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                              Connect your Stripe account to accept
+                              international payments from your profile.
+                            </p>
+                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                              <div className="w-2 h-2 rounded-full bg-yellow-500 mr-2"></div>
+                              <span className="font-medium">
+                                Not Configured
+                              </span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {/* Smart Links Tab Content */}
+              {activeTab === "smart-links" && (
+                <SmartLinkSection links={typedSmartLinks} />
+              )}
+
+              {/* Verification Tab Content */}
+              {activeTab === "verification" && (
+                <VerificationSection />
+              )}
+
+              {/* Settings Tab Content */}
+              {activeTab === "settings" && (
+                <SettingsForm
+                  initialData={profile}
+                  refetchProfile={refetchProfile}
+                />
+              )}
 
               {/* Profile Edit Modal */}
               {editingProfile && (

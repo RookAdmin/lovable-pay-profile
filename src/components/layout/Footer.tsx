@@ -2,8 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '@/components/Logo';
-import { VerificationType } from '@/types/verification';
-import VerificationBadge from '../verification/VerificationBadge';
+import { BadgeCheck } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -34,7 +33,7 @@ const Footer: React.FC = () => {
                 <li><Link to="/contact" className="text-sm text-[#555555] hover:text-[#333333]">Contact</Link></li>
                 {/* <li className="flex items-center">
                   <Link to="/verification" className="text-sm text-[#555555] hover:text-[#333333] mr-1">Verification</Link>
-                  <VerificationBadge isVerified={true} category="individual" size="sm" />
+                  <BadgeCheck className="h-4 w-4 text-green-500" />
                 </li> */}
               </ul>
             </div>
