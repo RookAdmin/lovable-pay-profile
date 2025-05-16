@@ -22,7 +22,7 @@ const Profile = () => {
     if (data) {
       console.log("Profile data loaded successfully", {
         username: data.profile.username,
-        displayName: data.profile.display_name,
+        displayName: data.profile.displayName,
         hasUpiId: !!data.upiId,
         hasBankDetails: !!data.bankDetails,
         hasQrCode: !!data.qrCodeUrl,
@@ -56,7 +56,7 @@ const Profile = () => {
   
   console.log("Rendering profile data:", {
     username: data.profile.username,
-    displayName: data.profile.display_name,
+    displayName: data.profile.displayName,
     upiId: data.upiId,
     hasQrCode: !!data.qrCodeUrl,
     hasBankDetails: !!data.bankDetails,
@@ -82,10 +82,10 @@ const Profile = () => {
         >
           <ProfileHeader
             username={data.profile.username}
-            displayName={data.profile.display_name}
+            displayName={data.profile.displayName}
             bio={data.profile.bio}
-            avatarUrl={data.profile.avatar_url}
-            isVerified={data.profile.is_verified}
+            avatarUrl={data.profile.avatarUrl}
+            isVerified={data.profile.isVerified}
             socialLinks={data.socialLinks}
             verticalVerification={true}
           />

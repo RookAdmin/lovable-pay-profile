@@ -31,7 +31,7 @@ import { toast } from "sonner";
 import { Link, useLocation } from "react-router-dom";
 import PaymentSection from "@/components/PaymentSection";
 import SmartLinkSection from "@/components/SmartLinkSection";
-import { SmartLink } from "@/types/profile";
+import { SmartLink, Profile } from "@/types/profile";
 import {
   BankDetails,
   CardDetails,
@@ -78,7 +78,7 @@ const Dashboard = () => {
       if (error) throw error;
       
       // Transform the raw profile data to match our Profile interface
-      return {
+      const profileData: Profile = {
         id: data.id,
         username: data.username,
         displayName: data.display_name,
@@ -94,6 +94,8 @@ const Dashboard = () => {
         usernameUpdatedAt: data.username_updated_at,
         views: typeof data.views === 'number' ? data.views : 0 // Default to 0 if not present
       };
+      
+      return profileData;
     },
     enabled: !!user?.id,
   });
