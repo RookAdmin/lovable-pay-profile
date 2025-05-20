@@ -26,7 +26,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   // If not authenticated, redirect to login
   if (!user) {
-    // Show a toast notification
+    // Show a toast notification (only once)
     toast.error('Please log in to access the dashboard.');
     
     // Redirect to login with the return path

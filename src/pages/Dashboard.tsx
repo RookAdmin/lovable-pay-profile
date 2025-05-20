@@ -47,6 +47,13 @@ import AppsIntegrationsSection from "@/components/integrations/AppsIntegrationsS
 import TransactionsSection from "@/components/TransactionsSection";
 import Payms from "./Payms";
 
+// Define goToAppsIntegrations for the global window object
+declare global {
+  interface Window {
+    goToAppsIntegrations?: () => void;
+  }
+}
+
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   const location = useLocation();
@@ -65,6 +72,15 @@ const Dashboard = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+  // Setup the goToAppsIntegrations window function - fixed to use React.useEffect
+  useEffect(() => {
+    window.goToAppsIntegrations = () => handleNavItemClick("apps-integrations");
+    
+    return () => {
+      delete window.goToAppsIntegrations;
+    };
+  }, []);
 
   const {
     data: profile,
@@ -267,14 +283,6 @@ const Dashboard = () => {
     { icon: BadgeCheck, label: "Verification", tabId: "verification" },
     { icon: Settings, label: "Settings", tabId: "settings" },
   ];
-
-  useEffect(() => {
-    window.goToAppsIntegrations = () => handleNavItemClick("apps-integrations");
-    
-    return () => {
-      delete window.goToAppsIntegrations;
-    };
-  }, []);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
