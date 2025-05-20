@@ -11,8 +11,14 @@ import { useQuery } from "@tanstack/react-query";
 import { SmartLink } from "@/types/profile";
 import SmartLinksForm from "./SmartLinksForm";
 import SmartLinkPaymentGateway from "./SmartLinkPaymentGateway";
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from "@/components/ui/carousel";
 
-// Add this function at the beginning of your file, or use the existing one if present
 const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], className?: string }) => {
   // Check if user has a payment gateway integrated
   const [hasPaymentGateway, setHasPaymentGateway] = useState(false);
@@ -67,16 +73,30 @@ const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], class
   const getIconComponent = (icon: SmartLink['icon']) => {
     switch (icon) {
       case 'heart':
-        return Heart;
+        return <Heart className="w-full h-full" />;
       case 'coffee':
-        return Coffee;
+        return <Coffee className="w-full h-full" />;
       case 'zap':
-        return Zap;
+        return <Zap className="w-full h-full" />;
       case 'card':
-        return CreditCard;
+        return <CreditCard className="w-full h-full" />;
       default:
-        return Heart;
+        return <Heart className="w-full h-full" />;
     }
+  };
+
+  // Create a grouping of links (2 per slide for mobile, more for desktop)
+  const groupLinks = (links: SmartLink[], itemsPerSlide: number = 1) => {
+    return links.reduce((resultArray: SmartLink[][], item, index) => {
+      const chunkIndex = Math.floor(index / itemsPerSlide);
+      
+      if (!resultArray[chunkIndex]) {
+        resultArray[chunkIndex] = []; // start a new chunk
+      }
+      
+      resultArray[chunkIndex].push(item);
+      return resultArray;
+    }, []);
   };
 
   return (
@@ -84,7 +104,7 @@ const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], class
       {/* Payment Gateway Integration Notice */}
       {!hasPaymentGateway && <SmartLinkPaymentGateway />}
       
-      {/* The rest of your SmartLinkSection component */}
+      {/* Smart Links Section */}
       <Card className="shadow-md border-gray-100">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl">Smart Links</CardTitle>
@@ -100,60 +120,108 @@ const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], class
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {links.map(link => {
-              const Icon = getIconComponent(link.icon);
-              return (
-                <Card key={link.id} className="shadow-sm hover:shadow-md transition-shadow duration-200">
-                  <CardContent className="p-3">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Icon size={16} className="text-gray-500" />
-                          <h3 className="text-sm font-semibold">{link.title}</h3>
+          {links.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No smart links yet. Create your first link!</p>
+            </div>
+          ) : (
+            <div className="my-4">
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {links.map((link) => (
+                    <CarouselItem key={link.id} className="md:basis-1/2 lg:basis-1/3">
+                      <div className="p-1">
+                        <div className={`rounded-xl overflow-hidden aspect-square shadow-lg ${
+                          link.gradient 
+                            ? 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500' 
+                            : 'bg-white border border-gray-200'
+                        }`}>
+                          {/* Instagram Story-like Display */}
+                          <div className="flex flex-col h-full">
+                            {/* Header with avatar and title */}
+                            <div className="p-3 flex justify-between items-center">
+                              <div>
+                                <p className={`font-bold text-lg ${link.gradient ? 'text-white' : 'text-gray-900'}`}>
+                                  {link.title}
+                                </p>
+                                <p className={`text-sm ${link.gradient ? 'text-white/80' : 'text-gray-500'}`}>
+                                  {link.currency} {link.amount}
+                                </p>
+                              </div>
+                              <Badge variant={link.isActive ? "secondary" : "outline"}>
+                                {link.isActive ? 'Active' : 'Inactive'}
+                              </Badge>
+                            </div>
+                            
+                            {/* Center Content - Image or Icon */}
+                            <div className="flex-1 flex items-center justify-center p-4">
+                              {link.imageUrl ? (
+                                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white/30 shadow-inner">
+                                  <img 
+                                    src={link.imageUrl} 
+                                    alt={link.title} 
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className={`w-24 h-24 flex items-center justify-center rounded-full ${
+                                  link.gradient 
+                                    ? 'bg-white/20 text-white' 
+                                    : 'bg-gray-100 text-gray-700'
+                                }`}>
+                                  {getIconComponent(link.icon)}
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Footer with actions */}
+                            <div className="p-3 flex justify-between items-center mt-auto">
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className={`${link.gradient ? 'text-white hover:bg-white/10' : ''}`}
+                                  onClick={() => copyLinkToClipboard(link.id)}
+                                >
+                                  <Copy size={18} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className={`${link.gradient ? 'text-white hover:bg-white/10' : ''}`}
+                                  onClick={() => handleEdit(link)}
+                                >
+                                  <Edit size={18} />
+                                </Button>
+                              </div>
+                              <Button
+                                variant={link.gradient ? "ghost" : "destructive"}
+                                size="icon"
+                                className={link.gradient ? 'text-white hover:bg-white/10' : ''}
+                                onClick={() => handleDelete(link.id)}
+                              >
+                                <Trash2 size={18} />
+                              </Button>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-xs text-gray-400">
-                          {link.currency} {link.amount}
-                        </p>
                       </div>
-                      <Badge variant="secondary">
-                        {link.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => copyLinkToClipboard(link.id)}
-                      >
-                        <Copy size={16} />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleEdit(link)}
-                      >
-                        <Edit size={16} />
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => handleDelete(link.id)}
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <div className="flex items-center justify-center mt-4">
+                  <CarouselPrevious className="static transform-none mx-2" />
+                  <CarouselNext className="static transform-none mx-2" />
+                </div>
+              </Carousel>
+            </div>
+          )}
         </CardContent>
       </Card>
       
       {/* SmartLink Form Dialog */}
       <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="text-xl mb-4">
               {editingLink ? "Edit Smart Link" : "Create New Smart Link"}
