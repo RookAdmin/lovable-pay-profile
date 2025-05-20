@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,11 +20,13 @@ export default {
     },
     extend: {
       colors: {
-        // Custom palette
-        lightblue: "#D4F1F4",
-        cyan: "#0097A7",
-        teal: "#005F6A",
-        darkteal: "#003D40",
+        // Rook's brand colors
+        rook: {
+          red: "#dc2e3e",
+          blue: "#0096d4",
+          green: "#00d437",
+          yellow: "#ffd800",
+        },
 
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -32,24 +35,24 @@ export default {
         foreground: 'hsl(var(--foreground))',
 
         primary: {
-          DEFAULT: "#0097A7",
-          foreground: "#D4F1F4",
+          DEFAULT: "#dc2e3e", // Rook red as primary
+          foreground: "#fff", // White text on red
         },
         secondary: {
-          DEFAULT: "#005F6A",
-          foreground: "#D4F1F4",
+          DEFAULT: "#0096d4", // Rook blue as secondary
+          foreground: "#fff",
         },
         muted: {
-          DEFAULT: "#D4F1F4",
-          foreground: "#005F6A",
+          DEFAULT: "#f5f5f5",
+          foreground: "#64748b",
         },
         card: {
           DEFAULT: "#ffffff",
-          foreground: "#003D40",
+          foreground: "#0f172a",
         },
         accent: {
-          DEFAULT: "#003D40",
-          foreground: "#D4F1F4",
+          DEFAULT: "#0096d4", // Rook blue as accent
+          foreground: "#fff",
         },
         destructive: {
           DEFAULT: "#FF585D",
@@ -57,15 +60,13 @@ export default {
         },
         popover: {
           DEFAULT: "#fff",
-          foreground: "#003D40"
+          foreground: "#0f172a"
         },
       },
       backgroundImage: {
-        'gradient-app': 'linear-gradient(135deg, #D4F1F4 0%, #0097A7 100%)',
+        'gradient-app': 'linear-gradient(135deg, #f5f5f5 0%, #f9f9f9 100%)',
         'gradient-card': 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-        'card-soft': 'linear-gradient(135deg, #D4F1F4 0%, #005F6A 100%)',
-        'heading-gradient': 'linear-gradient(135deg, #1A1F2C 0%, #403E43 50%, #333333 100%)',
-        'heading-soft-gradient': 'linear-gradient(135deg, #221F26 0%, #403E43 50%, #222222 100%)',
+        'card-soft': 'linear-gradient(135deg, #f5f5f5 0%, #ebebeb 100%)',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -86,9 +87,6 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
-      textColor: {
-        'gradient-dark': 'linear-gradient(135deg, #1A1F2C 0%, #403E43 100%)',
-      }
     },
   },
   plugins: [require("tailwindcss-animate")],
