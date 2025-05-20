@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChartPie } from 'lucide-react';
+import { ChartPie, BarChart3 } from 'lucide-react';
 
 const NavbarLinks = () => {
   return (
@@ -10,7 +10,7 @@ const NavbarLinks = () => {
         Dashboard
       </Link>
       <Link to="/analytics" className="text-foreground hover:text-primary transition-colors flex items-center gap-2">
-        <ChartPie size={16} />
+        <BarChart3 size={16} />
         Analytics
       </Link>
       <Link to="/pricing" className="text-foreground hover:text-primary transition-colors">
