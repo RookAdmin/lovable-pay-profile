@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +40,7 @@ import {
   CardDetails,
   UpiDetails,
   safelyConvertToUpiDetails,
+  Transaction, // Added import for Transaction
 } from "@/types/payment";
 import UpiVerificationField from "@/components/UpiVerificationField";
 import SettingsForm from "@/components/SettingsForm";
