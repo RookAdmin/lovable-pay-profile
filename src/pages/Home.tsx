@@ -13,6 +13,14 @@ import {
   CreditCard,
   Share2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Briefcase,
+  ShoppingBag,
+  Users,
+  BookOpen,
+  Calendar,
+  Heart,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -42,68 +50,146 @@ const Home = () => {
 
   return (
     <div className="flex flex-col">
-      <section className="relative h-screen flex items-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#f8f9fa] to-[#e9ecef]">
         <div
-          className="absolute inset-0 bg-gradient-to-br from-lightblue to-cyan opacity-70 -z-10"
-          style={{ transform: `translateY(${scrollY * 0.2}px)` }}
-        />
-        <div
-          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center bg-no-repeat opacity-10 -z-20"
+          className="absolute inset-0 bg-gradient-to-br from-[#f8fafc]/90 to-[#e0f2fe]/80 -z-10"
           style={{ transform: `translateY(${scrollY * 0.1}px)` }}
         />
+        <div
+          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center bg-no-repeat opacity-5 -z-20"
+          style={{ transform: `translateY(${scrollY * 0.05}px)` }}
+        />
 
-        <div className="container px-4 z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1
-              className="text-5xl md:text-7xl font-bold mb-6 text-[#003D40] animate-fade-in"
-              style={{ transform: `translateY(${-scrollY * 0.2}px)` }}
-            >
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#003D40] via-[#005F6A] to-[#0097A7]">
-                Your Payment Receivables Identity
-              </span>
-            </h1>
-            <p
-              className="text-xl md:text-2xl text-[#005F6A] mb-12 animate-fade-in opacity-90"
-              style={{
-                transform: `translateY(${-scrollY * 0.1}px)`,
-                animationDelay: "200ms",
-              }}
-            >
-              Collect Payment With Ease Using Just A Single Beautiful link:{" "}
-              <span className="font-semibold">paym.me/you</span>
-            </p>
-            <div
-              className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in"
-              style={{ animationDelay: "400ms" }}
-            >
-              {!user ? (
-                <Link to="/signup">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-[#0097A7] to-[#005F6A] hover:scale-105"
-                  >
-                    Get Started for Free
-                  </Button>
-                </Link>
-              ) : (
-                <Link to="/dashboard">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-[#0097A7] to-[#005F6A] hover:scale-105"
-                  >
-                    Go to Dashboard
-                  </Button>
-                </Link>
-              )}
-              <Link to="/arav">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto border-2 border-[#0097A7] text-[#003D40] hover:bg-[#D4F1F4]/20 hover:scale-105 transition-all"
+        {/* Decorative elements */}
+        <div className="absolute top-1/4 left-10 w-64 h-64 rounded-full bg-gradient-to-r from-[#0097A7]/10 to-[#0097A7]/5 blur-3xl -z-10"></div>
+        <div className="absolute bottom-1/4 right-10 w-80 h-80 rounded-full bg-gradient-to-r from-[#003D40]/10 to-[#005F6A]/5 blur-3xl -z-10"></div>
+
+        <div className="container px-4 z-10 py-20 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1">
+              <div className="max-w-xl">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 text-[#003D40] tracking-tight leading-tight animate-fade-in">
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#003D40] via-[#005F6A] to-[#0097A7]">
+                    Your Payment Receivables Identity
+                  </span>
+                </h1>
+                <p
+                  className="text-lg md:text-xl text-[#005F6A]/80 mb-8 animate-fade-in opacity-90 leading-relaxed"
+                  style={{ animationDelay: "200ms" }}
                 >
-                  See Demo
-                </Button>
-              </Link>
+                  Collect payments elegantly with a single beautiful link.
+                  <span className="font-semibold block mt-2 text-[#0097A7]">
+                    paym.me/you
+                  </span>
+                </p>
+                <div
+                  className="flex flex-col sm:flex-row gap-4 animate-fade-in"
+                  style={{ animationDelay: "400ms" }}
+                >
+                  {!user ? (
+                    <Link to="/signup">
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto shadow-md hover:shadow-lg transition-all bg-[#0097A7] hover:bg-[#0097A7]/90 text-white"
+                      >
+                        Get Started for Free
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link to="/dashboard">
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto shadow-md hover:shadow-lg transition-all bg-[#0097A7] hover:bg-[#0097A7]/90 text-white"
+                      >
+                        Go to Dashboard
+                      </Button>
+                    </Link>
+                  )}
+                  <Link to="/arav">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full sm:w-auto border-2 border-[#0097A7] text-[#003D40] hover:bg-[#D4F1F4]/10"
+                    >
+                      See Demo
+                    </Button>
+                  </Link>
+                </div>
+
+                <div
+                  className="mt-12 flex items-center space-x-6 text-sm text-[#005F6A]/70 animate-fade-in"
+                  style={{ animationDelay: "600ms" }}
+                >
+                  <div className="flex items-center">
+                    <Shield size={16} className="mr-2" />
+                    <span>Secure & Private</span>
+                  </div>
+                  <div className="flex items-center">
+                    <UserCheck size={16} className="mr-2" />
+                    <span>10k+ Users</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Zap size={16} className="mr-2" />
+                    <span>Instant Setup</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-1 md:order-2 flex justify-center items-center">
+              <div
+                className="relative w-full max-w-md animate-fade-in transform md:translate-y-0 -translate-y-8"
+                style={{ animationDelay: "300ms" }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0097A7]/20 to-[#003D40]/10 rounded-2xl transform rotate-3 scale-95 blur-sm"></div>
+                <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-[#0097A7]/10">
+                  <div className="bg-gradient-to-r from-[#003D40] to-[#0097A7] h-16 flex items-center px-6">
+                    <span className="text-white font-medium">
+                      paym.me/sarah
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center mb-6">
+                      <div className="w-16 h-16 rounded-full bg-[#D4F1F4] flex items-center justify-center mr-4">
+                        <User size={32} className="text-[#0097A7]" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-semibold text-[#003D40]">
+                          Sarah Johnson
+                        </h3>
+                        <p className="text-[#005F6A]/70">Freelance Designer</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4 mb-6">
+                      <div className="bg-[#f8fafc] p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-[#005F6A] mb-2">
+                          UPI Payment
+                        </h4>
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded bg-[#D4F1F4]/50 flex items-center justify-center mr-3">
+                            <CreditCard size={20} className="text-[#0097A7]" />
+                          </div>
+                          <span className="text-[#003D40]">sarah@upi</span>
+                        </div>
+                      </div>
+                      <div className="bg-[#f8fafc] p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-[#005F6A] mb-2">
+                          Bank Transfer
+                        </h4>
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded bg-[#D4F1F4]/50 flex items-center justify-center mr-3">
+                            <CreditCard size={20} className="text-[#0097A7]" />
+                          </div>
+                          <span className="text-[#003D40]">XXXX XXXX 1234</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Button className="w-full bg-[#0097A7] hover:bg-[#0097A7]/90">
+                      Pay Now
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -113,7 +199,7 @@ const Home = () => {
             className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce transition-opacity"
             style={{ opacity: 1 - scrollY / 100 }}
           >
-            <ChevronDown size={40} className="text-[#003D40] opacity-70" />
+            <ChevronDown size={32} className="text-[#003D40] opacity-50" />
           </div>
         )}
       </section>
@@ -231,166 +317,351 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-white relative">
-        <div className="container px-4 mx-auto">
+      {/* New Payms Section */}
+      <section className="py-24 bg-gradient-to-br from-[#f8fafc] to-[#e0f2fe] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547621706-1a9c79d5c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5" />
+
+        {/* Decorative elements */}
+        <div className="absolute top-1/4 right-10 w-64 h-64 rounded-full bg-gradient-to-r from-[#0097A7]/10 to-[#0097A7]/5 blur-3xl"></div>
+        <div className="absolute bottom-1/4 left-10 w-80 h-80 rounded-full bg-gradient-to-r from-[#003D40]/10 to-[#005F6A]/5 blur-3xl"></div>
+
+        <div className="container px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#005F6A]">
-              Perfect For
+              Introducing Payms
             </h2>
             <p className="text-lg md:text-xl text-[#005F6A]/80">
-              Anyone who collects payments and values their privacy
+              Create custom payment links for specific amounts and purposes
             </p>
           </div>
 
-          <div className="relative px-4">
-            <Swiper
-              modules={[Autoplay, Navigation, Pagination]}
-              spaceBetween={24}
-              slidesPerView={1.2}
-              breakpoints={{
-                640: {
-                  slidesPerView: 1.5,
-                },
-                768: {
-                  slidesPerView: 2.3,
-                },
-                1024: {
-                  slidesPerView: 3.1,
-                },
-              }}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-              }}
-              navigation={{
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-              }}
-              pagination={{
-                el: ".swiper-pagination",
-                clickable: true,
-              }}
-              loop={true}
-              className="!overflow-visible"
-            >
-              {[
-                {
-                  title: "Content Creators",
-                  desc: "Elegantly collect tips and payments from your audience",
-                  img: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                  accent: "#D946EF",
-                },
-                {
-                  title: "Freelancers",
-                  desc: "Receive client payments with professional simplicity",
-                  img: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                  accent: "#0EA5E9",
-                },
-                {
-                  title: "Small Businesses",
-                  desc: "Streamline payment collection with elegant solutions",
-                  img: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                  accent: "#8B5CF6",
-                },
-                {
-                  title: "Event Organizers",
-                  desc: "Effortlessly manage contributions and fees",
-                  img: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                  accent: "#F97316",
-                },
-                {
-                  title: "Consultants",
-                  desc: "Professional payment requests that reflect your brand",
-                  img: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                  accent: "#1EAEDB",
-                },
-                {
-                  title: "Individuals",
-                  desc: "Request money with grace and dignity",
-                  img: "https://images.unsplash.com/photo-1542103749-8ef59b94f47e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                  accent: "#9b87f5",
-                },
-              ].map((item, i) => (
-                <SwiperSlide key={i}>
-                  <div className="relative h-[420px] group overflow-hidden rounded-xl shadow-lg">
-                    {/* Image with overlay */}
-                    <div className="absolute inset-0 bg-black/20 z-10 transition-all duration-500 group-hover:bg-black/30"></div>
-                    <img
-                      src={item.img}
-                      alt={item.title}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center max-w-6xl mx-auto">
+            <div className="order-2 md:order-1">
+              <h3 className="text-2xl md:text-3xl font-bold mb-6 text-[#003D40]">
+                Standard Link vs Payms
+              </h3>
 
-                    {/* Content */}
-                    <div className="absolute bottom-0 left-0 right-0 z-20 p-8 text-white">
-                      <div className="mb-2">
-                        <span
-                          className="inline-block w-12 h-1 mb-3 transition-all duration-500 group-hover:w-16"
-                          style={{ backgroundColor: item.accent }}
-                        ></span>
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl p-6 shadow-lg">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-[#D4F1F4] flex items-center justify-center mr-4">
+                      <User size={24} className="text-[#0097A7]" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-semibold text-[#003D40]">
+                        Standard Link
+                      </h4>
+                      <p className="text-[#005F6A]/70">paym.me/yourname</p>
+                    </div>
+                  </div>
+                  <ul className="space-y-3 text-[#005F6A]">
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0097A7]">•</div>
+                      <span>Shows all your payment methods</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0097A7]">•</div>
+                      <span>Payer decides the amount</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0097A7]">•</div>
+                      <span>Your permanent payment identity</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#0097A7]/20">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-[#0097A7] flex items-center justify-center mr-4">
+                      <MessageSquare size={24} className="text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-semibold text-[#003D40]">
+                        Payms
+                      </h4>
+                      <p className="text-[#005F6A]/70">
+                        paym.me/yourname/coffee
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="space-y-3 text-[#005F6A]">
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0097A7]">•</div>
+                      <span>Pre-set payment amount</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0097A7]">•</div>
+                      <span>Custom description & purpose</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0097A7]">•</div>
+                      <span>One-click payment experience</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0097A7]">•</div>
+                      <span>Perfect for specific products or services</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-1 md:order-2 flex justify-center">
+              <div className="relative w-full max-w-md">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0097A7]/20 to-[#003D40]/10 rounded-2xl transform rotate-3 scale-95 blur-sm"></div>
+                <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-[#0097A7]/10">
+                  <div className="bg-gradient-to-r from-[#003D40] to-[#0097A7] h-16 flex items-center px-6">
+                    <span className="text-white font-medium">
+                      paym.me/alex/design-project
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center mb-6">
+                      <div className="w-16 h-16 rounded-full bg-[#D4F1F4] flex items-center justify-center mr-4">
+                        <User size={32} className="text-[#0097A7]" />
                       </div>
-                      <h3 className="text-4xl font-light mb-3">{item.title}</h3>
-                      <p className="text-white/90 opacity-0 transform translate-y-4 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100">
-                        {item.desc}
+                      <div>
+                        <h3 className="text-xl font-semibold text-[#003D40]">
+                          Alex's Design Project
+                        </h3>
+                        <p className="text-[#005F6A]/70">
+                          Logo Design - Phase 1
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-[#f8fafc] p-4 rounded-lg mb-6">
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="text-sm font-medium text-[#005F6A]">
+                          Project Details
+                        </h4>
+                        <span className="text-xl font-bold text-[#003D40]">
+                          ₹5,000
+                        </span>
+                      </div>
+                      <p className="text-sm text-[#005F6A]/80">
+                        Initial payment for logo design project. Includes 3
+                        concepts and 2 revision rounds.
                       </p>
                     </div>
 
-                    {/* Accent bar */}
-                    <div
-                      className="absolute left-0 bottom-0 h-1 w-full z-30 transition-all duration-500 group-hover:h-2"
-                      style={{ backgroundColor: item.accent }}
-                    ></div>
+                    <div className="space-y-4 mb-6">
+                      <div className="bg-[#f8fafc] p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-[#005F6A] mb-2">
+                          Payment Methods
+                        </h4>
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded bg-[#D4F1F4]/50 flex items-center justify-center mr-3">
+                            <CreditCard size={20} className="text-[#0097A7]" />
+                          </div>
+                          <span className="text-[#003D40]">
+                            Multiple options available
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-[#0097A7] hover:bg-[#0097A7]/90">
+                      Pay ₹5,000
+                    </Button>
                   </div>
-                </SwiperSlide>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-16 max-w-4xl mx-auto text-center">
+            <h3 className="text-2xl font-bold mb-6 text-[#003D40]">
+              Create Payms For:
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                "Products",
+                "Services",
+                "Donations",
+                "Subscriptions",
+                "Events",
+                "Invoices",
+                "Memberships",
+                "Custom Amounts",
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-white/80 backdrop-blur-sm rounded-lg py-3 px-4 shadow-md hover:shadow-lg transition-all hover:-translate-y-1 border border-[#0097A7]/10"
+                >
+                  <p className="text-[#005F6A] font-medium">{item}</p>
+                </div>
               ))}
-            </Swiper>
-
-            {/* Navigation arrows */}
-            <button className="swiper-button-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-gray-700 hover:text-[#005F6A] transition-colors hidden md:flex">
-              {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg> */}
-            </button>
-            <button className="swiper-button-next absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-gray-700 hover:text-[#005F6A] transition-colors hidden md:flex">
-              {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg> */}
-            </button>
-
-            {/* Pagination */}
-            <div className="swiper-pagination flex justify-center mt-8 space-x-2"></div>
+            </div>
           </div>
         </div>
       </section>
 
-      <style>{`
-  .swiper-container {
-    padding: 0 60px;
-  }
-  .swiper-wrapper {
-    display: flex;
-    gap: 24px;
-  }
-  .swiper-slide {
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
-  }
-  .swiper-slide:hover {
-    transform: translateY(-8px);
-  }
-  .swiper-pagination-bullet {
-    width: 10px;
-    height: 10px;
-    background: #E5E7EB;
-    opacity: 1;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-  }
-  .swiper-pagination-bullet-active {
-    width: 24px;
-    background: #005F6A;
-  }
-`}</style>
+      {/* Perfect For Section - Premium Auto-Carousel Design */}
+      <section className="py-24 bg-[#fafafa] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940')] bg-cover bg-center opacity-[0.03]" />
+
+        <div className="container px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#003D40]">
+              Perfect For
+            </h2>
+            <p className="text-lg md:text-xl text-[#005F6A]/80">
+              Designed for professionals who value elegance and simplicity
+            </p>
+          </div>
+
+          {/* Premium Auto-Carousel */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            {/* Carousel Navigation */}
+            <div className="absolute top-1/2 left-0 transform -translate-y-1/2 z-20 w-full flex justify-between pointer-events-none">
+              <button
+                className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-[#003D40] pointer-events-auto focus:outline-none hover:bg-white transition-all"
+                onClick={() => {
+                  const carousel = document.getElementById("premium-carousel");
+                  if (carousel) {
+                    carousel.scrollBy({ left: -400, behavior: "smooth" });
+                  }
+                }}
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-[#003D40] pointer-events-auto focus:outline-none hover:bg-white transition-all"
+                onClick={() => {
+                  const carousel = document.getElementById("premium-carousel");
+                  if (carousel) {
+                    carousel.scrollBy({ left: 400, behavior: "smooth" });
+                  }
+                }}
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+
+            {/* Carousel Items */}
+            <div className="overflow-hidden" id="premium-carousel">
+              <div className="flex space-x-6 py-8 animate-carousel">
+                {[
+                  {
+                    icon: <Briefcase size={32} />,
+                    title: "Freelancers",
+                    desc: "Create professional payment links for clients with detailed project descriptions and milestone payments.",
+                    image:
+                      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2942",
+                  },
+                  {
+                    icon: <ShoppingBag size={32} />,
+                    title: "Small Businesses",
+                    desc: "Streamline your payment collection with branded payment links that reflect your company's identity.",
+                    image:
+                      "https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                  },
+                  {
+                    icon: <Users size={32} />,
+                    title: "Creators",
+                    desc: "Monetize your content with elegant payment links for subscriptions, tips, and exclusive offerings.",
+                    image:
+                      "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                  },
+                  {
+                    icon: <BookOpen size={32} />,
+                    title: "Educators",
+                    desc: "Collect course fees and workshop payments with professional, branded payment links.",
+                    image:
+                      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                  },
+                  {
+                    icon: <Calendar size={32} />,
+                    title: "Event Organizers",
+                    desc: "Manage event registrations and ticket sales with customized payment experiences.",
+                    image:
+                      "https://images.unsplash.com/photo-1540317580384-e5d43867caa6?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                  },
+                  {
+                    icon: <Heart size={32} />,
+                    title: "Non-Profits",
+                    desc: "Create donation links with purpose-specific descriptions and suggested amounts.",
+                    image:
+                      "https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                  },
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    className="min-w-[350px] md:min-w-[400px] flex-shrink-0"
+                  >
+                    <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 h-full group">
+                      <div className="h-48 overflow-hidden relative">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10"></div>
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-8 relative">
+                        <div className="w-16 h-16 rounded-full bg-[#f8fafc] flex items-center justify-center absolute -top-8 right-8 border-4 border-white shadow-md text-[#0097A7]">
+                          {item.icon}
+                        </div>
+                        <h3 className="text-2xl font-semibold mb-4 text-[#003D40]">
+                          {item.title}
+                        </h3>
+                        <div className="w-12 h-0.5 bg-[#0097A7] mb-4 transition-all duration-500 group-hover:w-24"></div>
+                        <p className="text-[#005F6A]/80">{item.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Carousel Indicators */}
+            <div className="flex justify-center mt-8 space-x-2">
+              {[0, 1, 2, 3].map((index) => (
+                <button
+                  key={index}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    index === 0 ? "bg-[#0097A7]" : "bg-[#D4F1F4]"
+                  }`}
+                  onClick={() => {
+                    const carousel =
+                      document.getElementById("premium-carousel");
+                    if (carousel) {
+                      carousel.scrollTo({
+                        left: index * 400,
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
+                ></button>
+              ))}
+            </div>
+          </div>
+
+          {/* Categories */}
+          <div className="mt-20 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {[
+                "Freelancers",
+                "Businesses",
+                "Creators",
+                "Consultants",
+                "Educators",
+                "Non-profits",
+                "Events",
+                "Personal",
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-lg py-4 px-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 border border-[#0097A7]/5 text-center"
+                >
+                  <p className="text-[#003D40] font-medium">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="py-24 bg-gradient-to-br from-[#D4F1F4]/30 to-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547945026-a788b13c73f7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5" />
@@ -520,6 +791,26 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Replace the style jsx tag with a style tag */}
+      <style>
+        {`
+        @keyframes carousel {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-1200px);
+          }
+        }
+        .animate-carousel {
+          animation: carousel 30s linear infinite;
+        }
+        .animate-carousel:hover {
+          animation-play-state: paused;
+        }
+        `}
+      </style>
     </div>
   );
 };
