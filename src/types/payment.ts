@@ -1,4 +1,3 @@
-
 export interface BankDetails {
   accountNumber: string;
   ifsc: string;
@@ -44,3 +43,14 @@ export const safelyConvertToUpiDetails = (details: any): UpiDetails => {
   
   return { upiId: '' };
 };
+
+export interface Transaction {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  gateway: 'stripe' | 'paypal' | 'razorpay' | string;
+  createdAt: string;
+  receiptUrl?: string;
+  metadata?: Record<string, any>;
+}
