@@ -44,7 +44,7 @@ const UpiVerificationField: React.FC<UpiVerificationFieldProps> = ({
           UPI ID
         </Label>
         {touched && isValid && (
-          <span className="text-xs text-green-600">✓ Valid UPI ID</span>
+          <span className="text-xs text-green">✓ Valid UPI ID</span>
         )}
       </div>
       
@@ -56,10 +56,10 @@ const UpiVerificationField: React.FC<UpiVerificationFieldProps> = ({
             onChange={handleChange}
             onBlur={handleBlur}
             placeholder="yourname@upi"
-            className={showError ? "border-red-500" : ""}
+            className={showError ? "border-red" : ""}
           />
           {showError && (
-            <div className="flex items-center mt-1 text-xs text-red-600">
+            <div className="flex items-center mt-1 text-xs text-red">
               <AlertCircle size={12} className="mr-1" />
               Please enter a valid UPI ID (e.g., name@bank)
             </div>

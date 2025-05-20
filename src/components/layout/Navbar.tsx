@@ -10,7 +10,7 @@ const Navbar: React.FC = () => {
   const { user, signOut } = useAuth();
   
   return (
-    <header className="w-full bg-white border-b border-gray-100">
+    <header className="w-full bg-white border-b border-gray-100 shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center">
           <Link to="/">
@@ -18,10 +18,10 @@ const Navbar: React.FC = () => {
           </Link>
           
           <nav className="hidden md:flex ml-8 space-x-6">
-            <Link to="/pricing" className="text-[#555555] hover:text-primary">Pricing</Link>
-            <Link to="/blog" className="text-[#555555] hover:text-primary">Blog</Link>
-            <Link to="/about" className="text-[#555555] hover:text-primary">About</Link>
-            <Link to="/contact" className="text-[#555555] hover:text-primary">Contact</Link>
+            <Link to="/pricing" className="text-black hover:text-secondary transition-colors">Pricing</Link>
+            <Link to="/blog" className="text-black hover:text-secondary transition-colors">Blog</Link>
+            <Link to="/about" className="text-black hover:text-secondary transition-colors">About</Link>
+            <Link to="/contact" className="text-black hover:text-secondary transition-colors">Contact</Link>
           </nav>
         </div>
         
@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
           {user ? (
             <>
               <Link to="/dashboard">
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="text-secondary">
                   <User size={20} />
                 </Button>
               </Link>

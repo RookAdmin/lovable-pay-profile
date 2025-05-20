@@ -15,15 +15,15 @@ const SmartLinkPaymentGateway = () => {
   };
 
   return (
-    <Card className="border-amber-200 dark:border-amber-800/30 shadow-md mb-6">
-      <CardHeader className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800/30">
-        <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
-          <AlertCircle size={18} />
+    <Card className="border-yellow/30 shadow-sm mb-6">
+      <CardHeader className="bg-yellow/10 border-b border-yellow/20">
+        <div className="flex items-center gap-2 text-black">
+          <AlertCircle size={18} className="text-yellow" />
           <CardTitle className="text-base font-medium">Payment Gateway Required</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="p-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-gray-600 mb-4">
           To receive payments through Smart Links, you need to integrate a payment gateway. 
           This allows your visitors to make payments directly through your link.
         </p>

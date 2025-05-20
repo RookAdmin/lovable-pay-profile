@@ -5,65 +5,65 @@
 
 @layer base {
   :root {
-    --background: 192 59% 94%;        /* ~#D4F1F4 */
-    --foreground: 192 100% 14%;       /* ~#003D40 */
+    --background: 0 0% 100%;        /* White */
+    --foreground: 0 0% 0%;          /* Black */
 
-    --card: 0 0% 100%;
-    --card-foreground: 192 100% 14%;  /* #003D40 */
+    --card: 0 0% 100%;              /* White */
+    --card-foreground: 0 0% 0%;     /* Black */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 192 100% 14%;
+    --popover: 0 0% 100%;           /* White */
+    --popover-foreground: 0 0% 0%;  /* Black */
 
-    --primary: 188 100% 33%;          /* #0097A7 */
-    --primary-foreground: 192 59% 94%; /* #D4F1F4 */
+    --primary: 353 75% 52%;         /* #dc2e3e Red */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 192 100% 21%;        /* #005F6A */
-    --secondary-foreground: 192 59% 94%; /* #D4F1F4 */
+    --secondary: 196 100% 42%;      /* #0096d4 Blue */
+    --secondary-foreground: 0 0% 100%; /* White */
 
-    --muted: 192 59% 94%;             /* #D4F1F4 */
-    --muted-foreground: 192 100% 17%; /* #003D40 */
+    --muted: 220 14% 96%;           /* #f3f4f6 Light gray */
+    --muted-foreground: 0 0% 0%;    /* Black */
 
-    --accent: 192 100% 14%;           /* #003D40 */
-    --accent-foreground: 192 59% 94%; /* #D4F1F4 */
+    --accent: 50 100% 50%;          /* #ffd800 Yellow */
+    --accent-foreground: 0 0% 0%;   /* Black */
 
-    --destructive: 358 91% 63%;       /* Red */
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 353 75% 52%;     /* #dc2e3e Red */
+    --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 192 59% 94%;
-    --input: 192 59% 94%;
-    --ring: 188 100% 33%;
+    --border: 220 13% 91%;          /* #e5e7eb Light gray border */
+    --input: 220 13% 91%;
+    --ring: 353 75% 52%;            /* #dc2e3e Red */
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;               /* Reduced radius for cleaner look */
   }
 
   .dark {
-    --background: 192 100% 14%;
-    --foreground: 192 59% 94%;
+    --background: 0 0% 10%;         /* Near black */
+    --foreground: 0 0% 100%;        /* White */
 
-    --card: 192 100% 21%;
-    --card-foreground: 192 59% 94%;
+    --card: 0 0% 15%;               /* Dark gray */
+    --card-foreground: 0 0% 100%;   /* White */
 
-    --popover: 192 100% 21%;
-    --popover-foreground: 192 59% 94%;
+    --popover: 0 0% 15%;            /* Dark gray */
+    --popover-foreground: 0 0% 100%; /* White */
 
-    --primary: 188 100% 33%;
-    --primary-foreground: 192 59% 94%;
+    --primary: 353 75% 52%;         /* #dc2e3e Red */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 192 100% 21%;
-    --secondary-foreground: 192 59% 94%;
+    --secondary: 196 100% 42%;      /* #0096d4 Blue */
+    --secondary-foreground: 0 0% 100%; /* White */
 
-    --muted: 192 100% 21%;
-    --muted-foreground: 192 59% 94%;
+    --muted: 0 0% 20%;              /* Dark muted */
+    --muted-foreground: 0 0% 100%;  /* White */
 
-    --accent: 192 100% 14%;
-    --accent-foreground: 192 59% 94%;
+    --accent: 50 100% 50%;          /* #ffd800 Yellow */
+    --accent-foreground: 0 0% 0%;   /* Black */
 
-    --destructive: 358 91% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 353 75% 52%;     /* #dc2e3e Red */
+    --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 192 100% 21%;
-    --input: 192 100% 21%;
-    --ring: 188 100% 33%;
+    --border: 0 0% 25%;             /* Darker border */
+    --input: 0 0% 25%;
+    --ring: 353 75% 52%;            /* #dc2e3e Red */
   }
 }
 
@@ -82,11 +82,11 @@
 
 @layer components {
   .gradient-text {
-    @apply text-[#333333] font-bold;
+    @apply text-black font-bold;
   }
   
   .glass {
-    @apply bg-white/10 backdrop-blur-md shadow-lg border border-white/20 rounded-2xl;
+    @apply bg-white/10 backdrop-blur-md shadow-lg border border-white/20 rounded-md;
   }
   
   .glass-hover {
@@ -98,15 +98,15 @@
   }
 
   .gradient-heading {
-    @apply text-[#333333] font-bold tracking-tight;
+    @apply text-black font-bold tracking-tight;
   }
 
   .dark-heading {
-    @apply text-[#333333] font-bold tracking-tight;
+    @apply text-black font-bold tracking-tight;
   }
 
   .soft-gradient-heading {
-    @apply text-[#333333] font-bold;
+    @apply text-black font-bold;
   }
 }
 
