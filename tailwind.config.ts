@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -20,12 +19,6 @@ export default {
     },
     extend: {
       colors: {
-        // Rook brand colors
-        rookred: "#dc2e3e",
-        rookblue: "#0096d4",
-        rookgreen: "#00d437",
-        rookyellow: "#ffd800",
-
         // Custom palette
         lightblue: "#D4F1F4",
         cyan: "#0097A7",
@@ -39,8 +32,8 @@ export default {
         foreground: 'hsl(var(--foreground))',
 
         primary: {
-          DEFAULT: "#0096d4", // Using Rook blue as primary
-          foreground: "#ffffff",
+          DEFAULT: "#0097A7",
+          foreground: "#D4F1F4",
         },
         secondary: {
           DEFAULT: "#005F6A",
@@ -59,7 +52,7 @@ export default {
           foreground: "#D4F1F4",
         },
         destructive: {
-          DEFAULT: "#dc2e3e", // Using Rook red as destructive
+          DEFAULT: "#FF585D",
           foreground: "#fff"
         },
         popover: {
