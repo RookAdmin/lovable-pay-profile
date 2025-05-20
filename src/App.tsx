@@ -19,6 +19,9 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Payms from "./pages/Payms";
+import PaymDetail from "./pages/PaymDetail";
+import PaymGateway from "./pages/PaymGateway";
 
 const queryClient = new QueryClient();
   
@@ -35,6 +38,8 @@ const App = () => (
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="payms" element={<Payms />} />
+              <Route path="payms/:id" element={<PaymDetail />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="pricing" element={<Pricing />} />
               <Route path="blog" element={<Blog />} />
@@ -43,6 +48,8 @@ const App = () => (
               <Route path="about" element={<About />} />
               <Route path="contact" element={<Contact />} />
             </Route>
+            
+            <Route path="/payms/:uniqueLink" element={<PaymGateway />} />
             
             <Route path="/" element={<ProfileLayout />}>
               <Route path=":username" element={<Profile />} />

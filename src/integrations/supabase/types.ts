@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      paym_reminders: {
+        Row: {
+          channel: string
+          created_at: string
+          id: string
+          paym_id: string
+          recipient: string
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          channel: string
+          created_at?: string
+          id?: string
+          paym_id: string
+          recipient: string
+          scheduled_at: string
+          sent_at?: string | null
+          status: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          id?: string
+          paym_id?: string
+          recipient?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paym_reminders_paym_id_fkey"
+            columns: ["paym_id"]
+            isOneToOne: false
+            referencedRelation: "payms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_methods: {
         Row: {
           created_at: string
@@ -46,6 +87,68 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "payment_methods_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payms: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          expires_at: string | null
+          id: string
+          invoice_app: string | null
+          invoice_id: string | null
+          is_paid: boolean
+          last_reminder_sent: string | null
+          metadata: Json | null
+          profile_id: string
+          reminder_enabled: boolean
+          title: string
+          unique_link: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          invoice_app?: string | null
+          invoice_id?: string | null
+          is_paid?: boolean
+          last_reminder_sent?: string | null
+          metadata?: Json | null
+          profile_id: string
+          reminder_enabled?: boolean
+          title: string
+          unique_link: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          invoice_app?: string | null
+          invoice_id?: string | null
+          is_paid?: boolean
+          last_reminder_sent?: string | null
+          metadata?: Json | null
+          profile_id?: string
+          reminder_enabled?: boolean
+          title?: string
+          unique_link?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payms_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"

@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
             <div>
               <h3 className="text-sm font-semibold mb-3 text-[#333333]">Product</h3>
               <ul className="space-y-2">
-                <li><Link to="/" className="text-sm text-[#555555] hover:text-[#333333]">Features</Link></li>
+                <li><Link to="/" className="text-sm text-[#555555] hover:text-[#333333]">Support</Link></li>
                 <li><Link to="/pricing" className="text-sm text-[#555555] hover:text-[#333333]">Pricing</Link></li>
                 <li><Link to="/blog" className="text-sm text-[#555555] hover:text-[#333333]">Blog</Link></li>
               </ul>
@@ -35,16 +35,17 @@ const Footer: React.FC = () => {
                   <Link to="/verification" className="text-sm text-[#555555] hover:text-[#333333] mr-1">Verification</Link>
                   <BadgeCheck className="h-4 w-4 text-green-500" />
                 </li>
+                <li><Link to="/brand-kit" className="text-sm text-[#555555] hover:text-[#333333]">Brand Kit</Link></li>
               </ul>
             </div>
 
             <div>
               <h3 className="text-sm font-semibold mb-3 text-[#333333]">Happenings</h3>
               <ul className="space-y-2">
-                <li><Link to="/perspective" className="text-sm text-[#555555] hover:text-[#333333]">Perspectives</Link></li>
-                <li><Link to="/press-release" className="text-sm text-[#555555] hover:text-[#333333]">Press Release</Link></li>
-                <li><Link to="/media-coverage" className="text-sm text-[#555555] hover:text-[#333333]">Media Coverage</Link></li>
-                <li><Link to="/letter-from-the-ceo" className="text-sm text-[#555555] hover:text-[#333333]">Letter from the CEO</Link></li>
+                <li><a href="https://rookhq.com/perspectives" target="_blank" rel="noopener noreferrer" className="text-sm text-[#555555] hover:text-[#333333]">Perspectives</a></li>
+                <li><a href="https://rookhq.com/press-release" target="_blank" rel="noopener noreferrer" className="text-sm text-[#555555] hover:text-[#333333]">Press Release</a></li>
+                <li><a href="https://rookhq.com/media-coverage" target="_blank" rel="noopener noreferrer" className="text-sm text-[#555555] hover:text-[#333333]">Media Coverage</a></li>
+                <li><a href="https://rookhq.com/letter-from-the-ceo" target="_blank" rel="noopener noreferrer" className="text-sm text-[#555555] hover:text-[#333333]">Letter from the CEO</a></li>
               </ul>
             </div>
             

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +24,7 @@ import {
   ExternalLink,
   BadgeCheck,
   Puzzle,
+  FileText,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +44,7 @@ import UpiVerificationField from "@/components/UpiVerificationField";
 import SettingsForm from "@/components/SettingsForm";
 import { VerificationSection } from "@/components/verification/VerificationSection";
 import AppsIntegrationsSection from "@/components/integrations/AppsIntegrationsSection";
+import Payms from "./Payms";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -138,6 +141,21 @@ const Dashboard = () => {
     enabled: !!user?.id,
   });
 
+  const { data: payms } = useQuery({
+    queryKey: ["payms", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("payms")
+        .select("*")
+        .eq("profile_id", user?.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
+
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/${profile?.username}`;
     navigator.clipboard.writeText(shareUrl);
@@ -219,6 +237,7 @@ const Dashboard = () => {
   // Navigation items configuration
   const navigationItems = [
     { icon: LayoutDashboard, label: "Overview", tabId: "overview" },
+    { icon: FileText, label: "Payms", tabId: "payms" },
     { icon: QrCode, label: "Payment Methods", tabId: "payment" },
     { icon: LinkIcon, label: "Smart Links", tabId: "smart-links" },
     {
@@ -228,7 +247,6 @@ const Dashboard = () => {
       link: "/analytics",
     },
     { icon: Puzzle, label: "Apps & Integrations", tabId: "apps-integrations" },
-   
     { icon: BadgeCheck, label: "Verification", tabId: "verification" },
     { icon: Settings, label: "Settings", tabId: "settings" },
   ];
@@ -406,6 +424,34 @@ const Dashboard = () => {
                       </CardContent>
                     </Card>
 
+                    <Card className="border-0 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 shadow-sm">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-red-600 dark:text-red-400 font-medium">
+                              Payms
+                            </p>
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                              {payms?.length || 0}
+                            </h3>
+                          </div>
+                          <div className="p-3 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400">
+                            <FileText size={20} />
+                          </div>
+                        </div>
+                        <div className="mt-4">
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="text-red-600 dark:text-red-400 p-0 h-auto"
+                            onClick={() => handleNavItemClick("payms")}
+                          >
+                            Manage <ArrowRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+
                     <Card className="border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 shadow-sm">
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between">
@@ -429,33 +475,6 @@ const Dashboard = () => {
                             onClick={() => handleNavItemClick("payment")}
                           >
                             Configure <ArrowRight size={16} className="ml-1" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="border-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 shadow-sm">
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
-                              Profile Views
-                            </p>
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
-                              {profile?.views || 0}
-                            </h3>
-                          </div>
-                          <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
-                            <BarChart size={20} />
-                          </div>
-                        </div>
-                        <div className="mt-4">
-                          <Button
-                            variant="link"
-                            size="sm"
-                            className="text-purple-600 dark:text-purple-400 p-0 h-auto"
-                          >
-                            Analytics <ArrowRight size={16} className="ml-1" />
                           </Button>
                         </div>
                       </CardContent>
@@ -604,6 +623,9 @@ const Dashboard = () => {
                   </Card>
                 </div>
               )}
+
+              {/* Payms Tab Content */}
+              {activeTab === "payms" && <Payms />}
 
               {/* Payment Methods Tab Content */}
               {activeTab === "payment" && (
