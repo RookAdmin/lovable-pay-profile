@@ -10,6 +10,7 @@ import ProfileLayout from "./layouts/ProfileLayout";
 import Home from "./pages/Home";
 import { Login, Signup } from "./pages/AuthPages";
 import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Pricing from "./pages/Pricing";
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="analytics" element={<Analytics />} />
               <Route path="pricing" element={<Pricing />} />
               <Route path="blog" element={<Blog />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
