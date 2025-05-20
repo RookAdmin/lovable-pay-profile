@@ -76,7 +76,7 @@ const Dashboard = () => {
         .single();
 
       if (error) throw error;
-      
+
       // Transform the raw profile data to match our Profile interface
       // And set a default value of 0 for views since it might not exist in the database
       const profileData: Profile = {
@@ -93,9 +93,9 @@ const Dashboard = () => {
         createdAt: data.created_at,
         updatedAt: data.updated_at,
         usernameUpdatedAt: data.username_updated_at,
-        views: 0 // Default to 0 since the column might not exist yet
+        views: 0, // Default to 0 since the column might not exist yet
       };
-      
+
       return profileData;
     },
     enabled: !!user?.id,
@@ -221,7 +221,14 @@ const Dashboard = () => {
     { icon: LayoutDashboard, label: "Overview", tabId: "overview" },
     { icon: QrCode, label: "Payment Methods", tabId: "payment" },
     { icon: LinkIcon, label: "Smart Links", tabId: "smart-links" },
+    {
+      icon: BarChart,
+      label: "Analytics",
+      tabId: "analytics",
+      link: "/analytics",
+    },
     { icon: Puzzle, label: "Apps & Integrations", tabId: "apps-integrations" },
+   
     { icon: BadgeCheck, label: "Verification", tabId: "verification" },
     { icon: Settings, label: "Settings", tabId: "settings" },
   ];
@@ -276,23 +283,44 @@ const Dashboard = () => {
               </div>
 
               <nav className="space-y-2">
-                {navigationItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    variant="ghost"
-                    className={`w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-300 rounded-lg py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary ${
-                      activeTab === item.tabId
-                        ? "bg-gray-100 dark:bg-gray-700/50 text-primary dark:text-primary font-medium"
-                        : ""
-                    }`}
-                    size="sm"
-                    onClick={() => handleNavItemClick(item.tabId)}
-                  >
-                    <item.icon size={18} className="mr-3" />
-                    {item.label}
-                    <ChevronRight size={16} className="ml-auto opacity-70" />
-                  </Button>
-                ))}
+                {navigationItems.map((item) =>
+                  item.link ? (
+                    <Link to={item.link} key={item.label}>
+                      <Button
+                        variant="ghost"
+                        className={`w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-300 rounded-lg py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary ${
+                          activeTab === item.tabId
+                            ? "bg-gray-100 dark:bg-gray-700/50 text-primary dark:text-primary font-medium"
+                            : ""
+                        }`}
+                        size="sm"
+                      >
+                        <item.icon size={18} className="mr-3" />
+                        {item.label}
+                        <ChevronRight
+                          size={16}
+                          className="ml-auto opacity-70"
+                        />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button
+                      key={item.label}
+                      variant="ghost"
+                      className={`w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-300 rounded-lg py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary ${
+                        activeTab === item.tabId
+                          ? "bg-gray-100 dark:bg-gray-700/50 text-primary dark:text-primary font-medium"
+                          : ""
+                      }`}
+                      size="sm"
+                      onClick={() => handleNavItemClick(item.tabId)}
+                    >
+                      <item.icon size={18} className="mr-3" />
+                      {item.label}
+                      <ChevronRight size={16} className="ml-auto opacity-70" />
+                    </Button>
+                  )
+                )}
                 <Button
                   variant="ghost"
                   className="w-full justify-start text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300 rounded-lg py-3 px-4"
@@ -313,7 +341,8 @@ const Dashboard = () => {
             <CardHeader className="border-b border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">
-                  {navigationItems.find(item => item.tabId === activeTab)?.label || "Dashboard"}
+                  {navigationItems.find((item) => item.tabId === activeTab)
+                    ?.label || "Dashboard"}
                 </CardTitle>
                 <div className="flex space-x-2">
                   <Button
@@ -343,9 +372,11 @@ const Dashboard = () => {
               {activeTab === "overview" && (
                 <div className="space-y-6">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold">Welcome, {profile?.displayName}!</h2>
+                    <h2 className="text-xl font-semibold">
+                      Welcome, {profile?.displayName}!
+                    </h2>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 shadow-sm mt-5 sm:mt-0 md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0">
                       <CardContent className="p-6">
@@ -397,8 +428,7 @@ const Dashboard = () => {
                             className="text-green-600 dark:text-green-400 p-0 h-auto"
                             onClick={() => handleNavItemClick("payment")}
                           >
-                            Configure{" "}
-                            <ArrowRight size={16} className="ml-1" />
+                            Configure <ArrowRight size={16} className="ml-1" />
                           </Button>
                         </div>
                       </CardContent>
@@ -425,8 +455,7 @@ const Dashboard = () => {
                             size="sm"
                             className="text-purple-600 dark:text-purple-400 p-0 h-auto"
                           >
-                            Analytics{" "}
-                            <ArrowRight size={16} className="ml-1" />
+                            Analytics <ArrowRight size={16} className="ml-1" />
                           </Button>
                         </div>
                       </CardContent>
@@ -506,7 +535,7 @@ const Dashboard = () => {
                                     fill="currentColor"
                                     viewBox="0 0 24 24"
                                   >
-                                    <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
+                                    <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
                                   </svg>
                                 </div>
                                 <a
@@ -590,8 +619,8 @@ const Dashboard = () => {
                         upiId={
                           upiMethod?.details &&
                           typeof upiMethod.details === "object"
-                            ? (upiMethod.details as { upiId?: string })
-                                .upiId || ""
+                            ? (upiMethod.details as { upiId?: string }).upiId ||
+                              ""
                             : ""
                         }
                         onChange={(value) =>
@@ -607,8 +636,7 @@ const Dashboard = () => {
                     upiId={
                       upiMethod?.details &&
                       typeof upiMethod.details === "object"
-                        ? (upiMethod.details as { upiId?: string }).upiId ||
-                          ""
+                        ? (upiMethod.details as { upiId?: string }).upiId || ""
                         : ""
                     }
                     bankDetails={bankDetails}
@@ -713,16 +741,12 @@ const Dashboard = () => {
               {activeTab === "smart-links" && (
                 <SmartLinkSection links={typedSmartLinks} />
               )}
-              
+
               {/* Apps and Integrations Tab Content */}
-              {activeTab === "apps-integrations" && (
-                <AppsIntegrationsSection />
-              )}
+              {activeTab === "apps-integrations" && <AppsIntegrationsSection />}
 
               {/* Verification Tab Content */}
-              {activeTab === "verification" && (
-                <VerificationSection />
-              )}
+              {activeTab === "verification" && <VerificationSection />}
 
               {/* Settings Tab Content */}
               {activeTab === "settings" && (

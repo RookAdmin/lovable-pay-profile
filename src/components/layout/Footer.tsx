@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
           <div className="mb-4 md:mb-0">
             <Logo withTagline />
             <p className="text-sm text-[#555555] mt-2">
-              Privacy-first payment identities for creators
+            Your Payment Receivables Identity
             </p>
           </div>
           
@@ -35,6 +35,16 @@ const Footer: React.FC = () => {
                   <Link to="/verification" className="text-sm text-[#555555] hover:text-[#333333] mr-1">Verification</Link>
                   <BadgeCheck className="h-4 w-4 text-green-500" />
                 </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold mb-3 text-[#333333]">Happenings</h3>
+              <ul className="space-y-2">
+                <li><Link to="/perspective" className="text-sm text-[#555555] hover:text-[#333333]">Perspectives</Link></li>
+                <li><Link to="/press-release" className="text-sm text-[#555555] hover:text-[#333333]">Press Release</Link></li>
+                <li><Link to="/media-coverage" className="text-sm text-[#555555] hover:text-[#333333]">Media Coverage</Link></li>
+                <li><Link to="/letter-from-the-ceo" className="text-sm text-[#555555] hover:text-[#333333]">Letter from the CEO</Link></li>
               </ul>
             </div>
             
