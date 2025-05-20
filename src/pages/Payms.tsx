@@ -133,7 +133,7 @@ Thank you.`;
         </div>
         <Button 
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-dc2e3e hover:bg-dc2e3e/90"
+          className="bg-dc2e3e hover:bg-dc2e3e/90 text-black"
         >
           <Plus className="mr-2 h-4 w-4" /> Create New Paym
         </Button>
