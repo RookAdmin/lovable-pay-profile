@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, Clock, Send, Shield, Globe, Lock } from 'lucide-react';
+import { Check, Clock, Send, Shield, Globe, Lock, Calendar, Bell } from 'lucide-react';
 
 const PaymsSection = () => {
   return (
@@ -79,6 +79,14 @@ const PaymsSection = () => {
                     <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                     <span>Automated payment reminders via email and WhatsApp</span>
                   </li>
+                  <li className="flex items-start">
+                    <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
+                    <span><strong>Privacy-focused:</strong> Only accessible to those with the link</span>
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
+                    <span><strong>Invoice-specific:</strong> Dedicated links for each transaction</span>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -118,6 +126,26 @@ const PaymsSection = () => {
                     <div>
                       <h4 className="font-medium">Invoice Integration</h4>
                       <p className="text-sm text-gray-500">Connect with Zoho, FreshBooks, and more</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center mr-4">
+                      <Calendar className="h-5 w-5 text-dc2e3e" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Time-bound Security</h4>
+                      <p className="text-sm text-gray-500">Links that expire when you want them to</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center mr-4">
+                      <Bell className="h-5 w-5 text-dc2e3e" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Payment Notifications</h4>
+                      <p className="text-sm text-gray-500">Instant alerts when clients pay</p>
                     </div>
                   </div>
                   

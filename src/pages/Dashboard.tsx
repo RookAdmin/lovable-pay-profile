@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,10 +39,12 @@ import {
   UpiDetails,
   safelyConvertToUpiDetails,
 } from "@/types/payment";
+import { Transaction } from "@/types/transaction";
 import UpiVerificationField from "@/components/UpiVerificationField";
 import SettingsForm from "@/components/SettingsForm";
 import { VerificationSection } from "@/components/verification/VerificationSection";
 import AppsIntegrationsSection from "@/components/integrations/AppsIntegrationsSection";
+import TransactionsSection from "@/components/TransactionsSection";
 import Payms from "./Payms";
 
 const Dashboard = () => {
@@ -156,6 +157,21 @@ const Dashboard = () => {
     enabled: !!user?.id,
   });
 
+  const { data: transactions } = useQuery({
+    queryKey: ["transactions", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("profile_id", user?.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
+
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/${profile?.username}`;
     navigator.clipboard.writeText(shareUrl);
@@ -240,6 +256,7 @@ const Dashboard = () => {
     { icon: FileText, label: "Payms", tabId: "payms" },
     { icon: QrCode, label: "Payment Methods", tabId: "payment" },
     { icon: LinkIcon, label: "Smart Links", tabId: "smart-links" },
+    { icon: BarChart, label: "Transactions", tabId: "transactions" },
     {
       icon: BarChart,
       label: "Analytics",
@@ -250,6 +267,14 @@ const Dashboard = () => {
     { icon: BadgeCheck, label: "Verification", tabId: "verification" },
     { icon: Settings, label: "Settings", tabId: "settings" },
   ];
+
+  useEffect(() => {
+    window.goToAppsIntegrations = () => handleNavItemClick("apps-integrations");
+    
+    return () => {
+      delete window.goToAppsIntegrations;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
@@ -766,6 +791,11 @@ const Dashboard = () => {
 
               {/* Apps and Integrations Tab Content */}
               {activeTab === "apps-integrations" && <AppsIntegrationsSection />}
+
+              {/* Transactions Tab Content */}
+              {activeTab === "transactions" && (
+                <TransactionsSection />
+              )}
 
               {/* Verification Tab Content */}
               {activeTab === "verification" && <VerificationSection />}
