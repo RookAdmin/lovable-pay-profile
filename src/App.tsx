@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import MainLayout from "./layouts/MainLayout";
 import ProfileLayout from "./layouts/ProfileLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import { Login, Signup } from "./pages/AuthPages";
 import Dashboard from "./pages/Dashboard";
@@ -22,6 +23,7 @@ import Contact from "./pages/Contact";
 import Payms from "./pages/Payms";
 import PaymDetail from "./pages/PaymDetail";
 import PaymGateway from "./pages/PaymGateway";
+import BrandKit from "./pages/BrandKit"; // Add Brand Kit import
 
 const queryClient = new QueryClient();
   
@@ -37,16 +39,37 @@ const App = () => (
               <Route index element={<Home />} />
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="payms" element={<Payms />} />
-              <Route path="payms/:id" element={<PaymDetail />} />
-              <Route path="analytics" element={<Analytics />} />
+              
+              {/* Protected routes */}
+              <Route path="dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="payms" element={
+                <ProtectedRoute>
+                  <Payms />
+                </ProtectedRoute>
+              } />
+              <Route path="payms/:id" element={
+                <ProtectedRoute>
+                  <PaymDetail />
+                </ProtectedRoute>
+              } />
+              <Route path="analytics" element={
+                <ProtectedRoute>
+                  <Analytics />
+                </ProtectedRoute>
+              } />
+              
+              {/* Public routes */}
               <Route path="pricing" element={<Pricing />} />
               <Route path="blog" element={<Blog />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="terms-of-service" element={<TermsOfService />} />
               <Route path="about" element={<About />} />
               <Route path="contact" element={<Contact />} />
+              <Route path="brand-kit" element={<BrandKit />} /> {/* Add Brand Kit route */}
             </Route>
             
             <Route path="/payms/:uniqueLink" element={<PaymGateway />} />
