@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { ArrowLeft, Copy, ExternalLink, Clock, Calendar, BarChart3, Send, AlertTriangle, Check, X, Trash2, Share2, QrCode } from "lucide-react";
 import { Paym, PaymReminder } from "@/types/payms";
-import QRCode from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 import {
   Dialog,
   DialogContent,
@@ -643,7 +642,7 @@ Thank you.`;
           
           <div className="flex flex-col items-center space-y-4">
             <div className="p-4 bg-white rounded-lg">
-              <QRCode value={paymentLink} size={200} />
+              <QRCodeSVG value={paymentLink} size={200} />
             </div>
             
             <p className="text-sm text-center break-all">{paymentLink}</p>

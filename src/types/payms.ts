@@ -21,7 +21,7 @@ export interface Paym {
   createdAt: Date;
   updatedAt: Date;
   isPaid: boolean;
-  invoiceApp?: 'zoho' | 'freshbooks' | 'xero' | 'quickbooks';
+  invoiceApp?: 'zoho' | 'freshbooks' | 'xero' | 'quickbooks' | string;
   invoiceId?: string;
   reminderEnabled: boolean;
   lastReminderSent?: Date;
@@ -33,7 +33,7 @@ export interface PaymFormData {
   amount: number;
   currency: string;
   expiresAt?: Date;
-  invoiceApp?: 'zoho' | 'freshbooks' | 'xero' | 'quickbooks';
+  invoiceApp?: 'zoho' | 'freshbooks' | 'xero' | 'quickbooks' | string;
   invoiceId?: string;
   reminderEnabled: boolean;
   recipientEmail?: string;

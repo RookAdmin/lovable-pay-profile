@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,11 +42,11 @@ const PaymGateway = () => {
           createdAt: new Date(paymData.created_at),
           updatedAt: new Date(paymData.updated_at),
           isPaid: paymData.is_paid,
-          invoiceApp: paymData.invoice_app,
+          invoiceApp: paymData.invoice_app as Paym['invoiceApp'],
           invoiceId: paymData.invoice_id,
           reminderEnabled: paymData.reminder_enabled,
           lastReminderSent: paymData.last_reminder_sent ? new Date(paymData.last_reminder_sent) : undefined,
-          metadata: paymData.metadata
+          metadata: paymData.metadata ? paymData.metadata as Record<string, any> : undefined
         };
         
         setPaym(paymObj);
