@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -10,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Heart, Coffee, CreditCard, Zap, Image, X } from 'lucide-react';
+import { Heart, Coffee, CreditCard, Zap, Image as ImageIcon, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -76,8 +75,8 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
         return;
       }
       
-      // Check dimensions
-      const img = new Image();
+      // Check dimensions - Fix: Create the Image object correctly
+      const img = new window.Image();
       img.onload = () => {
         URL.revokeObjectURL(img.src);
         if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
@@ -387,7 +386,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
                               </div>
                             ) : (
                               <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300">
-                                <Image size={32} className="text-gray-400" />
+                                <ImageIcon size={32} className="text-gray-400" />
                               </div>
                             )}
                             <div className="text-center">
