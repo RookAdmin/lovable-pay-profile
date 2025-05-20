@@ -2,9 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AnalyticsDashboard from "../components/analytics/AnalyticsDashboard";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChartPie, BarChart3, LineChart } from "lucide-react";
+import { 
+  ChartPie, 
+  BarChart3, 
+  LineChart,
+  CreditCard
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -25,7 +30,7 @@ const Analytics = () => {
   if (!user) return null;
   
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Analytics</h1>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
@@ -34,13 +39,13 @@ const Analytics = () => {
               <ChartPie size={16} />
               <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
-            <TabsTrigger value="payments" className="flex items-center gap-2">
+            <TabsTrigger value="payms" className="flex items-center gap-2">
               <BarChart3 size={16} />
-              <span className="hidden sm:inline">Payments</span>
+              <span className="hidden sm:inline">Payms</span>
             </TabsTrigger>
-            <TabsTrigger value="links" className="flex items-center gap-2">
-              <LineChart size={16} />
-              <span className="hidden sm:inline">Smart Links</span>
+            <TabsTrigger value="payments" className="flex items-center gap-2">
+              <CreditCard size={16} />
+              <span className="hidden sm:inline">Payments</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -50,19 +55,25 @@ const Analytics = () => {
         <AnalyticsDashboard />
       </TabsContent>
       
-      <TabsContent value="payments" className="mt-0">
-        <Card>
+      <TabsContent value="payms" className="mt-0">
+        <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-xl">Payment Analytics</CardTitle>
+            <CardTitle className="text-xl">Payms Performance</CardTitle>
           </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">View analytics for your payment links, including views, clicks, and conversion rates.</p>
+          </CardContent>
         </Card>
       </TabsContent>
       
-      <TabsContent value="links" className="mt-0">
-        <Card>
+      <TabsContent value="payments" className="mt-0">
+        <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-xl">Smart Link Analytics</CardTitle>
+            <CardTitle className="text-xl">Payment Analytics</CardTitle>
           </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">Track your revenue, payment methods, and transaction history.</p>
+          </CardContent>
         </Card>
       </TabsContent>
     </div>

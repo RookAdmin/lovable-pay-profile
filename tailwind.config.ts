@@ -64,7 +64,7 @@ export default {
         },
       },
       backgroundImage: {
-        'gradient-app': 'linear-gradient(135deg, #f5f5f5 0%, #f9f9f9 100%)',
+        'gradient-app': 'linear-gradient(135deg, #f9fafb 0%, #ffffff 100%)',
         'gradient-card': 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
         'card-soft': 'linear-gradient(135deg, #f5f5f5 0%, #ebebeb 100%)',
       },
