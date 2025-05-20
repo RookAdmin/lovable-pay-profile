@@ -3,15 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, Clock, Send, Shield, Globe, Lock, FileText, BellDot } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Check, Clock, Send, Shield, Globe, Lock } from 'lucide-react';
 
 const PaymsSection = () => {
   return (
@@ -138,77 +130,7 @@ const PaymsSection = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto mt-16">
-          <h3 className="text-2xl font-bold text-center mb-8">How Payms Works</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
-                <FileText className="h-6 w-6 text-blue-600" />
-              </div>
-              <h4 className="font-semibold mb-2">1. Create an Invoice</h4>
-              <p className="text-gray-600 text-sm">Generate an invoice in your favorite app like Zoho Books or FreshBooks</p>
-            </div>
-            
-            <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
-                <Lock className="h-6 w-6 text-dc2e3e" />
-              </div>
-              <h4 className="font-semibold mb-2">2. Generate Paym Link</h4>
-              <p className="text-gray-600 text-sm">Create a private payment link with optional expiry and reminders</p>
-            </div>
-            
-            <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
-                <BellDot className="h-6 w-6 text-green-600" />
-              </div>
-              <h4 className="font-semibold mb-2">3. Share & Get Paid</h4>
-              <p className="text-gray-600 text-sm">Share the link with your client and receive automatic payment notifications</p>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-lg p-6 overflow-hidden border border-gray-200">
-            <h4 className="text-xl font-semibold mb-4">Security & Privacy Features</h4>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[250px]">Feature</TableHead>
-                  <TableHead>Smart Links</TableHead>
-                  <TableHead>Payms</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">Search Engine Visibility</TableCell>
-                  <TableCell>Public & Indexed</TableCell>
-                  <TableCell>Private & Unindexed</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Time-based Expiry</TableCell>
-                  <TableCell>No</TableCell>
-                  <TableCell>Yes (Configurable)</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Automated Payment Reminders</TableCell>
-                  <TableCell>No</TableCell>
-                  <TableCell>Yes (Email & WhatsApp)</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Invoice Integration</TableCell>
-                  <TableCell>No</TableCell>
-                  <TableCell>Yes (Multiple Apps)</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Payment Status Tracking</TableCell>
-                  <TableCell>Basic</TableCell>
-                  <TableCell>Advanced</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-
-        <div className="text-center mt-12">
+        <div className="text-center">
           <Button className="bg-dc2e3e hover:bg-dc2e3e/90" size="lg" asChild>
             <Link to="/signup">Get Started with Payms</Link>
           </Button>

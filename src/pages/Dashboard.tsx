@@ -25,7 +25,6 @@ import {
   BadgeCheck,
   Puzzle,
   FileText,
-  CreditCard,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -40,14 +39,12 @@ import {
   CardDetails,
   UpiDetails,
   safelyConvertToUpiDetails,
-  Transaction, // Added import for Transaction
 } from "@/types/payment";
 import UpiVerificationField from "@/components/UpiVerificationField";
 import SettingsForm from "@/components/SettingsForm";
 import { VerificationSection } from "@/components/verification/VerificationSection";
 import AppsIntegrationsSection from "@/components/integrations/AppsIntegrationsSection";
 import Payms from "./Payms";
-import TransactionsSection from "@/components/TransactionsSection";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -60,8 +57,6 @@ const Dashboard = () => {
     }
     return "overview";
   });
-  const [hasPaymentGateway, setHasPaymentGateway] = useState<boolean>(false);
-  const [transactions, setTransactions] = useState<Transaction[] | null>(null);
 
   // Clear location state after using it
   useEffect(() => {
@@ -245,7 +240,6 @@ const Dashboard = () => {
     { icon: FileText, label: "Payms", tabId: "payms" },
     { icon: QrCode, label: "Payment Methods", tabId: "payment" },
     { icon: LinkIcon, label: "Smart Links", tabId: "smart-links" },
-    { icon: CreditCard, label: "Transactions", tabId: "transactions" },
     {
       icon: BarChart,
       label: "Analytics",
@@ -256,56 +250,6 @@ const Dashboard = () => {
     { icon: BadgeCheck, label: "Verification", tabId: "verification" },
     { icon: Settings, label: "Settings", tabId: "settings" },
   ];
-
-  useEffect(() => {
-    // For demo purposes, we'll just check for the existence of a "payment_integrations" table
-    // In a real application, you would query the database
-    const checkPaymentGateways = async () => {
-      try {
-        // This is a placeholder - in a real app, you'd check for actual integrations
-        const { data } = await supabase
-          .from("payment_methods")
-          .select("id")
-          .limit(1);
-          
-        // For demonstration purposes, let's say that having payment methods means having a gateway
-        // In reality, you'd check for specific gateway integrations
-        setHasPaymentGateway(!!data && data.length > 0);
-        
-        if (data && data.length > 0) {
-          // Fetch sample transactions for demo purposes
-          // In a real app, you'd fetch from a transactions table
-          const mockTransactions = [
-            {
-              id: "txn_1K2OnjXYZ123456",
-              amount: 2500,
-              currency: "USD",
-              status: "completed",
-              gateway: "stripe",
-              createdAt: new Date(Date.now() - 86400000).toISOString(),
-              receiptUrl: "https://dashboard.stripe.com/receipts/...",
-            },
-            {
-              id: "txn_1K2OmkXYZ789012",
-              amount: 5000,
-              currency: "USD",
-              status: "pending",
-              gateway: "paypal",
-              createdAt: new Date(Date.now() - 172800000).toISOString(),
-            },
-          ];
-          setTransactions(mockTransactions);
-        }
-      } catch (error) {
-        console.error("Error checking payment gateways:", error);
-        setHasPaymentGateway(false);
-      }
-    };
-
-    if (user?.id) {
-      checkPaymentGateways();
-    }
-  }, [user?.id]);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
@@ -677,13 +621,6 @@ const Dashboard = () => {
                       </div>
                     </CardContent>
                   </Card>
-
-                  {/* Add the TransactionsSection below the existing cards */}
-                  <TransactionsSection 
-                    transactions={transactions} 
-                    isLoading={false} 
-                    hasPaymentGateway={hasPaymentGateway} 
-                  />
                 </div>
               )}
 

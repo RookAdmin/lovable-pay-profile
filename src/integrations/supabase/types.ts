@@ -251,36 +251,6 @@ export type Database = {
           },
         ]
       }
-      user_preferences: {
-        Row: {
-          created_at: string
-          id: string
-          notification_preferences: Json | null
-          tfa_enabled: boolean
-          time_zone: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          notification_preferences?: Json | null
-          tfa_enabled?: boolean
-          time_zone?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          notification_preferences?: Json | null
-          tfa_enabled?: boolean
-          time_zone?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       visits: {
         Row: {
           created_at: string
