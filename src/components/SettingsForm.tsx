@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   Calendar, 
@@ -15,7 +14,6 @@ import {
   Mail, 
   Bell, 
   Globe, 
-  Clock, 
   Shield 
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +21,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NotificationPreferences, UserPreferences } from "@/types/userPreferences";
 
 interface SettingsFormProps {
   initialData: any;
@@ -41,7 +40,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData, refetchProfile
   });
   
   const [tfaEnabled, setTfaEnabled] = useState(false);
-  const [notificationPreferences, setNotificationPreferences] = useState({
+  const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>({
     emailNotifications: true,
     pushNotifications: true,
     smsNotifications: false,
@@ -88,24 +87,26 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData, refetchProfile
       if (!user?.id) return;
       
       try {
+        // Use a type assertion to tell TypeScript this is a valid table
         const { data, error } = await supabase
           .from('user_preferences')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
           
         if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
           throw error;
         }
         
         if (data) {
-          setTimeZone(data.time_zone || "UTC");
-          setTfaEnabled(data.tfa_enabled || false);
+          const preferences = data as unknown as UserPreferences;
+          setTimeZone(preferences.time_zone || "UTC");
+          setTfaEnabled(preferences.tfa_enabled || false);
           
-          if (data.notification_preferences) {
+          if (preferences.notification_preferences) {
             setNotificationPreferences({
               ...notificationPreferences,
-              ...data.notification_preferences
+              ...preferences.notification_preferences
             });
           }
         }
@@ -227,14 +228,14 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData, refetchProfile
       const newTfaState = !tfaEnabled;
       setTfaEnabled(newTfaState);
       
-      // Save preference to database
+      // Save preference to database using type assertion
       const { error } = await supabase
         .from('user_preferences')
         .upsert({ 
           user_id: user?.id,
           tfa_enabled: newTfaState,
           updated_at: new Date().toISOString()
-        }, {
+        } as any, {
           onConflict: 'user_id'
         });
         
@@ -254,23 +255,23 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData, refetchProfile
     }
   };
   
-  const handleNotificationToggle = async (key: string) => {
+  const handleNotificationToggle = async (key: keyof NotificationPreferences) => {
     try {
       const updatedPreferences = { 
         ...notificationPreferences, 
-        [key]: !notificationPreferences[key as keyof typeof notificationPreferences]
+        [key]: !notificationPreferences[key]
       };
       
       setNotificationPreferences(updatedPreferences);
       
-      // Save to database
+      // Save to database using type assertion
       const { error } = await supabase
         .from('user_preferences')
         .upsert({ 
           user_id: user?.id,
           notification_preferences: updatedPreferences,
           updated_at: new Date().toISOString()
-        }, {
+        } as any, {
           onConflict: 'user_id'
         });
         
@@ -288,14 +289,14 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData, refetchProfile
     try {
       setTimeZone(value);
       
-      // Save to database
+      // Save to database using type assertion
       const { error } = await supabase
         .from('user_preferences')
         .upsert({ 
           user_id: user?.id,
           time_zone: value,
           updated_at: new Date().toISOString()
-        }, {
+        } as any, {
           onConflict: 'user_id'
         });
         
