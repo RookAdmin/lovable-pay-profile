@@ -5,65 +5,65 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;        /* Light gray background */
-    --foreground: 222 47% 12%;     /* Dark text color */
+    --background: 192 59% 94%;        /* ~#D4F1F4 */
+    --foreground: 192 100% 14%;       /* ~#003D40 */
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 12%;
+    --card-foreground: 192 100% 14%;  /* #003D40 */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 12%;
+    --popover-foreground: 192 100% 14%;
 
-    --primary: 352 69% 52%;        /* Rook Red */
-    --primary-foreground: 0 0% 100%;
+    --primary: 188 100% 33%;          /* #0097A7 */
+    --primary-foreground: 192 59% 94%; /* #D4F1F4 */
 
-    --secondary: 197 100% 42%;     /* Rook Blue */
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 192 100% 21%;        /* #005F6A */
+    --secondary-foreground: 192 59% 94%; /* #D4F1F4 */
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 192 59% 94%;             /* #D4F1F4 */
+    --muted-foreground: 192 100% 17%; /* #003D40 */
 
-    --accent: 197 100% 42%;        /* Rook Blue as accent */
-    --accent-foreground: 0 0% 100%;
+    --accent: 192 100% 14%;           /* #003D40 */
+    --accent-foreground: 192 59% 94%; /* #D4F1F4 */
 
-    --destructive: 0 84% 60%;      /* Red for errors */
+    --destructive: 358 91% 63%;       /* Red */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 352 69% 52%;           /* Rook Red for focus rings */
+    --border: 192 59% 94%;
+    --input: 192 59% 94%;
+    --ring: 188 100% 33%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    --background: 192 100% 14%;
+    --foreground: 192 59% 94%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 192 100% 21%;
+    --card-foreground: 192 59% 94%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 192 100% 21%;
+    --popover-foreground: 192 59% 94%;
 
-    --primary: 352 69% 52%;        /* Rook Red */
-    --primary-foreground: 0 0% 100%;
+    --primary: 188 100% 33%;
+    --primary-foreground: 192 59% 94%;
 
-    --secondary: 197 100% 42%;     /* Rook Blue */
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 192 100% 21%;
+    --secondary-foreground: 192 59% 94%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 192 100% 21%;
+    --muted-foreground: 192 59% 94%;
 
-    --accent: 197 100% 42%;        /* Rook Blue as accent */
-    --accent-foreground: 0 0% 100%;
+    --accent: 192 100% 14%;
+    --accent-foreground: 192 59% 94%;
 
-    --destructive: 0 84% 60%;      /* Red for errors */
+    --destructive: 358 91% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 352 69% 52%;           /* Rook Red for focus rings */
+    --border: 192 100% 21%;
+    --input: 192 100% 21%;
+    --ring: 188 100% 33%;
   }
 }
 
@@ -71,7 +71,6 @@
   * { @apply border-border; }
   body { 
     @apply bg-background text-foreground min-h-screen w-full; 
-    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
@@ -87,7 +86,7 @@
   }
   
   .glass {
-    @apply bg-white/10 backdrop-blur-md shadow-lg border border-white/20 rounded-xl;
+    @apply bg-white/10 backdrop-blur-md shadow-lg border border-white/20 rounded-2xl;
   }
   
   .glass-hover {
@@ -98,37 +97,16 @@
     @apply bg-gradient-to-br from-white/10 to-white/5;
   }
 
-  .paym-heading {
-    @apply text-gray-900 dark:text-white font-bold tracking-tight;
+  .gradient-heading {
+    @apply text-[#333333] font-bold tracking-tight;
   }
 
-  .enterprise-card {
-    @apply bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-lg hover:shadow-md transition-all duration-300;
-  }
-  
-  .metric-card {
-    @apply p-6 rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800;
+  .dark-heading {
+    @apply text-[#333333] font-bold tracking-tight;
   }
 
-  .analytics-tab {
-    @apply flex items-center gap-2 text-sm font-medium;
-  }
-  
-  /* New utility classes */
-  .dashboard-card {
-    @apply bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-sm p-6;
-  }
-  
-  .dashboard-header {
-    @apply flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6;
-  }
-  
-  .dashboard-title {
-    @apply text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white;
-  }
-  
-  .dashboard-subtitle {
-    @apply text-sm text-gray-500 dark:text-gray-400 mt-1;
+  .soft-gradient-heading {
+    @apply text-[#333333] font-bold;
   }
 }
 
