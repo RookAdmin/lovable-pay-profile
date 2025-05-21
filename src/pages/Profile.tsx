@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProfileData } from '@/hooks/useProfileData';
@@ -12,72 +11,54 @@ const Profile = () => {
   const { data, isLoading, error, refetch } = useProfileData(username);
   
   useEffect(() => {
-    console.log("Profile component mounted, username:", username);
     if (username) {
       refetch();
     }
   }, [username, refetch]);
 
-  useEffect(() => {
-    if (data) {
-      console.log("Profile data loaded successfully", {
-        username: data.profile.username,
-        displayName: data.profile.displayName,
-        hasUpiId: !!data.upiId,
-        hasBankDetails: !!data.bankDetails,
-        hasQrCode: !!data.qrCodeUrl,
-        smartLinksCount: data.smartLinks.length
-      });
-    }
-  }, [data]);
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="relative w-20 h-20">
-          <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-primary animate-spin" />
-          <div className="absolute inset-3 rounded-full border-2 border-t-transparent border-primary/70 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }} />
+          <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-gray-300 animate-spin" />
         </div>
       </div>
     );
   }
 
   if (error || !data) {
-    console.error("Error in Profile component:", error);
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center space-y-4 p-8 rounded-lg bg-white/30 backdrop-blur-sm border border-white/20">
-          <p className="text-2xl font-semibold text-muted-foreground">Profile not found</p>
-          <p className="text-sm text-muted-foreground/80">The requested profile could not be loaded</p>
+        <div className="text-center space-y-4 p-8 rounded-lg bg-white">
+          <p className="text-2xl font-medium text-gray-800">Profile not found</p>
+          <p className="text-sm text-gray-500">The requested profile could not be loaded</p>
         </div>
       </div>
     );
   }
   
-  console.log("Rendering profile data:", {
-    username: data.profile.username,
-    displayName: data.profile.displayName,
-    upiId: data.upiId,
-    hasQrCode: !!data.qrCodeUrl,
-    hasBankDetails: !!data.bankDetails,
-    smartLinksCount: data.smartLinks.length
-  });
-  
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Decorative elements */}
-      <div className="absolute top-40 right-10 w-80 h-80 bg-primary/5 rounded-full filter blur-3xl -z-10" />
-      <div className="absolute bottom-40 left-10 w-80 h-80 bg-cyan/5 rounded-full filter blur-3xl -z-10" />
+    <div className="min-h-screen bg-gray-50">
+      {/* Premium background texture */}
+      <div className="fixed inset-0 bg-[url('https://uploads-ssl.webflow.com/5f5a53e153805db840dae2db/60d1a5a6d1a0b942f9e9f0e0_noise.png')] opacity-10 pointer-events-none"></div>
+      
+      {/* Subtle grid pattern */}
+      <div className="fixed inset-0 bg-grid-gray-100/[0.04] pointer-events-none"></div>
+      
+      {/* Decorative accent elements */}
+      <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-gradient-to-br from-blue-50/50 to-transparent -z-10"></div>
+      <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-gradient-to-tl from-gray-100/50 to-transparent -z-10"></div>
       
       <motion.div 
-        className="container max-w-2xl px-4 py-12 mx-auto space-y-8"
+        className="container max-w-2xl px-4 py-16 mx-auto space-y-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
+        {/* Profile Header */}
         <motion.div 
-          className="glass p-8 rounded-2xl backdrop-blur-lg border border-white/20 shadow-lg"
-          whileHover={{ boxShadow: "0 25px 50px -12px rgba(0, 151, 167, 0.15)" }}
+          className="bg-white p-8 rounded-xl shadow-sm border border-gray-100"
+          whileHover={{ boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05)" }}
           transition={{ duration: 0.3 }}
         >
           <ProfileHeader
@@ -92,6 +73,7 @@ const Profile = () => {
         </motion.div>
         
         <div className="space-y-6">
+          {/* Payment Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -102,10 +84,11 @@ const Profile = () => {
               bankDetails={data.bankDetails}
               qrCodeUrl={data.qrCodeUrl}
               isViewingMode={true}
-              className="glass p-6 rounded-2xl backdrop-blur-lg border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
             />
           </motion.div>
           
+          {/* Smart Links Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -113,11 +96,16 @@ const Profile = () => {
           >
             <SmartLinkSection 
               links={data.smartLinks} 
-              className="glass p-6 rounded-2xl backdrop-blur-lg border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
             />
           </motion.div>
         </div>
       </motion.div>
+      
+      {/* Premium footer note */}
+      <div className="pb-8 text-center">
+        <p className="text-xs text-gray-400 tracking-wider">PREMIUM PROFILE</p>
+      </div>
     </div>
   );
 };

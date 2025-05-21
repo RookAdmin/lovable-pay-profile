@@ -1,14 +1,12 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import Logo from '@/components/Logo';
-import { User } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar: React.FC = () => {
   const { user, signOut } = useAuth();
-  
+
   return (
     <header className="w-full bg-white border-b border-gray-100 shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
@@ -16,21 +14,53 @@ const Navbar: React.FC = () => {
           <Link to="/">
             <Logo withTagline />
           </Link>
-          
-          <nav className="hidden md:flex ml-8 space-x-6">
-            <Link to="/pricing" className="text-black hover:text-secondary transition-colors">Pricing</Link>
-            <Link to="/blog" className="text-black hover:text-secondary transition-colors">Blog</Link>
-            <Link to="/about" className="text-black hover:text-secondary transition-colors">About</Link>
-            <Link to="/contact" className="text-black hover:text-secondary transition-colors">Contact</Link>
-          </nav>
         </div>
-        
+
+        <nav className="hidden md:flex items-center space-x-6">
+          <Link
+            to="/features"
+            className="text-black hover:text-secondary transition-colors"
+          >
+            Features
+          </Link>
+          <Link
+            to="/solutions"
+            className="text-black hover:text-secondary transition-colors"
+          >
+            Solutions
+          </Link>
+          <Link
+            to="/resources"
+            className="text-black hover:text-secondary transition-colors"
+          >
+            Free Resources
+          </Link>
+          <Link
+            to="/trends"
+            className="text-black hover:text-secondary transition-colors"
+          >
+            Latest Trends
+          </Link>
+          <Link
+            to="/pricing"
+            className="text-black hover:text-secondary transition-colors"
+          >
+            Pricing
+          </Link>
+          <Link
+            to="/blog"
+            className="text-black hover:text-secondary transition-colors"
+          >
+            Blog
+          </Link>
+        </nav>
+
         <div className="flex items-center space-x-2">
           {user ? (
             <>
               <Link to="/dashboard">
-                <Button variant="ghost" size="icon" className="text-secondary">
-                  <User size={20} />
+                <Button variant="outline" size="sm">
+                  Dashboard
                 </Button>
               </Link>
               <Button variant="outline" size="sm" onClick={() => signOut()}>
@@ -39,11 +69,27 @@ const Navbar: React.FC = () => {
             </>
           ) : (
             <>
+              <Link to="/demo">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-blue-500 font-medium"
+                >
+                  ▶ DEMO
+                </Button>
+              </Link>
               <Link to="/login">
-                <Button variant="ghost" size="sm">Log in</Button>
+                <Button variant="outline" size="sm" className="font-medium">
+                  LOGIN
+                </Button>
               </Link>
               <Link to="/signup">
-                <Button size="sm">Sign up</Button>
+                <Button
+                  size="sm"
+                  className="bg-black text-white hover:bg-gray-800 font-medium"
+                >
+                  CREATE FREE ACCOUNT
+                </Button>
               </Link>
             </>
           )}

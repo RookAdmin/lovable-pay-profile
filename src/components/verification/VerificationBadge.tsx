@@ -49,7 +49,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
         alt="Verified"
         className="h-3 w-3"
       />
-      {category ? `Verified ${categoryLabel[category]}` : "Verified"}
+      {category ? `Verified ${categoryLabel[category]}` : ""}
     </Badge>
   );
 

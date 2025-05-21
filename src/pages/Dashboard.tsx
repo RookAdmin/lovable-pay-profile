@@ -76,7 +76,7 @@ const Dashboard = () => {
   // Setup the goToAppsIntegrations window function - fixed to use React.useEffect
   useEffect(() => {
     window.goToAppsIntegrations = () => handleNavItemClick("apps-integrations");
-    
+
     return () => {
       delete window.goToAppsIntegrations;
     };
@@ -272,7 +272,7 @@ const Dashboard = () => {
     { icon: FileText, label: "Payms", tabId: "payms" },
     { icon: QrCode, label: "Payment Methods", tabId: "payment" },
     { icon: LinkIcon, label: "Smart Links", tabId: "smart-links" },
-    { icon: BarChart, label: "Transactions", tabId: "transactions" },
+    { icon: Wallet, label: "Transactions", tabId: "transactions" },
     {
       icon: BarChart,
       label: "Analytics",
@@ -801,9 +801,7 @@ const Dashboard = () => {
               {activeTab === "apps-integrations" && <AppsIntegrationsSection />}
 
               {/* Transactions Tab Content */}
-              {activeTab === "transactions" && (
-                <TransactionsSection />
-              )}
+              {activeTab === "transactions" && <TransactionsSection />}
 
               {/* Verification Tab Content */}
               {activeTab === "verification" && <VerificationSection />}
