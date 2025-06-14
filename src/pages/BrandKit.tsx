@@ -44,18 +44,18 @@ const BrandKit = () => {
               <div className="flex flex-col items-center p-6 border rounded-lg">
                 <div className="w-48 h-48 bg-white flex items-center justify-center mb-4 rounded-lg">
                   <img 
-                    src="/placeholder.svg" 
-                    alt="Paym.me Logo (Light)" 
-                    className="w-36 h-36 object-contain"
+                    src="/lovable-uploads/48be0c8b-7024-4561-8197-b8fb18c8c01a.png" 
+                    alt="Paym.me Logo (Full)" 
+                    className="w-36 h-auto object-contain"
                   />
                 </div>
-                <h3 className="text-lg font-medium mb-2">Paym.me Logo (Light)</h3>
+                <h3 className="text-lg font-medium mb-2">Paym.me Logo (Full)</h3>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <Button 
                     size="sm" 
                     variant="outline" 
                     className="flex gap-2"
-                    onClick={() => handleDownload('Light Logo PNG')}
+                    onClick={() => handleDownload('Full Logo PNG')}
                   >
                     <Download size={16} />
                     PNG
@@ -64,7 +64,7 @@ const BrandKit = () => {
                     size="sm" 
                     variant="outline" 
                     className="flex gap-2"
-                    onClick={() => handleDownload('Light Logo SVG')}
+                    onClick={() => handleDownload('Full Logo SVG')}
                   >
                     <Download size={16} />
                     SVG
@@ -75,9 +75,9 @@ const BrandKit = () => {
               <div className="flex flex-col items-center p-6 border rounded-lg bg-gray-900">
                 <div className="w-48 h-48 bg-gray-900 flex items-center justify-center mb-4 rounded-lg">
                   <img 
-                    src="/placeholder.svg" 
-                    alt="Paym.me Logo (Dark)" 
-                    className="w-36 h-36 object-contain invert"
+                    src="/lovable-uploads/33485f10-10af-4c18-9961-ca57444f650c.png" 
+                    alt="Paym.me Logo (Dark Background)" 
+                    className="w-36 h-auto object-contain"
                   />
                 </div>
                 <h3 className="text-lg font-medium mb-2 text-white">Paym.me Logo (Dark)</h3>
@@ -106,7 +106,7 @@ const BrandKit = () => {
               <div className="flex flex-col items-center p-6 border rounded-lg">
                 <div className="w-48 h-48 bg-white flex items-center justify-center mb-4 rounded-lg">
                   <img 
-                    src="/placeholder.svg" 
+                    src="/lovable-uploads/33906b8c-f93b-4eff-b1f9-e4a0ca5aaef8.png" 
                     alt="Paym.me Icon Only" 
                     className="w-24 h-24 object-contain"
                   />
@@ -137,18 +137,18 @@ const BrandKit = () => {
               <div className="flex flex-col items-center p-6 border rounded-lg">
                 <div className="w-48 h-48 bg-white flex items-center justify-center mb-4 rounded-lg">
                   <img 
-                    src="/placeholder.svg" 
-                    alt="Paym.me Badge" 
+                    src="/lovable-uploads/8e336c94-f519-42df-aa12-2c1a838a3224.png" 
+                    alt="Paym.me Compact Icon" 
                     className="w-24 h-24 object-contain"
                   />
                 </div>
-                <h3 className="text-lg font-medium mb-2">Paym.me Badge</h3>
+                <h3 className="text-lg font-medium mb-2">Paym.me Compact Icon</h3>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <Button 
                     size="sm" 
                     variant="outline" 
                     className="flex gap-2"
-                    onClick={() => handleDownload('Badge PNG')}
+                    onClick={() => handleDownload('Compact Icon PNG')}
                   >
                     <Download size={16} />
                     PNG
@@ -157,7 +157,7 @@ const BrandKit = () => {
                     size="sm" 
                     variant="outline" 
                     className="flex gap-2"
-                    onClick={() => handleDownload('Badge SVG')}
+                    onClick={() => handleDownload('Compact Icon SVG')}
                   >
                     <Download size={16} />
                     SVG
@@ -179,7 +179,7 @@ const BrandKit = () => {
                 <div className="flex flex-col">
                   <div className="aspect-video bg-gray-100 rounded flex items-center justify-center mb-3">
                     <img 
-                      src="/placeholder.svg" 
+                      src="/lovable-uploads/48be0c8b-7024-4561-8197-b8fb18c8c01a.png" 
                       alt="Logo on website" 
                       className="h-12 object-contain"
                     />
@@ -189,7 +189,7 @@ const BrandKit = () => {
                 <div className="flex flex-col">
                   <div className="aspect-video bg-gray-100 rounded flex items-center justify-center mb-3">
                     <img 
-                      src="/placeholder.svg" 
+                      src="/lovable-uploads/33906b8c-f93b-4eff-b1f9-e4a0ca5aaef8.png" 
                       alt="Logo on social media" 
                       className="h-12 object-contain"
                     />
@@ -199,7 +199,7 @@ const BrandKit = () => {
                 <div className="flex flex-col">
                   <div className="aspect-video bg-gray-100 rounded flex items-center justify-center mb-3">
                     <img 
-                      src="/placeholder.svg" 
+                      src="/lovable-uploads/8e336c94-f519-42df-aa12-2c1a838a3224.png" 
                       alt="Logo on print material" 
                       className="h-12 object-contain"
                     />
@@ -221,11 +221,11 @@ const BrandKit = () => {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-4">
-                <div className="h-24 bg-[#dc2e3e] rounded-lg"></div>
+                <div className="h-24 bg-[#1e9bd8] rounded-lg"></div>
                 <div>
-                  <h3 className="font-medium">Primary Red</h3>
-                  <p className="text-sm text-gray-600">HEX: #dc2e3e</p>
-                  <p className="text-sm text-gray-600">RGB: 220, 46, 62</p>
+                  <h3 className="font-medium">Primary Blue</h3>
+                  <p className="text-sm text-gray-600">HEX: #1e9bd8</p>
+                  <p className="text-sm text-gray-600">RGB: 30, 155, 216</p>
                 </div>
               </div>
               
@@ -265,7 +265,7 @@ const BrandKit = () => {
                   <div className="border rounded p-4">
                     <div className="aspect-square bg-white flex items-center justify-center mb-2 border-b pb-2">
                       <img 
-                        src="/placeholder.svg" 
+                        src="/lovable-uploads/33906b8c-f93b-4eff-b1f9-e4a0ca5aaef8.png" 
                         alt="Do: Clear space" 
                         className="h-16 object-contain"
                       />
@@ -278,7 +278,7 @@ const BrandKit = () => {
                     <div className="aspect-square bg-white flex items-center justify-center mb-2 border-b pb-2">
                       <div className="relative">
                         <img 
-                          src="/placeholder.svg" 
+                          src="/lovable-uploads/33906b8c-f93b-4eff-b1f9-e4a0ca5aaef8.png" 
                           alt="Don't: Crowd logo" 
                           className="h-16 object-contain"
                         />
@@ -294,7 +294,7 @@ const BrandKit = () => {
                   <div className="border rounded p-4">
                     <div className="aspect-square bg-white flex items-center justify-center mb-2 border-b pb-2">
                       <img 
-                        src="/placeholder.svg" 
+                        src="/lovable-uploads/33906b8c-f93b-4eff-b1f9-e4a0ca5aaef8.png" 
                         alt="Do: Original proportions" 
                         className="h-16 object-contain"
                       />
@@ -307,7 +307,7 @@ const BrandKit = () => {
                     <div className="aspect-square bg-white flex items-center justify-center mb-2 border-b pb-2">
                       <div className="relative">
                         <img 
-                          src="/placeholder.svg" 
+                          src="/lovable-uploads/33906b8c-f93b-4eff-b1f9-e4a0ca5aaef8.png" 
                           alt="Don't: Stretch" 
                           className="h-16 w-24 object-fill"
                         />

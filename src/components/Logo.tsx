@@ -17,7 +17,7 @@ const Logo: React.FC<LogoProps> = ({
     <Link to="/" className={`flex items-center ${className}`}>
       <div className="flex flex-col">
         <img 
-          src="/lovable-uploads/c34235af-7981-4a49-9a23-5176a93e9a81.png"
+          src="/lovable-uploads/48be0c8b-7024-4561-8197-b8fb18c8c01a.png"
           alt="Paym.me Logo"
           className="h-8 w-auto"
         />
