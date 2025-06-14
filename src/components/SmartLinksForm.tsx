@@ -53,6 +53,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imageUrl || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   const form = useForm<SmartLinkFormData>({
     resolver: zodResolver(smartLinkSchema),
@@ -154,23 +155,36 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
   };
 
   const handleSubmit = async (data: SmartLinkFormData) => {
+    if (isSaving) return; // Prevent double submission
+    
     try {
       if (!user) {
         toast.error('You must be logged in to save smart links');
         return;
       }
 
+      console.log('Starting smart link save process...');
+      console.log('Form data:', data);
+      console.log('User ID:', user.id);
+
+      setIsSaving(true);
+
       let imageUrl = imagePreview;
 
       // If there's a new image to upload
       if (uploadedImage) {
+        console.log('Uploading new image...');
         imageUrl = await uploadImageToStorage(uploadedImage);
-        if (!imageUrl) return;
+        if (!imageUrl) {
+          console.error('Image upload failed');
+          return;
+        }
+        console.log('Image uploaded successfully:', imageUrl);
       }
 
       const payload: any = {
         profile_id: user.id,
-        title: data.title,
+        title: data.title.trim(),
         amount: parseFloat(data.amount),
         gradient: data.gradient,
         currency: '₹',
@@ -186,27 +200,48 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
         payload.image_url = imageUrl;
       }
 
+      console.log('Payload to save:', payload);
+
+      let result;
       if (editingLink?.id) {
+        console.log('Updating existing smart link:', editingLink.id);
         // Update existing
-        const { error } = await supabase
+        result = await supabase
           .from('smart_links')
           .update(payload)
-          .eq('id', editingLink.id);
+          .eq('id', editingLink.id)
+          .select();
 
-        if (error) throw error;
+        if (result.error) {
+          console.error('Update error:', result.error);
+          throw result.error;
+        }
+        console.log('Update result:', result.data);
         toast.success('Smart link updated successfully');
       } else {
+        console.log('Creating new smart link...');
         // Insert new
-        const { error } = await supabase
+        result = await supabase
           .from('smart_links')
-          .insert(payload);
+          .insert(payload)
+          .select();
 
-        if (error) throw error;
+        if (result.error) {
+          console.error('Insert error:', result.error);
+          throw result.error;
+        }
+        console.log('Insert result:', result.data);
         toast.success('Smart link created successfully');
       }
 
       // Reset form and editing state
-      form.reset();
+      form.reset({
+        title: '',
+        amount: '',
+        displayType: 'icon',
+        icon: 'heart',
+        gradient: false
+      });
       setEditingLink(null);
       setUploadedImage(null);
       setImagePreview(null);
@@ -218,7 +253,9 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
       if (onSubmitSuccess) onSubmitSuccess();
     } catch (error) {
       console.error('Error saving smart link:', error);
-      toast.error('Failed to save smart link');
+      toast.error(`Failed to save smart link: ${error.message || 'Unknown error'}`);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -438,8 +475,14 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
             />
             
             <div className="flex gap-2 pt-2">
-              <Button type="submit" className="flex-1" disabled={isUploading}>
-                {isUploading ? 'Uploading...' : (editingLink ? 'Update Link' : 'Create Link')}
+              <Button 
+                type="submit" 
+                className="flex-1" 
+                disabled={isUploading || isSaving}
+              >
+                {isUploading ? 'Uploading...' : 
+                 isSaving ? 'Saving...' : 
+                 (editingLink ? 'Update Link' : 'Create Link')}
               </Button>
               
               {(editingLink || onCancel) && (
@@ -458,6 +501,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
                     });
                     if (onCancel) onCancel();
                   }}
+                  disabled={isSaving}
                 >
                   Cancel
                 </Button>
