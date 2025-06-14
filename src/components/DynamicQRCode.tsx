@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -211,7 +210,7 @@ const DynamicQRCode: React.FC<DynamicQRCodeProps> = ({
               <Smartphone size={14} className="mr-1" /> Pay
             </Button>
           )}
-        </div>
+        </motion.div>
         
         {amount && (
           <div className="mt-2 text-center">
