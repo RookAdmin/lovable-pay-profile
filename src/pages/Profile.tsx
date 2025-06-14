@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProfileData } from '@/hooks/useProfileData';
@@ -88,7 +89,7 @@ const Profile = () => {
             />
           </motion.div>
           
-          {/* Smart Links Section */}
+          {/* Smart Links Section - Now with payment functionality */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -97,6 +98,7 @@ const Profile = () => {
             <SmartLinkSection 
               links={data.smartLinks} 
               className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
+              isViewingMode={true}
             />
           </motion.div>
         </div>

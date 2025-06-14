@@ -19,7 +19,13 @@ import {
   CarouselPrevious
 } from "@/components/ui/carousel";
 
-const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], className?: string }) => {
+interface SmartLinkSectionProps {
+  links: SmartLink[];
+  className?: string;
+  isViewingMode?: boolean; // New prop to determine if this is a public view
+}
+
+const SmartLinkSection = ({ links = [], className, isViewingMode = false }: SmartLinkSectionProps) => {
   // Check if user has a payment gateway integrated
   const [hasPaymentGateway, setHasPaymentGateway] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -70,6 +76,26 @@ const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], class
     toast.success("Link copied to clipboard!");
   };
 
+  const handlePayment = (link: SmartLink) => {
+    // Create UPI payment URL
+    const upiUrl = `upi://pay?pa=example@upi&pn=${encodeURIComponent(link.title)}&am=${link.amount}&cu=INR&tn=${encodeURIComponent(`Payment for ${link.title}`)}`;
+    
+    try {
+      // Try to open UPI app
+      if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        window.location.href = upiUrl;
+        toast.success('Opening payment app...');
+      } else {
+        // Desktop: copy payment details
+        navigator.clipboard.writeText(`Pay ${link.currency}${link.amount} for ${link.title}`);
+        toast.info('Payment details copied! Use on mobile device with UPI app.');
+      }
+    } catch (error) {
+      console.error('Error opening payment app:', error);
+      toast.error('Could not open payment app. Please try again.');
+    }
+  };
+
   const getIconComponent = (icon: SmartLink['icon']) => {
     switch (icon) {
       case 'heart':
@@ -85,44 +111,37 @@ const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], class
     }
   };
 
-  // Create a grouping of links (2 per slide for mobile, more for desktop)
-  const groupLinks = (links: SmartLink[], itemsPerSlide: number = 1) => {
-    return links.reduce((resultArray: SmartLink[][], item, index) => {
-      const chunkIndex = Math.floor(index / itemsPerSlide);
-      
-      if (!resultArray[chunkIndex]) {
-        resultArray[chunkIndex] = []; // start a new chunk
-      }
-      
-      resultArray[chunkIndex].push(item);
-      return resultArray;
-    }, []);
-  };
-
   return (
     <div className={`space-y-6 ${className || ''}`}>
-      {/* Payment Gateway Integration Notice */}
-      {!hasPaymentGateway && <SmartLinkPaymentGateway />}
+      {/* Payment Gateway Integration Notice - Only show in edit mode */}
+      {!isViewingMode && !hasPaymentGateway && <SmartLinkPaymentGateway />}
       
       {/* Smart Links Section */}
       <Card className="shadow-md border-gray-100">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-xl">Smart Links</CardTitle>
-          <Button 
-            onClick={() => {
-              setEditingLink(null);
-              setOpenModal(true);
-            }}
-            size="sm"
-          >
-            <PlusCircle size={16} className="mr-2" />
-            Add Smart Link
-          </Button>
+          <CardTitle className="text-xl">
+            {isViewingMode ? 'Support Options' : 'Smart Links'}
+          </CardTitle>
+          {/* Only show Add button in edit mode */}
+          {!isViewingMode && (
+            <Button 
+              onClick={() => {
+                setEditingLink(null);
+                setOpenModal(true);
+              }}
+              size="sm"
+            >
+              <PlusCircle size={16} className="mr-2" />
+              Add Smart Link
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
           {links.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">No smart links yet. Create your first link!</p>
+              <p className="text-muted-foreground">
+                {isViewingMode ? 'No support options available.' : 'No smart links yet. Create your first link!'}
+              </p>
             </div>
           ) : (
             <div className="my-4">
@@ -148,9 +167,12 @@ const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], class
                                   {link.currency} {link.amount}
                                 </p>
                               </div>
-                              <Badge variant={link.isActive ? "secondary" : "outline"}>
-                                {link.isActive ? 'Active' : 'Inactive'}
-                              </Badge>
+                              {/* Only show Active badge in edit mode */}
+                              {!isViewingMode && (
+                                <Badge variant={link.isActive ? "secondary" : "outline"}>
+                                  {link.isActive ? 'Active' : 'Inactive'}
+                                </Badge>
+                              )}
                             </div>
                             
                             {/* Center Content - Image or Icon */}
@@ -176,32 +198,52 @@ const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], class
                             
                             {/* Footer with actions */}
                             <div className="p-3 flex justify-between items-center mt-auto">
-                              <div className="flex space-x-2">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className={`${link.gradient ? 'text-white hover:bg-white/10' : ''}`}
-                                  onClick={() => copyLinkToClipboard(link.id)}
-                                >
-                                  <Copy size={18} />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className={`${link.gradient ? 'text-white hover:bg-white/10' : ''}`}
-                                  onClick={() => handleEdit(link)}
-                                >
-                                  <Edit size={18} />
-                                </Button>
-                              </div>
-                              <Button
-                                variant={link.gradient ? "ghost" : "destructive"}
-                                size="icon"
-                                className={link.gradient ? 'text-white hover:bg-white/10' : ''}
-                                onClick={() => handleDelete(link.id)}
-                              >
-                                <Trash2 size={18} />
-                              </Button>
+                              {isViewingMode ? (
+                                // View mode: Show Pay button
+                                <div className="w-full flex justify-center">
+                                  <Button
+                                    onClick={() => handlePayment(link)}
+                                    className={`w-full ${
+                                      link.gradient 
+                                        ? 'bg-white/20 hover:bg-white/30 text-white border-white/30' 
+                                        : 'bg-primary hover:bg-primary/90 text-white'
+                                    }`}
+                                    variant={link.gradient ? "outline" : "default"}
+                                  >
+                                    Pay {link.currency}{link.amount}
+                                  </Button>
+                                </div>
+                              ) : (
+                                // Edit mode: Show management buttons
+                                <>
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className={`${link.gradient ? 'text-white hover:bg-white/10' : ''}`}
+                                      onClick={() => copyLinkToClipboard(link.id)}
+                                    >
+                                      <Copy size={18} />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className={`${link.gradient ? 'text-white hover:bg-white/10' : ''}`}
+                                      onClick={() => handleEdit(link)}
+                                    >
+                                      <Edit size={18} />
+                                    </Button>
+                                  </div>
+                                  <Button
+                                    variant={link.gradient ? "ghost" : "destructive"}
+                                    size="icon"
+                                    className={link.gradient ? 'text-white hover:bg-white/10' : ''}
+                                    onClick={() => handleDelete(link.id)}
+                                  >
+                                    <Trash2 size={18} />
+                                  </Button>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -219,24 +261,26 @@ const SmartLinkSection = ({ links = [], className }: { links: SmartLink[], class
         </CardContent>
       </Card>
       
-      {/* SmartLink Form Dialog */}
-      <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle className="text-xl mb-4">
-              {editingLink ? "Edit Smart Link" : "Create New Smart Link"}
-            </DialogTitle>
-          </DialogHeader>
-          <SmartLinksForm 
-            initialData={editingLink} 
-            onSubmitSuccess={() => {
-              setOpenModal(false);
-              toast.success(editingLink ? "Link updated" : "Link created");
-            }}
-            onCancel={() => setOpenModal(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      {/* SmartLink Form Dialog - Only show in edit mode */}
+      {!isViewingMode && (
+        <Dialog open={openModal} onOpenChange={setOpenModal}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl mb-4">
+                {editingLink ? "Edit Smart Link" : "Create New Smart Link"}
+              </DialogTitle>
+            </DialogHeader>
+            <SmartLinksForm 
+              initialData={editingLink} 
+              onSubmitSuccess={() => {
+                setOpenModal(false);
+                toast.success(editingLink ? "Link updated" : "Link created");
+              }}
+              onCancel={() => setOpenModal(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
