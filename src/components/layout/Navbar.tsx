@@ -1,11 +1,22 @@
+
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar: React.FC = () => {
   const { user, signOut } = useAuth();
+  const location = useLocation();
+  
+  // Show navigation links only on homepage and other public pages
+  const showNavLinks = location.pathname === '/' || 
+                      location.pathname === '/features' || 
+                      location.pathname === '/solutions' || 
+                      location.pathname === '/resources' || 
+                      location.pathname === '/trends' || 
+                      location.pathname === '/pricing' || 
+                      location.pathname === '/blog';
 
   return (
     <header className="w-full bg-white border-b border-gray-100 shadow-sm">
@@ -16,44 +27,46 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link
-            to="/features"
-            className="text-black hover:text-secondary transition-colors"
-          >
-            Features
-          </Link>
-          <Link
-            to="/solutions"
-            className="text-black hover:text-secondary transition-colors"
-          >
-            Solutions
-          </Link>
-          <Link
-            to="/resources"
-            className="text-black hover:text-secondary transition-colors"
-          >
-            Free Resources
-          </Link>
-          <Link
-            to="/trends"
-            className="text-black hover:text-secondary transition-colors"
-          >
-            Latest Trends
-          </Link>
-          <Link
-            to="/pricing"
-            className="text-black hover:text-secondary transition-colors"
-          >
-            Pricing
-          </Link>
-          <Link
-            to="/blog"
-            className="text-black hover:text-secondary transition-colors"
-          >
-            Blog
-          </Link>
-        </nav>
+        {showNavLinks && (
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link
+              to="/features"
+              className="text-black hover:text-secondary transition-colors"
+            >
+              Features
+            </Link>
+            <Link
+              to="/solutions"
+              className="text-black hover:text-secondary transition-colors"
+            >
+              Solutions
+            </Link>
+            <Link
+              to="/resources"
+              className="text-black hover:text-secondary transition-colors"
+            >
+              Free Resources
+            </Link>
+            <Link
+              to="/trends"
+              className="text-black hover:text-secondary transition-colors"
+            >
+              Latest Trends
+            </Link>
+            <Link
+              to="/pricing"
+              className="text-black hover:text-secondary transition-colors"
+            >
+              Pricing
+            </Link>
+            <Link
+              to="/blog"
+              className="text-black hover:text-secondary transition-colors"
+            >
+              Blog
+            </Link>
+          </nav>
+        )}
 
         <div className="flex items-center space-x-2">
           {user ? (
