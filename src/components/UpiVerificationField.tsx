@@ -54,25 +54,14 @@ const UpiVerificationField: React.FC<UpiVerificationFieldProps> = ({
       return;
     }
     
-    // Validate amount if provided
-    if (amount && amount <= 0) {
-      toast.error('Please enter a valid amount greater than 0');
-      return;
-    }
-    
-    // Check for reasonable amount limits (to avoid UPI limit issues)
-    if (amount && amount > 100000) {
-      toast.warning('Amount is quite high. Please ensure it\'s within your bank\'s UPI transaction limit.');
-    }
-    
     const upiData = {
       upiId,
-      ...(amount && amount > 0 && { amount: parseFloat(amount.toString()) }),
+      ...(amount && amount > 0 && { amount }),
       ...(payeeName.trim() && { payeeName: payeeName.trim() }),
       ...(note.trim() && { note: note.trim() })
     };
     
-    console.log('Generating QR with validated data:', upiData);
+    console.log('Generating QR with data:', upiData);
     onGenerate?.(upiData);
     toast.success('QR code generated with payment details');
   };
@@ -132,19 +121,12 @@ const UpiVerificationField: React.FC<UpiVerificationFieldProps> = ({
                 id="payment-amount"
                 type="number"
                 min="0"
-                max="100000"
                 step="0.01"
                 value={amount || ''}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setAmount(value ? parseFloat(value) : undefined);
-                }}
-                placeholder="Enter amount (max ₹1,00,000)"
+                onChange={(e) => setAmount(e.target.value ? parseFloat(e.target.value) : undefined)}
+                placeholder="Enter amount"
                 className="text-sm"
               />
-              <p className="text-xs text-gray-500">
-                Keep amount within your bank's UPI transaction limit
-              </p>
             </div>
           )}
           
@@ -159,7 +141,6 @@ const UpiVerificationField: React.FC<UpiVerificationFieldProps> = ({
                 onChange={(e) => setPayeeName(e.target.value)}
                 placeholder="Recipient name"
                 className="text-sm"
-                maxLength={50}
               />
             </div>
           )}
@@ -175,7 +156,6 @@ const UpiVerificationField: React.FC<UpiVerificationFieldProps> = ({
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Payment description"
                 className="text-sm"
-                maxLength={100}
               />
             </div>
           )}
