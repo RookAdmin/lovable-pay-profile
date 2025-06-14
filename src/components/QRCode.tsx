@@ -111,32 +111,31 @@ const QRCode: React.FC<QRCodeProps> = ({
 
     console.log("Opening UPI with URL:", qrValue);
     
-    // Check if on mobile device
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      // Try different UPI app schemes for better compatibility
-      const upiApps = [
-        qrValue, // Standard UPI URL
-        qrValue.replace('upi://pay', 'phonepe://pay'), // PhonePe
-        qrValue.replace('upi://pay', 'paytmmp://pay'), // Paytm
-        qrValue.replace('upi://pay', 'gpay://pay'), // Google Pay
-      ];
-      
-      // Try opening with standard UPI scheme first
-      try {
+    try {
+      // For mobile browsers, use window.open with _self to trigger app
+      if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // First try direct assignment
         window.location.href = qrValue;
-        toast.success('Opening UPI app...');
-      } catch (error) {
-        console.error('Error opening UPI app:', error);
-        // Fallback to copying
+        
+        // Show success message immediately
+        toast.success('Opening payment app...');
+        
+        // Fallback message after delay
+        setTimeout(() => {
+          if (document.hasFocus()) {
+            toast.info('If the app didn\'t open, try scanning the QR code directly with your payment app.');
+          }
+        }, 2000);
+      } else {
+        // On desktop, copy the URL and inform user
         navigator.clipboard.writeText(qrValue);
-        toast.info('UPI payment link copied. Open manually in your payment app.');
+        toast.info('Payment link copied! Open on your mobile device or scan the QR code with your UPI app.');
       }
-    } else {
-      // On desktop, copy and inform user
+    } catch (error) {
+      console.error('Error opening UPI app:', error);
+      // Fallback: copy to clipboard
       navigator.clipboard.writeText(qrValue);
-      toast.info('UPI payment link copied! Open on your mobile device to pay.');
+      toast.error('Could not open payment app. Link copied to clipboard - paste in your UPI app or scan the QR code.');
     }
   };
   

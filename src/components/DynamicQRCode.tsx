@@ -114,39 +114,31 @@ const DynamicQRCode: React.FC<DynamicQRCodeProps> = ({
 
     console.log("Opening UPI with URL:", qrValue);
     
-    // Check if on mobile device
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      try {
-        // Create a temporary link element to trigger UPI app
-        const link = document.createElement('a');
-        link.href = qrValue;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
+    try {
+      // For mobile devices, use direct window.location.href
+      if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // Direct assignment works best for UPI apps
+        window.location.href = qrValue;
         
-        // Add to DOM temporarily
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Show immediate success message
+        toast.success('Opening payment app...');
         
-        toast.success('Opening UPI app...');
-        
-        // Fallback after 3 seconds if app doesn't open
+        // Fallback guidance after delay
         setTimeout(() => {
-          toast.info('If the app didn\'t open, try copying the payment link and opening it manually.');
-        }, 3000);
-        
-      } catch (error) {
-        console.error('Error opening UPI app:', error);
-        // Fallback to copying
+          if (document.hasFocus()) {
+            toast.info('If the app didn\'t open, try scanning the QR code directly.');
+          }
+        }, 2000);
+      } else {
+        // Desktop: inform user to use mobile or scan QR
         navigator.clipboard.writeText(qrValue);
-        toast.error('Could not open UPI app. Payment link copied to clipboard.');
+        toast.info('Payment link copied! Use on mobile device or scan QR code with UPI app.');
       }
-    } else {
-      // On desktop, copy and inform user
+    } catch (error) {
+      console.error('Error opening UPI app:', error);
+      // Fallback: copy link
       navigator.clipboard.writeText(qrValue);
-      toast.info('Payment link copied! Open on your mobile device to pay.');
+      toast.error('Could not open payment app. Link copied - paste in UPI app or scan QR code.');
     }
   };
   
@@ -219,7 +211,7 @@ const DynamicQRCode: React.FC<DynamicQRCodeProps> = ({
               <Smartphone size={14} className="mr-1" /> Pay
             </Button>
           )}
-        </motion.div>
+        </div>
         
         {amount && (
           <div className="mt-2 text-center">
