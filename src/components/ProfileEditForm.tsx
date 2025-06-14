@@ -9,8 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Camera, Image } from 'lucide-react';
+import { Camera, Image, User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AvatarPicker from '@/components/ui/avatar-picker';
 
 const profileSchema = z.object({
   display_name: z.string().min(2, 'Display name must be at least 2 characters'),
@@ -37,6 +39,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(initialData?.avatar_url || '');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [avatarType, setAvatarType] = useState<'upload' | 'default'>('upload');
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const form = useForm<ProfileFormValues>({
@@ -86,8 +89,16 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
     const file = e.target.files?.[0];
     setSelectedFile(file || null);
     if (file) {
+      setAvatarType('upload');
       handleAvatarChange(file);
     }
+  };
+
+  const handleDefaultAvatarSelect = (avatarSvg: string) => {
+    setAvatarType('default');
+    setAvatarUrl(avatarSvg);
+    form.setValue('avatar_url', avatarSvg, { shouldDirty: true });
+    toast.success('Default avatar selected! Don\'t forget to save changes.');
   };
 
   const onSubmit = async (data: ProfileFormValues) => {
@@ -113,7 +124,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         
-        <div className="flex flex-col items-center gap-2 mb-4">
+        <div className="flex flex-col items-center gap-4 mb-6">
           <Avatar className="h-20 w-20">
             {avatarUrl
               ? <AvatarImage src={avatarUrl} alt="Profile photo" />
@@ -122,25 +133,50 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
                 </AvatarFallback>
             }
           </Avatar>
-          <input
-            ref={inputFileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={onSelectFile}
-            disabled={uploading}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1 mt-2"
-            disabled={uploading}
-            onClick={() => inputFileRef.current?.click()}
-          >
-            <Image size={16} />
-            {uploading ? 'Uploading...' : (avatarUrl ? 'Change Photo' : 'Upload Photo')}
-          </Button>
+
+          <Tabs value={avatarType} onValueChange={(value) => setAvatarType(value as 'upload' | 'default')} className="w-full max-w-md">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="upload" className="flex items-center gap-2">
+                <Image size={16} />
+                Upload Photo
+              </TabsTrigger>
+              <TabsTrigger value="default" className="flex items-center gap-2">
+                <User size={16} />
+                Default Avatar
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="upload" className="mt-4">
+              <div className="text-center">
+                <input
+                  ref={inputFileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={onSelectFile}
+                  disabled={uploading}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  disabled={uploading}
+                  onClick={() => inputFileRef.current?.click()}
+                >
+                  <Image size={16} />
+                  {uploading ? 'Uploading...' : (avatarUrl && avatarType === 'upload' ? 'Change Photo' : 'Upload Photo')}
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Upload a custom profile picture
+                </p>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="default" className="mt-4">
+              <AvatarPicker onSelect={handleDefaultAvatarSelect} />
+            </TabsContent>
+          </Tabs>
         </div>
 
         <FormField
