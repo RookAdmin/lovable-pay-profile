@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,7 +39,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(initialData?.avatar_url || '');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [avatarType, setAvatarType] = useState<'upload' | 'default'>('upload');
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
@@ -87,7 +87,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
 
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setSelectedFile(file || null);
     if (file) {
       setAvatarType('upload');
       handleAvatarChange(file);
@@ -256,7 +255,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
             <FormItem>
               <FormLabel>LinkedIn URL</FormLabel>
               <FormControl>
-                <Input {...field} type="url" placeholder="https://linkedin.com/in/" />
+                <Input {...field} type="url" placeholder="https://linkedin.com/" />
               </FormControl>
               <FormMessage />
             </FormItem>
