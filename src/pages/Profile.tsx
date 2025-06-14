@@ -89,7 +89,7 @@ const Profile = () => {
             />
           </motion.div>
           
-          {/* Smart Links Section - Now with payment functionality */}
+          {/* Smart Links Section - Now with connected UPI payment */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -99,6 +99,8 @@ const Profile = () => {
               links={data.smartLinks} 
               className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
               isViewingMode={true}
+              profileOwnerUpiId={data.upiId}
+              profileOwnerDisplayName={data.profile.displayName}
             />
           </motion.div>
         </div>

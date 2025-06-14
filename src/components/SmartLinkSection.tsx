@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,10 +21,18 @@ import {
 interface SmartLinkSectionProps {
   links: SmartLink[];
   className?: string;
-  isViewingMode?: boolean; // New prop to determine if this is a public view
+  isViewingMode?: boolean;
+  profileOwnerUpiId?: string; // Add UPI ID prop
+  profileOwnerDisplayName?: string; // Add display name for payment
 }
 
-const SmartLinkSection = ({ links = [], className, isViewingMode = false }: SmartLinkSectionProps) => {
+const SmartLinkSection = ({ 
+  links = [], 
+  className, 
+  isViewingMode = false,
+  profileOwnerUpiId,
+  profileOwnerDisplayName
+}: SmartLinkSectionProps) => {
   // Check if user has a payment gateway integrated
   const [hasPaymentGateway, setHasPaymentGateway] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -77,22 +84,67 @@ const SmartLinkSection = ({ links = [], className, isViewingMode = false }: Smar
   };
 
   const handlePayment = (link: SmartLink) => {
-    // Create UPI payment URL
-    const upiUrl = `upi://pay?pa=example@upi&pn=${encodeURIComponent(link.title)}&am=${link.amount}&cu=INR&tn=${encodeURIComponent(`Payment for ${link.title}`)}`;
+    // Check if we have the profile owner's UPI ID
+    if (!profileOwnerUpiId) {
+      toast.error('Payment method not available for this profile');
+      return;
+    }
+
+    console.log("Processing payment for smart link:", {
+      linkTitle: link.title,
+      amount: link.amount,
+      currency: link.currency,
+      upiId: profileOwnerUpiId,
+      payeeName: profileOwnerDisplayName
+    });
+
+    // Create UPI payment URL with actual user's UPI ID
+    let upiUrl = `upi://pay?pa=${encodeURIComponent(profileOwnerUpiId)}`;
+    
+    // Add payee name if available
+    if (profileOwnerDisplayName) {
+      upiUrl += `&pn=${encodeURIComponent(profileOwnerDisplayName)}`;
+    }
+    
+    // Add amount
+    upiUrl += `&am=${link.amount}`;
+    
+    // Add currency
+    upiUrl += `&cu=INR`;
+    
+    // Add transaction note with smart link title
+    const transactionNote = `Payment for ${link.title}`;
+    upiUrl += `&tn=${encodeURIComponent(transactionNote)}`;
+    
+    // Add transaction reference
+    const txnRef = `SL${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+    upiUrl += `&tr=${txnRef}`;
+
+    console.log("Generated UPI payment URL:", upiUrl);
     
     try {
-      // Try to open UPI app
+      // Check if on mobile device
       if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // On mobile, try to open UPI app directly
         window.location.href = upiUrl;
-        toast.success('Opening payment app...');
+        toast.success(`Opening payment app for ${link.currency}${link.amount}...`);
+        
+        // Fallback guidance after delay
+        setTimeout(() => {
+          if (document.hasFocus()) {
+            toast.info('If the app didn\'t open, try using a different UPI app.');
+          }
+        }, 3000);
       } else {
-        // Desktop: copy payment details
-        navigator.clipboard.writeText(`Pay ${link.currency}${link.amount} for ${link.title}`);
-        toast.info('Payment details copied! Use on mobile device with UPI app.');
+        // Desktop: copy payment details and inform user
+        navigator.clipboard.writeText(upiUrl);
+        toast.info(`Payment details copied! Amount: ${link.currency}${link.amount}. Use on mobile device with UPI app.`);
       }
     } catch (error) {
       console.error('Error opening payment app:', error);
-      toast.error('Could not open payment app. Please try again.');
+      // Fallback: copy payment details
+      navigator.clipboard.writeText(`Pay ${link.currency}${link.amount} for ${link.title} to UPI ID: ${profileOwnerUpiId}`);
+      toast.error('Could not open payment app. Payment details copied to clipboard.');
     }
   };
 
@@ -209,8 +261,9 @@ const SmartLinkSection = ({ links = [], className, isViewingMode = false }: Smar
                                         : 'bg-primary hover:bg-primary/90 text-white'
                                     }`}
                                     variant={link.gradient ? "outline" : "default"}
+                                    disabled={!profileOwnerUpiId}
                                   >
-                                    Pay {link.currency}{link.amount}
+                                    {profileOwnerUpiId ? `Pay ${link.currency}${link.amount}` : 'Payment Unavailable'}
                                   </Button>
                                 </div>
                               ) : (
