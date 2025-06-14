@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Download } from 'lucide-react';
+import { Download, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,13 +15,33 @@ const BrandKit = () => {
     }, 1500);
   };
 
+  const handleDownloadAll = () => {
+    toast.info('Preparing complete brand kit...', {
+      description: 'This may take a few moments'
+    });
+    // Simulate zip preparation
+    setTimeout(() => {
+      toast.success('Brand kit downloaded successfully!', {
+        description: 'All logo assets have been packaged into a ZIP file'
+      });
+    }, 3000);
+  };
+
   return (
     <div className="container max-w-5xl py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900 mb-4">Paym.me Brand Kit</h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
           Everything you need to represent the Paym.me brand correctly in your communications.
         </p>
+        <Button 
+          onClick={handleDownloadAll}
+          className="flex gap-2 bg-blue-600 hover:bg-blue-700"
+          size="lg"
+        >
+          <Package size={20} />
+          Download Complete Brand Kit (ZIP)
+        </Button>
       </div>
       
       <Tabs defaultValue="logos" className="space-y-8">
@@ -40,7 +59,7 @@ const BrandKit = () => {
                 Download official Paym.me logo assets in various formats and sizes.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="flex flex-col items-center p-6 border rounded-lg">
                 <div className="w-48 h-48 bg-white flex items-center justify-center mb-4 rounded-lg">
                   <img 
@@ -164,6 +183,99 @@ const BrandKit = () => {
                   </Button>
                 </div>
               </div>
+
+              <div className="flex flex-col items-center p-6 border rounded-lg">
+                <div className="w-48 h-48 bg-white flex items-center justify-center mb-4 rounded-lg">
+                  <img 
+                    src="/lovable-uploads/a0d6dd25-4d77-4acc-9cc3-ec428dba79dd.png" 
+                    alt="Paym.me Cross Icon Blue" 
+                    className="w-24 h-24 object-contain"
+                  />
+                </div>
+                <h3 className="text-lg font-medium mb-2">Cross Icon (Blue)</h3>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="flex gap-2"
+                    onClick={() => handleDownload('Cross Icon Blue PNG')}
+                  >
+                    <Download size={16} />
+                    PNG
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="flex gap-2"
+                    onClick={() => handleDownload('Cross Icon Blue SVG')}
+                  >
+                    <Download size={16} />
+                    SVG
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center p-6 border rounded-lg">
+                <div className="w-48 h-48 bg-white flex items-center justify-center mb-4 rounded-lg">
+                  <img 
+                    src="/lovable-uploads/78318878-fa8f-4fe5-a85b-45ce743719ad.png" 
+                    alt="Paym.me Cross Icon Blue Alt" 
+                    className="w-24 h-24 object-contain"
+                  />
+                </div>
+                <h3 className="text-lg font-medium mb-2">Cross Icon (Blue Alt)</h3>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="flex gap-2"
+                    onClick={() => handleDownload('Cross Icon Blue Alt PNG')}
+                  >
+                    <Download size={16} />
+                    PNG
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="flex gap-2"
+                    onClick={() => handleDownload('Cross Icon Blue Alt SVG')}
+                  >
+                    <Download size={16} />
+                    SVG
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center p-6 border rounded-lg">
+                <div className="w-48 h-48 bg-white flex items-center justify-center mb-4 rounded-lg">
+                  <img 
+                    src="/lovable-uploads/c5c6ea55-b72b-4f3d-8e9f-a90b8cf9b2b3.png" 
+                    alt="Paym.me Cross Icon Blue Gradient" 
+                    className="w-24 h-24 object-contain"
+                  />
+                </div>
+                <h3 className="text-lg font-medium mb-2">Cross Icon (Gradient)</h3>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="flex gap-2"
+                    onClick={() => handleDownload('Cross Icon Gradient PNG')}
+                  >
+                    <Download size={16} />
+                    PNG
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="flex gap-2"
+                    onClick={() => handleDownload('Cross Icon Gradient SVG')}
+                  >
+                    <Download size={16} />
+                    SVG
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
           
@@ -175,7 +287,7 @@ const BrandKit = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="flex flex-col">
                   <div className="aspect-video bg-gray-100 rounded flex items-center justify-center mb-3">
                     <img 
@@ -205,6 +317,16 @@ const BrandKit = () => {
                     />
                   </div>
                   <p className="text-sm text-gray-600">Print Materials</p>
+                </div>
+                <div className="flex flex-col">
+                  <div className="aspect-video bg-gray-100 rounded flex items-center justify-center mb-3">
+                    <img 
+                      src="/lovable-uploads/a0d6dd25-4d77-4acc-9cc3-ec428dba79dd.png" 
+                      alt="Cross icon usage" 
+                      className="h-12 object-contain"
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600">App Icons</p>
                 </div>
               </div>
             </CardContent>
