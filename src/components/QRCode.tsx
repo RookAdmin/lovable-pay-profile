@@ -1,5 +1,6 @@
 
 import React, { useEffect } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, Copy, Smartphone } from 'lucide-react';
@@ -11,6 +12,9 @@ interface QRCodeProps {
   logoUrl?: string;
   type?: 'upi' | 'payment';
   className?: string;
+  amount?: number;
+  payeeName?: string;
+  transactionNote?: string;
 }
 
 const QRCode: React.FC<QRCodeProps> = ({ 
@@ -18,73 +22,119 @@ const QRCode: React.FC<QRCodeProps> = ({
   size = 180,
   logoUrl,
   type = 'upi',
-  className = '' 
+  className = '',
+  amount,
+  payeeName,
+  transactionNote
 }) => {
+  const [qrValue, setQrValue] = React.useState('');
+
   useEffect(() => {
-    console.log("QRCode component received logoUrl:", logoUrl);
-  }, [logoUrl]);
+    console.log("QRCode component received values:", { value, amount, payeeName, transactionNote });
+    
+    if (type === 'upi' && value) {
+      // Create proper UPI URL format for payments
+      let upiUrl = `upi://pay?pa=${encodeURIComponent(value)}`;
+      
+      if (payeeName) {
+        upiUrl += `&pn=${encodeURIComponent(payeeName)}`;
+      }
+      
+      if (amount && amount > 0) {
+        upiUrl += `&am=${amount}`;
+      }
+      
+      if (transactionNote) {
+        upiUrl += `&tn=${encodeURIComponent(transactionNote)}`;
+      }
+      
+      // Add currency (INR is default for UPI)
+      upiUrl += '&cu=INR';
+      
+      console.log("Generated UPI URL:", upiUrl);
+      setQrValue(upiUrl);
+    } else {
+      setQrValue(value);
+    }
+  }, [value, type, amount, payeeName, transactionNote]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(value);
-    toast.success('Copied to clipboard!');
+    navigator.clipboard.writeText(qrValue || value);
+    toast.success('Payment details copied to clipboard!');
   };
   
   const handleDownload = () => {
-    // If we have a custom QR logo URL, download that directly
-    if (logoUrl) {
-      const link = document.createElement('a');
-      link.href = logoUrl;
-      link.download = 'qrcode.png';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      toast.success('QR code downloaded');
+    try {
+      const svg = document.querySelector('#qr-code-svg') as SVGElement;
+      if (!svg) {
+        toast.error('QR code not found');
+        return;
+      }
+
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        canvas.width = size;
+        canvas.height = size;
+        ctx?.drawImage(img, 0, 0);
+        
+        const pngFile = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.download = 'upi-qr-code.png';
+        downloadLink.href = pngFile;
+        downloadLink.click();
+        
+        toast.success('QR code downloaded successfully');
+      };
+      
+      img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Failed to download QR code');
     }
   };
   
   const handleOpenUPI = () => {
-    // Implement UPI deep link to open payment apps
-    const encodedValue = encodeURIComponent(value);
-    const upiURL = `upi://pay?pa=${encodedValue}`;
-    
-    // On mobile devices, this will open the UPI app
-    // On desktop, it will typically do nothing or show an error
-    window.location.href = upiURL;
-    
-    toast.success('Opening UPI app');
+    if (!qrValue) {
+      toast.error('No payment details available');
+      return;
+    }
+
+    // For mobile devices, try to open UPI apps
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      window.location.href = qrValue;
+      toast.success('Opening UPI app...');
+    } else {
+      // For desktop, copy the UPI URL
+      navigator.clipboard.writeText(qrValue);
+      toast.info('UPI payment link copied. Open on your mobile device.');
+    }
   };
   
   return (
     <Card className={`border-0 shadow-none ${className}`}>
       <CardContent className="p-0 flex flex-col items-center">
         <div 
-          className="relative rounded-2xl bg-white border-2 border-gray-100 overflow-hidden mb-3"
-          style={{ width: size, height: size }}
+          className="relative rounded-2xl bg-white border-2 border-gray-100 overflow-hidden mb-3 p-4"
+          style={{ width: size + 32, height: size + 32 }}
         >
-          {logoUrl ? (
-            <img 
-              src={logoUrl} 
-              alt="QR Code" 
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                console.error("Failed to load QR code image:", e);
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
+          {qrValue ? (
+            <QRCodeSVG
+              id="qr-code-svg"
+              value={qrValue}
+              size={size}
+              level="M"
+              includeMargin={false}
+              fgColor="#000000"
+              bgColor="#ffffff"
             />
           ) : (
-            <div className="absolute inset-0 p-4 grid grid-cols-7 grid-rows-7 gap-1">
-              {/* Simulated QR code pattern */}
-              {Array.from({ length: 49 }).map((_, i) => (
-                <div 
-                  key={i}
-                  className={`
-                    ${Math.random() > 0.7 ? 'bg-black' : 'bg-transparent'} 
-                    ${(i < 7 || i > 41 || i % 7 === 0 || i % 7 === 6) ? 'opacity-30' : ''}
-                    rounded-sm
-                  `}
-                />
-              ))}
+            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+              <Smartphone className="h-8 w-8 mb-2" />
+              <span className="text-xs">No payment data</span>
             </div>
           )}
         </div>
@@ -95,6 +145,7 @@ const QRCode: React.FC<QRCodeProps> = ({
             size="sm" 
             onClick={handleCopy} 
             className="text-xs h-8"
+            disabled={!qrValue}
           >
             <Copy size={14} className="mr-1" /> Copy
           </Button>
@@ -104,16 +155,17 @@ const QRCode: React.FC<QRCodeProps> = ({
             size="sm" 
             onClick={handleDownload} 
             className="text-xs h-8"
+            disabled={!qrValue}
           >
             <Download size={14} className="mr-1" /> Save
           </Button>
           
-          {type === 'upi' && (
+          {type === 'upi' && qrValue && (
             <Button 
               variant="default" 
               size="sm" 
               onClick={handleOpenUPI} 
-              className="text-xs h-8"
+              className="text-xs h-8 bg-primary hover:bg-primary/90"
             >
               <Smartphone size={14} className="mr-1" /> Pay
             </Button>
