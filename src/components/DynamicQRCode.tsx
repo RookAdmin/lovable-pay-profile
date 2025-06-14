@@ -38,25 +38,26 @@ const DynamicQRCode: React.FC<DynamicQRCodeProps> = ({
       let upiUrl = `upi://pay?pa=${encodeURIComponent(value)}`;
       
       // Add payee name if provided
-      if (payeeName) {
-        upiUrl += `&pn=${encodeURIComponent(payeeName)}`;
+      if (payeeName && payeeName.trim()) {
+        upiUrl += `&pn=${encodeURIComponent(payeeName.trim())}`;
       }
       
-      // Add amount if provided
+      // Add amount if provided - format to 2 decimal places
       if (amount && amount > 0) {
-        upiUrl += `&am=${amount}`;
+        upiUrl += `&am=${parseFloat(amount.toString()).toFixed(2)}`;
       }
       
       // Add transaction note if provided  
-      if (transactionNote) {
-        upiUrl += `&tn=${encodeURIComponent(transactionNote)}`;
+      if (transactionNote && transactionNote.trim()) {
+        upiUrl += `&tn=${encodeURIComponent(transactionNote.trim())}`;
       }
       
       // Add currency (INR for UPI)
       upiUrl += '&cu=INR';
       
-      // Add merchant code for better compatibility
-      upiUrl += '&mc=0000';
+      // Add transaction reference for better tracking
+      const txnRef = `PAY${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      upiUrl += `&tr=${txnRef}`;
       
       console.log("Generated comprehensive UPI URL:", upiUrl);
       setQrValue(upiUrl);
@@ -117,9 +118,31 @@ const DynamicQRCode: React.FC<DynamicQRCodeProps> = ({
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-      // On mobile, directly open the UPI URL
-      window.location.href = qrValue;
-      toast.success('Opening UPI app...');
+      try {
+        // Create a temporary link element to trigger UPI app
+        const link = document.createElement('a');
+        link.href = qrValue;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        
+        // Add to DOM temporarily
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast.success('Opening UPI app...');
+        
+        // Fallback after 3 seconds if app doesn't open
+        setTimeout(() => {
+          toast.info('If the app didn\'t open, try copying the payment link and opening it manually.');
+        }, 3000);
+        
+      } catch (error) {
+        console.error('Error opening UPI app:', error);
+        // Fallback to copying
+        navigator.clipboard.writeText(qrValue);
+        toast.error('Could not open UPI app. Payment link copied to clipboard.');
+      }
     } else {
       // On desktop, copy and inform user
       navigator.clipboard.writeText(qrValue);
@@ -155,7 +178,7 @@ const DynamicQRCode: React.FC<DynamicQRCodeProps> = ({
           <QRCodeSVG
             value={qrValue}
             size={size}
-            level="M"
+            level="H"
             includeMargin={true}
             fgColor="#000000"
             bgColor="#ffffff"
@@ -200,7 +223,7 @@ const DynamicQRCode: React.FC<DynamicQRCodeProps> = ({
         
         {amount && (
           <div className="mt-2 text-center">
-            <p className="text-sm text-gray-600">Amount: ₹{amount}</p>
+            <p className="text-sm text-gray-600">Amount: ₹{parseFloat(amount.toString()).toFixed(2)}</p>
             {payeeName && <p className="text-xs text-gray-500">To: {payeeName}</p>}
           </div>
         )}

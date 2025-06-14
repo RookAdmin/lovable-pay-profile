@@ -36,20 +36,25 @@ const QRCode: React.FC<QRCodeProps> = ({
       // Create proper UPI URL format for payments
       let upiUrl = `upi://pay?pa=${encodeURIComponent(value)}`;
       
-      if (payeeName) {
-        upiUrl += `&pn=${encodeURIComponent(payeeName)}`;
+      if (payeeName && payeeName.trim()) {
+        upiUrl += `&pn=${encodeURIComponent(payeeName.trim())}`;
       }
       
       if (amount && amount > 0) {
-        upiUrl += `&am=${amount}`;
+        // Format amount to 2 decimal places
+        upiUrl += `&am=${parseFloat(amount.toString()).toFixed(2)}`;
       }
       
-      if (transactionNote) {
-        upiUrl += `&tn=${encodeURIComponent(transactionNote)}`;
+      if (transactionNote && transactionNote.trim()) {
+        upiUrl += `&tn=${encodeURIComponent(transactionNote.trim())}`;
       }
       
       // Add currency (INR is default for UPI)
       upiUrl += '&cu=INR';
+      
+      // Add transaction reference for tracking
+      const txnRef = `TXN${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      upiUrl += `&tr=${txnRef}`;
       
       console.log("Generated UPI URL:", upiUrl);
       setQrValue(upiUrl);
@@ -59,7 +64,8 @@ const QRCode: React.FC<QRCodeProps> = ({
   }, [value, type, amount, payeeName, transactionNote]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(qrValue || value);
+    const textToCopy = qrValue || value;
+    navigator.clipboard.writeText(textToCopy);
     toast.success('Payment details copied to clipboard!');
   };
   
@@ -103,14 +109,34 @@ const QRCode: React.FC<QRCodeProps> = ({
       return;
     }
 
-    // For mobile devices, try to open UPI apps
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-      window.location.href = qrValue;
-      toast.success('Opening UPI app...');
+    console.log("Opening UPI with URL:", qrValue);
+    
+    // Check if on mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Try different UPI app schemes for better compatibility
+      const upiApps = [
+        qrValue, // Standard UPI URL
+        qrValue.replace('upi://pay', 'phonepe://pay'), // PhonePe
+        qrValue.replace('upi://pay', 'paytmmp://pay'), // Paytm
+        qrValue.replace('upi://pay', 'gpay://pay'), // Google Pay
+      ];
+      
+      // Try opening with standard UPI scheme first
+      try {
+        window.location.href = qrValue;
+        toast.success('Opening UPI app...');
+      } catch (error) {
+        console.error('Error opening UPI app:', error);
+        // Fallback to copying
+        navigator.clipboard.writeText(qrValue);
+        toast.info('UPI payment link copied. Open manually in your payment app.');
+      }
     } else {
-      // For desktop, copy the UPI URL
+      // On desktop, copy and inform user
       navigator.clipboard.writeText(qrValue);
-      toast.info('UPI payment link copied. Open on your mobile device.');
+      toast.info('UPI payment link copied! Open on your mobile device to pay.');
     }
   };
   
@@ -126,7 +152,7 @@ const QRCode: React.FC<QRCodeProps> = ({
               id="qr-code-svg"
               value={qrValue}
               size={size}
-              level="M"
+              level="H"
               includeMargin={false}
               fgColor="#000000"
               bgColor="#ffffff"
