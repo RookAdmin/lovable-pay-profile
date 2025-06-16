@@ -74,7 +74,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       title: z.string().min(1, "Title is required"),
       amount: z.number().min(1, "Amount must be greater than 0"),
       currency: z.string(),
-      // Other validations can be added as needed
+      recipientEmail: z.string().email("Valid email is required").optional().or(z.literal("")),
     });
 
     try {
@@ -86,6 +86,41 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
           toast.error(err.message);
         });
       }
+      return false;
+    }
+  };
+
+  const sendInvoiceEmail = async (paymData: any, paymentLink: string) => {
+    try {
+      // Get user profile for sender name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", user?.id)
+        .single();
+
+      const emailData = {
+        recipientEmail: formData.recipientEmail,
+        paymTitle: formData.title,
+        amount: formData.amount,
+        currency: formData.currency,
+        paymentLink,
+        expiresAt: formData.expiresAt?.toISOString(),
+        invoiceId: formData.invoiceId,
+        senderName: profile?.display_name || "Someone"
+      };
+
+      const { data, error } = await supabase.functions.invoke('send-paym-email', {
+        body: emailData
+      });
+
+      if (error) throw error;
+      
+      console.log("Email sent successfully:", data);
+      return true;
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast.error("Failed to send email notification");
       return false;
     }
   };
@@ -124,6 +159,14 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         
       if (error) throw error;
       
+      // Generate payment link
+      const paymentLink = `${window.location.origin}/payms/${data.unique_link}`;
+      
+      // Send email if recipient email is provided
+      if (formData.recipientEmail) {
+        await sendInvoiceEmail(data, paymentLink);
+      }
+      
       // If reminder is enabled and we have recipient details, create a reminder
       if (formData.reminderEnabled && (formData.recipientEmail || formData.recipientPhone)) {
         // Create email reminder if email is provided
@@ -149,7 +192,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         }
       }
       
-      toast.success("Paym created successfully");
+      toast.success(`Paym created successfully${formData.recipientEmail ? ' and email sent to recipient' : ''}`);
       onSuccess();
       onOpenChange(false);
     } catch (error) {
@@ -315,7 +358,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
               {formData.reminderEnabled && (
                 <div className="space-y-3 mt-3">
                   <div className="grid gap-2">
-                    <Label htmlFor="recipientEmail">Recipient Email</Label>
+                    <Label htmlFor="recipientEmail">Recipient Email *</Label>
                     <Input
                       id="recipientEmail"
                       name="recipientEmail"
@@ -323,7 +366,11 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
                       placeholder="client@example.com"
                       value={formData.recipientEmail || ""}
                       onChange={handleInputChange}
+                      required
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Invoice will be automatically sent to this email
+                    </p>
                   </div>
                   
                   <div className="grid gap-2">
