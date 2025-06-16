@@ -10,13 +10,17 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { format, formatDistance, isAfter } from "date-fns";
 import { Link } from "react-router-dom";
-import { ChevronRight, Plus, Calendar, Bell, Copy, ExternalLink, Clock, Check, X, Send } from "lucide-react";
+import { ChevronRight, Plus, Calendar, Bell, Copy, ExternalLink, Clock, Check, X, Send, Edit, Trash2 } from "lucide-react";
 import { Paym } from "@/types/payms";
 import CreatePaymModal from "@/components/payms/CreatePaymModal";
+import EditPaymModal from "@/components/payms/EditPaymModal";
+import DeletePaymModal from "@/components/payms/DeletePaymModal";
 
 const Payms = () => {
   const { user } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingPaym, setEditingPaym] = useState<Paym | null>(null);
+  const [deletingPaym, setDeletingPaym] = useState<Paym | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<'created_at' | 'amount'>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -257,6 +261,12 @@ Thank you.`;
                         <Send className="h-4 w-4" />
                       </Button>
                     )}
+                    <Button size="sm" variant="ghost" onClick={() => setEditingPaym(paym)} title="Edit">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setDeletingPaym(paym)} title="Delete" className="text-destructive hover:text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
                 
@@ -334,6 +344,24 @@ Thank you.`;
           open={isCreateModalOpen}
           onOpenChange={setIsCreateModalOpen}
           onSuccess={refetch}
+        />
+      )}
+
+      {editingPaym && (
+        <EditPaymModal
+          open={!!editingPaym}
+          onOpenChange={(open) => !open && setEditingPaym(null)}
+          onSuccess={refetch}
+          paym={editingPaym}
+        />
+      )}
+
+      {deletingPaym && (
+        <DeletePaymModal
+          open={!!deletingPaym}
+          onOpenChange={(open) => !open && setDeletingPaym(null)}
+          onSuccess={refetch}
+          paym={deletingPaym}
         />
       )}
     </div>

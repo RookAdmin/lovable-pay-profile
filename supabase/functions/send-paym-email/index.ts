@@ -20,6 +20,7 @@ interface PaymEmailRequest {
   expiresAt?: string;
   invoiceId?: string;
   senderName?: string;
+  upiId?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -38,7 +39,8 @@ const handler = async (req: Request): Promise<Response> => {
       paymentLink,
       expiresAt,
       invoiceId,
-      senderName
+      senderName,
+      upiId
     }: PaymEmailRequest = await req.json();
 
     // Format expiration date if provided
@@ -46,50 +48,162 @@ const handler = async (req: Request): Promise<Response> => {
       ? `Please complete payment before ${new Date(expiresAt).toLocaleDateString()}.`
       : '';
 
-    // Create email content
+    // Generate UPI payment link
+    const upiPaymentLink = upiId 
+      ? `upi://pay?pa=${upiId}&pn=${encodeURIComponent(senderName || 'Paym.me')}&am=${amount}&cu=${currency === '₹' ? 'INR' : 'USD'}&tn=${encodeURIComponent(paymTitle)}`
+      : paymentLink;
+
+    // Create email content with enhanced design and Pay button
     const emailHtml = `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Payment Request</title>
           <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: #dc2e3e; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
-            .amount { font-size: 24px; font-weight: bold; color: #dc2e3e; margin: 20px 0; }
-            .button { display: inline-block; background: #dc2e3e; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-            .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+            body { 
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+              line-height: 1.6; 
+              color: #333; 
+              margin: 0; 
+              padding: 0; 
+              background-color: #f4f4f4; 
+            }
+            .container { 
+              max-width: 600px; 
+              margin: 0 auto; 
+              background-color: #ffffff; 
+              border-radius: 12px; 
+              overflow: hidden; 
+              box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            }
+            .header { 
+              background: linear-gradient(135deg, #dc2e3e 0%, #ff4757 100%); 
+              color: white; 
+              padding: 30px 20px; 
+              text-align: center; 
+            }
+            .header h1 { 
+              margin: 0; 
+              font-size: 28px; 
+              font-weight: 600; 
+            }
+            .content { 
+              padding: 40px 30px; 
+            }
+            .amount { 
+              font-size: 36px; 
+              font-weight: 700; 
+              color: #dc2e3e; 
+              text-align: center; 
+              margin: 30px 0; 
+              padding: 20px; 
+              background: #f8f9fa; 
+              border-radius: 8px; 
+              border-left: 4px solid #dc2e3e; 
+            }
+            .pay-button { 
+              display: inline-block; 
+              background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+              color: white; 
+              padding: 16px 32px; 
+              text-decoration: none; 
+              border-radius: 8px; 
+              font-size: 18px; 
+              font-weight: 600; 
+              text-align: center; 
+              margin: 30px 0; 
+              box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3); 
+              transition: transform 0.2s; 
+            }
+            .pay-button:hover { 
+              transform: translateY(-2px); 
+              box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4); 
+            }
+            .button-container { 
+              text-align: center; 
+              margin: 30px 0; 
+            }
+            .info-box { 
+              background: #e3f2fd; 
+              border: 1px solid #2196f3; 
+              border-radius: 8px; 
+              padding: 20px; 
+              margin: 20px 0; 
+            }
+            .footer { 
+              text-align: center; 
+              margin-top: 40px; 
+              padding-top: 30px; 
+              border-top: 1px solid #e9ecef; 
+              color: #6c757d; 
+              font-size: 14px; 
+            }
+            .logo { 
+              font-size: 24px; 
+              font-weight: 700; 
+              color: #dc2e3e; 
+              margin-bottom: 10px; 
+            }
+            .payment-methods { 
+              margin: 20px 0; 
+              text-align: center; 
+            }
+            .payment-methods p { 
+              color: #6c757d; 
+              font-size: 14px; 
+              margin: 10px 0; 
+            }
+            @media (max-width: 600px) {
+              .container { margin: 10px; }
+              .content { padding: 30px 20px; }
+              .amount { font-size: 28px; }
+              .pay-button { padding: 14px 24px; font-size: 16px; }
+            }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
+              <div class="logo">Paym.me</div>
               <h1>Payment Request</h1>
             </div>
             <div class="content">
-              <p>Hello${recipientName ? ` ${recipientName}` : ''},</p>
+              <p style="font-size: 18px; margin-bottom: 10px;">Hello${recipientName ? ` ${recipientName}` : ''},</p>
               
-              <p>You have received a payment request${senderName ? ` from ${senderName}` : ''}:</p>
+              <p style="font-size: 16px; color: #6c757d;">You have received a payment request${senderName ? ` from <strong>${senderName}</strong>` : ''}:</p>
               
-              <h3>${paymTitle}</h3>
-              ${invoiceId ? `<p><strong>Invoice ID:</strong> ${invoiceId}</p>` : ''}
+              <h2 style="color: #333; margin: 20px 0; font-size: 22px;">${paymTitle}</h2>
+              ${invoiceId ? `<p style="margin: 10px 0;"><strong>Invoice ID:</strong> <span style="color: #dc2e3e; font-family: monospace;">${invoiceId}</span></p>` : ''}
               
               <div class="amount">${currency}${amount}</div>
               
-              <p>Click the button below to complete your payment:</p>
+              <div class="button-container">
+                <a href="${upiPaymentLink}" class="pay-button">
+                  💳 Pay Now
+                </a>
+              </div>
               
-              <a href="${paymentLink}" class="button">Pay Now</a>
+              <div class="payment-methods">
+                <p><strong>Supported Payment Methods:</strong></p>
+                <p>💳 UPI • 🏦 Net Banking • 💰 Wallets • 📱 QR Code</p>
+                <p style="font-size: 12px; color: #adb5bd;">Works with GPay, PhonePe, Paytm, BHIM, and all UPI apps</p>
+              </div>
               
-              <p>Or copy and paste this link in your browser:<br>
-              <a href="${paymentLink}">${paymentLink}</a></p>
+              <div class="info-box">
+                <p style="margin: 0; font-size: 14px;"><strong>Alternative Payment Link:</strong></p>
+                <p style="margin: 10px 0 0 0; word-break: break-all;">
+                  <a href="${paymentLink}" style="color: #2196f3; text-decoration: none;">${paymentLink}</a>
+                </p>
+              </div>
               
-              ${expirationText ? `<p><em>${expirationText}</em></p>` : ''}
+              ${expirationText ? `<p style="color: #ff6b6b; font-weight: 500; text-align: center; margin: 20px 0;"><em>⏰ ${expirationText}</em></p>` : ''}
               
               <div class="footer">
-                <p>This payment request was sent via Paym.me</p>
+                <p><strong>Paym.me</strong> - Secure Payment Links</p>
                 <p>If you have any questions, please contact the sender directly.</p>
+                <p style="font-size: 12px; margin-top: 20px;">This email was sent automatically. Please do not reply to this email.</p>
               </div>
             </div>
           </div>
@@ -98,9 +212,9 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "Paym.me <noreply@resend.dev>", // You can customize this with your verified domain
+      from: "Paym.me <noreply@resend.dev>",
       to: [recipientEmail],
-      subject: `Payment Request: ${paymTitle}`,
+      subject: `💰 Payment Request: ${paymTitle} - ${currency}${amount}`,
       html: emailHtml,
     });
 
