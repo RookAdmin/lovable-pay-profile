@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { format, addDays } from "date-fns";
 import { PaymFormData } from "@/types/payms";
 import { z } from "zod";
+import { safelyConvertToUpiDetails } from "@/types/payment";
 
 interface CreatePaymModalProps {
   open: boolean;
@@ -108,7 +109,9 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         .eq("is_primary", true)
         .single();
 
-      const upiId = paymentMethods?.details?.upi_id;
+      // Safely convert the details to UpiDetails type
+      const upiDetails = safelyConvertToUpiDetails(paymentMethods?.details);
+      const upiId = upiDetails.upiId;
 
       const emailData = {
         recipientEmail: formData.recipientEmail,
