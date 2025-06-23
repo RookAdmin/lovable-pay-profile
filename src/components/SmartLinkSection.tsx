@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -202,20 +203,16 @@ const SmartLinkSection = ({
                   {links.map((link) => (
                     <CarouselItem key={link.id} className="md:basis-1/2 lg:basis-1/3">
                       <div className="p-1">
-                        <div className={`rounded-xl overflow-hidden aspect-square shadow-lg ${
-                          link.gradient 
-                            ? 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500' 
-                            : 'bg-white border border-gray-200'
-                        }`}>
-                          {/* Instagram Story-like Display */}
+                        <div className="rounded-xl overflow-hidden aspect-square shadow-lg bg-white border border-gray-200">
+                          {/* Clean Card Display */}
                           <div className="flex flex-col h-full">
-                            {/* Header with avatar and title */}
+                            {/* Header with title and amount */}
                             <div className="p-3 flex justify-between items-center">
                               <div>
-                                <p className={`font-bold text-lg ${link.gradient ? 'text-white' : 'text-gray-900'}`}>
+                                <p className="font-bold text-lg text-gray-900">
                                   {link.title}
                                 </p>
-                                <p className={`text-sm ${link.gradient ? 'text-white/80' : 'text-gray-500'}`}>
+                                <p className="text-sm text-gray-500">
                                   {link.currency} {link.amount}
                                 </p>
                               </div>
@@ -230,7 +227,7 @@ const SmartLinkSection = ({
                             {/* Center Content - Image or Icon */}
                             <div className="flex-1 flex items-center justify-center p-4">
                               {link.imageUrl ? (
-                                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white/30 shadow-inner">
+                                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 shadow-inner">
                                   <img 
                                     src={link.imageUrl} 
                                     alt={link.title} 
@@ -238,11 +235,7 @@ const SmartLinkSection = ({
                                   />
                                 </div>
                               ) : (
-                                <div className={`w-24 h-24 flex items-center justify-center rounded-full ${
-                                  link.gradient 
-                                    ? 'bg-white/20 text-white' 
-                                    : 'bg-gray-100 text-gray-700'
-                                }`}>
+                                <div className="w-24 h-24 flex items-center justify-center rounded-full bg-gray-100 text-gray-700">
                                   {getIconComponent(link.icon)}
                                 </div>
                               )}
@@ -255,12 +248,7 @@ const SmartLinkSection = ({
                                 <div className="w-full flex justify-center">
                                   <Button
                                     onClick={() => handlePayment(link)}
-                                    className={`w-full ${
-                                      link.gradient 
-                                        ? 'bg-white/20 hover:bg-white/30 text-white border-white/30' 
-                                        : 'bg-primary hover:bg-primary/90 text-white'
-                                    }`}
-                                    variant={link.gradient ? "outline" : "default"}
+                                    className="w-full bg-primary hover:bg-primary/90 text-white"
                                     disabled={!profileOwnerUpiId}
                                   >
                                     {profileOwnerUpiId ? `Pay ${link.currency}${link.amount}` : 'Payment Unavailable'}
@@ -273,7 +261,6 @@ const SmartLinkSection = ({
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className={`${link.gradient ? 'text-white hover:bg-white/10' : ''}`}
                                       onClick={() => copyLinkToClipboard(link.id)}
                                     >
                                       <Copy size={18} />
@@ -281,16 +268,14 @@ const SmartLinkSection = ({
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className={`${link.gradient ? 'text-white hover:bg-white/10' : ''}`}
                                       onClick={() => handleEdit(link)}
                                     >
                                       <Edit size={18} />
                                     </Button>
                                   </div>
                                   <Button
-                                    variant={link.gradient ? "ghost" : "destructive"}
+                                    variant="destructive"
                                     size="icon"
-                                    className={link.gradient ? 'text-white hover:bg-white/10' : ''}
                                     onClick={() => handleDelete(link.id)}
                                   >
                                     <Trash2 size={18} />

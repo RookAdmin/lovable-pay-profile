@@ -73,10 +73,10 @@ const getProfile = async (username: string) => {
       
     console.log("Payment methods fetched:", paymentMethods || []);
 
-    // Fetch smart links
+    // Fetch smart links - now including image_url column
     const { data: smartLinks, error: smartLinksError } = await supabase
       .from('smart_links')
-      .select('*')
+      .select('id, profile_id, title, amount, currency, icon, image_url, is_active, created_at, updated_at')
       .eq('profile_id', rawProfileData.id)
       .eq('is_active', true);
       
