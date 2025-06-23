@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -13,10 +12,10 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: '0',
+      padding: "0",
       screens: {
-        '2xl': '100%'
-      }
+        "2xl": "100%",
+      },
     },
     extend: {
       colors: {
@@ -25,12 +24,12 @@ export default {
         blue: "#0096d4",
         green: "#00d437",
         yellow: "#ffd800",
-        
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
 
         primary: {
           DEFAULT: "#dc2e3e", // Red as primary
@@ -54,19 +53,21 @@ export default {
         },
         destructive: {
           DEFAULT: "#dc2e3e", // Red for destructive
-          foreground: "#ffffff"
+          foreground: "#ffffff",
         },
         popover: {
           DEFAULT: "#fff",
-          foreground: "#000000"
+          foreground: "#000000",
         },
       },
       backgroundImage: {
-        'gradient-app': 'linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)',
-        'gradient-card': 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-        'card-soft': 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
-        'heading-gradient': 'linear-gradient(135deg, #000000 0%, #333333 100%)',
-        'heading-soft-gradient': 'linear-gradient(135deg, #222222 0%, #444444 100%)',
+        "gradient-app": "linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)",
+        "gradient-card":
+          "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
+        "card-soft": "linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)",
+        "heading-gradient": "linear-gradient(135deg, #000000 0%, #333333 100%)",
+        "heading-soft-gradient":
+          "linear-gradient(135deg, #222222 0%, #444444 100%)",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -74,22 +75,36 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
-        'accordion-down': {
+        "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
-        'accordion-up': {
+        "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "spin-slow": {
+          to: { transform: "rotate(360deg)" },
+        },
+        "progress-bar": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "progress-fill": {
+          "0%": { width: "0%" },
+          "100%": { width: "100%" },
+        },
       },
       animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "spin-slow": "spin-slow 2s linear infinite",
+        "progress-bar": "progress-bar 1.2s cubic-bezier(0.4,0,0.2,1) infinite",
+        "progress-fill": "progress-fill 1.2s ease-in-out forwards",
       },
       textColor: {
-        'gradient-dark': 'linear-gradient(135deg, #000000 0%, #333333 100%)',
-      }
+        "gradient-dark": "linear-gradient(135deg, #000000 0%, #333333 100%)",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
