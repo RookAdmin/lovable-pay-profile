@@ -114,7 +114,14 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
 
   const sendInvoiceEmail = async (paymData: any, paymentLink: string) => {
     try {
-      console.log('Sending invoice email to:', formData.recipientEmail);
+      // Validate email exists and is not empty
+      if (!formData.recipientEmail || !formData.recipientEmail.trim()) {
+        console.log('No recipient email provided, skipping email send');
+        return false;
+      }
+
+      const recipientEmail = formData.recipientEmail.trim();
+      console.log('Sending invoice email to:', recipientEmail);
       
       // Get user profile for sender name
       const { data: profile } = await supabase
@@ -137,7 +144,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       const upiId = upiDetails.upiId;
 
       const emailData = {
-        to: formData.recipientEmail, // Make sure to pass the email as 'to' field
+        to: recipientEmail, // Ensure this is a string and not undefined
         paymTitle: formData.title,
         amount: formData.amount,
         currency: formData.currency,
@@ -147,6 +154,11 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       };
 
       console.log('Email data being sent:', emailData);
+
+      // Validate email data before sending
+      if (!emailData.to || typeof emailData.to !== 'string') {
+        throw new Error('Invalid recipient email address');
+      }
 
       const { data, error } = await supabase.functions.invoke(
         "send-paym-email",
@@ -216,10 +228,11 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       const paymentLink = `${window.location.origin}/payms/${data.unique_link}`;
       console.log('Generated payment link:', paymentLink);
 
-      // Send email if recipient email is provided
+      // Send email if recipient email is provided and valid
+      let emailSent = false;
       if (formData.recipientEmail && formData.recipientEmail.trim()) {
-        console.log('Attempting to send email to:', formData.recipientEmail);
-        await sendInvoiceEmail(data, paymentLink);
+        console.log('Attempting to send email to:', formData.recipientEmail.trim());
+        emailSent = await sendInvoiceEmail(data, paymentLink);
       } else {
         console.log('No recipient email provided, skipping email send');
       }
@@ -230,23 +243,23 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         (formData.recipientEmail || formData.recipientPhone)
       ) {
         // Create email reminder if email is provided
-        if (formData.recipientEmail) {
+        if (formData.recipientEmail && formData.recipientEmail.trim()) {
           await supabase.from("paym_reminders").insert({
             paym_id: data.id,
-            recipient: formData.recipientEmail,
+            recipient: formData.recipientEmail.trim(),
             channel: "email",
             status: "pending",
             scheduled_at: new Date(
-              Date.now() + 24 * 60 * 60 * 1000
+              Date.now() + 24 * 60 * 60 *1000
             ).toISOString(), // 24 hours from now
           });
         }
 
         // Create WhatsApp reminder if phone is provided
-        if (formData.recipientPhone) {
+        if (formData.recipientPhone && formData.recipientPhone.trim()) {
           await supabase.from("paym_reminders").insert({
             paym_id: data.id,
-            recipient: formData.recipientPhone,
+            recipient: formData.recipientPhone.trim(),
             channel: "whatsapp",
             status: "pending",
             scheduled_at: new Date(
@@ -256,11 +269,13 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         }
       }
 
-      toast.success(
-        `Paym created successfully${
-          formData.recipientEmail ? " and email sent to recipient" : ""
-        }`
-      );
+      const successMessage = emailSent
+        ? "Paym created successfully and email sent to recipient"
+        : formData.recipientEmail && formData.recipientEmail.trim()
+        ? "Paym created successfully, but email sending failed"
+        : "Paym created successfully";
+
+      toast.success(successMessage);
       onSuccess();
       onOpenChange(false);
     } catch (error) {

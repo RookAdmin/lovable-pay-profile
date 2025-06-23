@@ -129,6 +129,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
   const uploadImageToStorage = async (file: File): Promise<string | null> => {
     if (!user) {
       console.error('No user found for image upload');
+      toast.error('You must be logged in to upload images');
       return null;
     }
     
@@ -139,7 +140,22 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
     setIsUploading(true);
     
     try {
-      console.log('Uploading file to smart_links_images bucket...');
+      // Test if we can access the bucket first
+      console.log('Testing bucket access...');
+      const { data: testData, error: testError } = await supabase.storage
+        .from('smart_links_images')
+        .list('', { limit: 1 });
+      
+      if (testError) {
+        console.error('Bucket access test failed:', testError);
+        if (testError.message?.includes('not found') || testError.message?.includes('does not exist')) {
+          throw new Error('Storage bucket not found. Please contact support.');
+        }
+        throw new Error(`Storage access error: ${testError.message}`);
+      }
+      
+      console.log('Bucket access successful, proceeding with upload...');
+      
       const { data, error } = await supabase.storage
         .from('smart_links_images')
         .upload(fileName, file, {
@@ -149,6 +165,29 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
       
       if (error) {
         console.error('Upload error:', error);
+        if (error.message?.includes('already exists')) {
+          // Try with a different filename
+          const retryFileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+          console.log('File exists, retrying with:', retryFileName);
+          
+          const { data: retryData, error: retryError } = await supabase.storage
+            .from('smart_links_images')
+            .upload(retryFileName, file, {
+              cacheControl: '3600',
+              upsert: false
+            });
+            
+          if (retryError) {
+            throw retryError;
+          }
+          
+          const { data: urlData } = supabase.storage
+            .from('smart_links_images')
+            .getPublicUrl(retryFileName);
+          
+          console.log('Retry upload successful, generated URL:', urlData.publicUrl);
+          return urlData.publicUrl;
+        }
         throw error;
       }
       
