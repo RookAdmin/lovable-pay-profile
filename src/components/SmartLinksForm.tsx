@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -66,22 +65,34 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
 
   const validateImage = (file: File): Promise<{ valid: boolean; message?: string }> => {
     return new Promise((resolve) => {
+      console.log('Validating image:', { name: file.name, size: file.size, type: file.type });
+      
       // Check file size
       if (file.size > MAX_FILE_SIZE) {
-        resolve({ valid: false, message: `Image is too large. Maximum size is ${MAX_FILE_SIZE / 1024}KB.` });
+        console.log('File too large:', file.size, 'vs max:', MAX_FILE_SIZE);
+        resolve({ valid: false, message: `Image is too large. Maximum size is ${Math.round(MAX_FILE_SIZE / 1024)}KB. Your file is ${Math.round(file.size / 1024)}KB.` });
         return;
       }
       
-      // Check if it's a valid image
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        console.log('Invalid file type:', file.type);
+        resolve({ valid: false, message: 'Please select a valid image file (PNG, JPG, JPEG, or WebP).' });
+        return;
+      }
+      
+      // Check if it's a valid image by loading it
       const img = new window.Image();
       img.onload = () => {
+        console.log('Image validation successful');
         URL.revokeObjectURL(img.src);
         resolve({ valid: true });
       };
       
       img.onerror = () => {
+        console.log('Image validation failed - corrupted file');
         URL.revokeObjectURL(img.src);
-        resolve({ valid: false, message: 'Invalid image file.' });
+        resolve({ valid: false, message: 'The selected file appears to be corrupted or is not a valid image.' });
       };
       
       img.src = URL.createObjectURL(file);
@@ -92,46 +103,81 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
     const file = event.target.files?.[0];
     if (!file) return;
     
+    console.log('Starting image upload process for file:', file.name);
+    
     const validation = await validateImage(file);
     if (!validation.valid) {
+      console.error('Image validation failed:', validation.message);
       toast.error(validation.message);
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
     
+    console.log('Image validation passed, setting up preview');
     setUploadedImage(file);
     setImagePreview(URL.createObjectURL(file));
+    toast.success('Image selected successfully!');
   };
 
   const clearImage = () => {
+    console.log('Clearing image selection');
     setUploadedImage(null);
     setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const uploadImageToStorage = async (file: File): Promise<string | null> => {
-    if (!user) return null;
+    if (!user) {
+      console.error('No user found for image upload');
+      return null;
+    }
     
     const fileExt = file.name.split('.').pop();
     const fileName = `${user.id}/${Date.now()}.${fileExt}`;
     
+    console.log('Starting image upload to storage:', { fileName, bucket: 'smart_links_images' });
     setIsUploading(true);
     
     try {
+      // First, check if bucket exists and is accessible
+      const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+      console.log('Available buckets:', buckets);
+      
+      if (bucketError) {
+        console.error('Error checking buckets:', bucketError);
+        throw new Error('Storage service is not available');
+      }
+      
+      const smartLinksBucket = buckets?.find(bucket => bucket.id === 'smart_links_images');
+      if (!smartLinksBucket) {
+        console.error('smart_links_images bucket not found');
+        throw new Error('Image storage is not properly configured');
+      }
+      
+      console.log('Bucket found, uploading file...');
       const { data, error } = await supabase.storage
         .from('smart_links_images')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Upload error:', error);
+        throw error;
+      }
+      
+      console.log('Upload successful:', data);
       
       const { data: urlData } = supabase.storage
         .from('smart_links_images')
         .getPublicUrl(fileName);
       
+      console.log('Generated public URL:', urlData.publicUrl);
       return urlData.publicUrl;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading image:', error);
-      toast.error('Failed to upload image');
+      toast.error(`Failed to upload image: ${error.message || 'Unknown error'}`);
       return null;
     } finally {
       setIsUploading(false);
@@ -231,7 +277,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
       
       // Call success callback if provided
       if (onSubmitSuccess) onSubmitSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving smart link:', error);
       toast.error(`Failed to save smart link: ${error.message || 'Unknown error'}`);
     } finally {
@@ -409,7 +455,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
                               <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="image/png, image/jpeg"
+                                accept="image/png,image/jpeg,image/jpg,image/webp"
                                 onChange={handleImageUpload}
                                 className="hidden"
                                 id="image-upload"
@@ -418,11 +464,12 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
                                 type="button"
                                 variant="outline"
                                 onClick={() => fileInputRef.current?.click()}
+                                disabled={isUploading}
                               >
-                                {imagePreview ? 'Change Image' : 'Upload Image'}
+                                {isUploading ? 'Processing...' : (imagePreview ? 'Change Image' : 'Upload Image')}
                               </Button>
                               <p className="text-xs text-muted-foreground mt-2">
-                                Max 100KB, JPG or PNG format
+                                Max 100KB, PNG/JPG/JPEG/WebP format
                               </p>
                             </div>
                           </div>
@@ -441,7 +488,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
                 className="flex-1" 
                 disabled={isUploading || isSaving}
               >
-                {isUploading ? 'Uploading...' : 
+                {isUploading ? 'Uploading Image...' : 
                  isSaving ? 'Saving...' : 
                  (editingLink ? 'Update Link' : 'Create Link')}
               </Button>
