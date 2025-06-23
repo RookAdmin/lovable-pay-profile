@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -116,13 +115,13 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
     try {
       // Validate email exists and is not empty
       if (!formData.recipientEmail || !formData.recipientEmail.trim()) {
-        console.log('No recipient email provided, skipping email send');
+        console.log("No recipient email provided, skipping email send");
         return false;
       }
 
       const recipientEmail = formData.recipientEmail.trim();
-      console.log('Sending invoice email to:', recipientEmail);
-      
+      console.log("Sending invoice email to:", recipientEmail);
+
       // Get user profile for sender name
       const { data: profile } = await supabase
         .from("profiles")
@@ -153,11 +152,11 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         expiresAt: formData.expiresAt?.toISOString(),
       };
 
-      console.log('Email data being sent:', emailData);
+      console.log("Email data being sent:", emailData);
 
       // Validate email data before sending
-      if (!emailData.to || typeof emailData.to !== 'string') {
-        throw new Error('Invalid recipient email address');
+      if (!emailData.to || typeof emailData.to !== "string") {
+        throw new Error("Invalid recipient email address");
       }
 
       const { data, error } = await supabase.functions.invoke(
@@ -168,7 +167,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       );
 
       if (error) {
-        console.error('Email sending error:', error);
+        console.error("Email sending error:", error);
         throw error;
       }
 
@@ -193,8 +192,8 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
     setIsLoading(true);
 
     try {
-      console.log('Creating Paym with data:', formData);
-      
+      console.log("Creating Paym with data:", formData);
+
       // Prepare the data for submission
       const paymData = {
         profile_id: user.id,
@@ -218,23 +217,26 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         .single();
 
       if (error) {
-        console.error('Paym creation error:', error);
+        console.error("Paym creation error:", error);
         throw error;
       }
 
-      console.log('Paym created successfully:', data);
+      console.log("Paym created successfully:", data);
 
       // Generate payment link
       const paymentLink = `${window.location.origin}/payms/${data.unique_link}`;
-      console.log('Generated payment link:', paymentLink);
+      console.log("Generated payment link:", paymentLink);
 
       // Send email if recipient email is provided and valid
       let emailSent = false;
       if (formData.recipientEmail && formData.recipientEmail.trim()) {
-        console.log('Attempting to send email to:', formData.recipientEmail.trim());
+        console.log(
+          "Attempting to send email to:",
+          formData.recipientEmail.trim()
+        );
         emailSent = await sendInvoiceEmail(data, paymentLink);
       } else {
-        console.log('No recipient email provided, skipping email send');
+        console.log("No recipient email provided, skipping email send");
       }
 
       // If reminder is enabled and we have recipient details, create a reminder
@@ -250,7 +252,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
             channel: "email",
             status: "pending",
             scheduled_at: new Date(
-              Date.now() + 24 * 60 * 60 *1000
+              Date.now() + 24 * 60 * 60 * 1000
             ).toISOString(), // 24 hours from now
           });
         }
@@ -288,7 +290,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95%] max-w-[500px] p-4 md:p-6">
+      <DialogContent className="w-full max-w-[500px] p-4 md:p-6 max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl md:text-2xl">
             Create New Paym

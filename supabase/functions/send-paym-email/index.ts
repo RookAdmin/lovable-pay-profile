@@ -1,12 +1,15 @@
-
+// @ts-ignore
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+// @ts-ignore
 import { Resend } from "npm:resend@2.0.0";
 
+// @ts-ignore
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 interface PaymEmailRequest {
@@ -25,13 +28,23 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { to, paymTitle, amount, currency, paymLink, senderName, expiresAt }: PaymEmailRequest = await req.json();
+    const {
+      to,
+      paymTitle,
+      amount,
+      currency,
+      paymLink,
+      senderName,
+      expiresAt,
+    }: PaymEmailRequest = await req.json();
 
     console.log("Sending paym email to:", to);
 
-    const expiryText = expiresAt 
-      ? `<p style="color: #666; font-size: 14px; margin: 10px 0;">This payment request expires on ${new Date(expiresAt).toLocaleDateString()}.</p>`
-      : '';
+    const expiryText = expiresAt
+      ? `<p style="color: #666; font-size: 14px; margin: 10px 0;">This payment request expires on ${new Date(
+          expiresAt
+        ).toLocaleDateString()}.</p>`
+      : "";
 
     const emailResponse = await resend.emails.send({
       from: "Paym <onboarding@resend.dev>",
@@ -88,13 +101,10 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error in send-paym-email function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 };
 
