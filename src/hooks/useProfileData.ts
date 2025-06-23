@@ -141,7 +141,7 @@ const getProfile = async (username: string) => {
       amount: Number(link.amount),
       currency: link.currency,
       icon: link.icon as SmartLink['icon'],
-      gradient: !!link.gradient,
+      imageUrl: link.image_url || undefined,
       isActive: !!link.is_active,
       createdAt: link.created_at,
       updatedAt: link.updated_at

@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -8,7 +9,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Heart, Coffee, CreditCard, Zap, Image as ImageIcon, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,10 +16,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { SmartLink } from '@/types/profile';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// Maximum file size: 200KB
-const MAX_FILE_SIZE = 200 * 1024;
-// Maximum dimensions: 1000x1000
-const MAX_DIMENSION = 1000;
+// Maximum file size: 100KB
+const MAX_FILE_SIZE = 100 * 1024;
 
 const smartLinkSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -27,8 +25,7 @@ const smartLinkSchema = z.object({
     message: 'Amount must be a positive number',
   }),
   displayType: z.enum(['icon', 'image']).default('icon'),
-  icon: z.enum(['heart', 'coffee', 'zap', 'card']).optional(),
-  gradient: z.boolean().default(false)
+  icon: z.enum(['heart', 'coffee', 'zap', 'card']).optional()
 });
 
 type SmartLinkFormData = z.infer<typeof smartLinkSchema>;
@@ -61,8 +58,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
       title: initialData?.title || '',
       amount: initialData ? initialData.amount.toString() : '',
       displayType: initialData?.imageUrl ? 'image' : 'icon',
-      icon: initialData?.icon || 'heart',
-      gradient: initialData?.gradient || false
+      icon: initialData?.icon || 'heart'
     }
   });
 
@@ -76,23 +72,11 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
         return;
       }
       
-      // Check dimensions - Fix: Create the Image object correctly
+      // Check if it's a valid image
       const img = new window.Image();
       img.onload = () => {
         URL.revokeObjectURL(img.src);
-        if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
-          resolve({ 
-            valid: false, 
-            message: `Image dimensions are too large. Maximum dimensions are ${MAX_DIMENSION}x${MAX_DIMENSION} pixels.` 
-          });
-        } else if (Math.abs(img.width - img.height) > 10) {
-          resolve({ 
-            valid: false, 
-            message: 'Image should be square (equal width and height).' 
-          });
-        } else {
-          resolve({ valid: true });
-        }
+        resolve({ valid: true });
       };
       
       img.onerror = () => {
@@ -155,7 +139,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
   };
 
   const handleSubmit = async (data: SmartLinkFormData) => {
-    if (isSaving) return; // Prevent double submission
+    if (isSaving) return;
     
     try {
       if (!user) {
@@ -186,7 +170,6 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
         profile_id: user.id,
         title: data.title.trim(),
         amount: parseFloat(data.amount),
-        gradient: data.gradient,
         currency: '₹',
         is_active: true
       };
@@ -205,7 +188,6 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
       let result;
       if (editingLink?.id) {
         console.log('Updating existing smart link:', editingLink.id);
-        // Update existing
         result = await supabase
           .from('smart_links')
           .update(payload)
@@ -220,7 +202,6 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
         toast.success('Smart link updated successfully');
       } else {
         console.log('Creating new smart link...');
-        // Insert new
         result = await supabase
           .from('smart_links')
           .insert(payload)
@@ -239,8 +220,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
         title: '',
         amount: '',
         displayType: 'icon',
-        icon: 'heart',
-        gradient: false
+        icon: 'heart'
       });
       setEditingLink(null);
       setUploadedImage(null);
@@ -266,8 +246,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
       title: link.title,
       amount: link.amount.toString(),
       displayType: link.imageUrl ? 'image' : 'icon',
-      icon: link.icon,
-      gradient: link.gradient || false
+      icon: link.icon
     });
   };
 
@@ -443,7 +422,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
                                 {imagePreview ? 'Change Image' : 'Upload Image'}
                               </Button>
                               <p className="text-xs text-muted-foreground mt-2">
-                                Square image, max 200KB, 1000x1000px
+                                Max 100KB, JPG or PNG format
                               </p>
                             </div>
                           </div>
@@ -452,24 +431,6 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
                     </Tabs>
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="gradient"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Use Gradient Background</FormLabel>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
                 </FormItem>
               )}
             />
@@ -496,8 +457,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
                       title: '',
                       amount: '',
                       displayType: 'icon',
-                      icon: 'heart',
-                      gradient: false
+                      icon: 'heart'
                     });
                     if (onCancel) onCancel();
                   }}
@@ -520,7 +480,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
                   className="flex items-center justify-between border rounded-lg p-3"
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`rounded-full ${link.gradient ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white' : 'bg-gray-100'}`}>
+                    <div className="bg-gray-100 rounded-full">
                       {link.imageUrl ? (
                         <img 
                           src={link.imageUrl} 

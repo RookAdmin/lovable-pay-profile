@@ -41,7 +41,6 @@ export interface SmartLink {
   currency: string;
   icon?: 'heart' | 'coffee' | 'zap' | 'card'; // Make icon optional
   imageUrl?: string; // Add support for custom image URLs
-  gradient?: boolean;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
