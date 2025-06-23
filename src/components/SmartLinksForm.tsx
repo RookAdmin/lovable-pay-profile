@@ -139,22 +139,7 @@ const SmartLinksForm: React.FC<SmartLinksFormProps> = ({
     setIsUploading(true);
     
     try {
-      // First, check if bucket exists and is accessible
-      const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
-      console.log('Available buckets:', buckets);
-      
-      if (bucketError) {
-        console.error('Error checking buckets:', bucketError);
-        throw new Error('Storage service is not available');
-      }
-      
-      const smartLinksBucket = buckets?.find(bucket => bucket.id === 'smart_links_images');
-      if (!smartLinksBucket) {
-        console.error('smart_links_images bucket not found');
-        throw new Error('Image storage is not properly configured');
-      }
-      
-      console.log('Bucket found, uploading file...');
+      console.log('Uploading file to smart_links_images bucket...');
       const { data, error } = await supabase.storage
         .from('smart_links_images')
         .upload(fileName, file, {

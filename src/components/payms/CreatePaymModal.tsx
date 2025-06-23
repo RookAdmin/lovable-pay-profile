@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -113,7 +114,9 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
 
   const sendInvoiceEmail = async (paymData: any, paymentLink: string) => {
     try {
-      // Get user profile for sender name and UPI ID
+      console.log('Sending invoice email to:', formData.recipientEmail);
+      
+      // Get user profile for sender name
       const { data: profile } = await supabase
         .from("profiles")
         .select("display_name")
@@ -134,16 +137,16 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       const upiId = upiDetails.upiId;
 
       const emailData = {
-        recipientEmail: formData.recipientEmail,
+        to: formData.recipientEmail, // Make sure to pass the email as 'to' field
         paymTitle: formData.title,
         amount: formData.amount,
         currency: formData.currency,
-        paymentLink,
-        expiresAt: formData.expiresAt?.toISOString(),
-        invoiceId: formData.invoiceId,
+        paymLink: paymentLink,
         senderName: profile?.display_name || "Someone",
-        upiId: upiId,
+        expiresAt: formData.expiresAt?.toISOString(),
       };
+
+      console.log('Email data being sent:', emailData);
 
       const { data, error } = await supabase.functions.invoke(
         "send-paym-email",
@@ -152,7 +155,10 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         }
       );
 
-      if (error) throw error;
+      if (error) {
+        console.error('Email sending error:', error);
+        throw error;
+      }
 
       console.log("Email sent successfully:", data);
       return true;
@@ -175,6 +181,8 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
     setIsLoading(true);
 
     try {
+      console.log('Creating Paym with data:', formData);
+      
       // Prepare the data for submission
       const paymData = {
         profile_id: user.id,
@@ -197,14 +205,23 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Paym creation error:', error);
+        throw error;
+      }
+
+      console.log('Paym created successfully:', data);
 
       // Generate payment link
       const paymentLink = `${window.location.origin}/payms/${data.unique_link}`;
+      console.log('Generated payment link:', paymentLink);
 
       // Send email if recipient email is provided
-      if (formData.recipientEmail) {
+      if (formData.recipientEmail && formData.recipientEmail.trim()) {
+        console.log('Attempting to send email to:', formData.recipientEmail);
         await sendInvoiceEmail(data, paymentLink);
+      } else {
+        console.log('No recipient email provided, skipping email send');
       }
 
       // If reminder is enabled and we have recipient details, create a reminder
