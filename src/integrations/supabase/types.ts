@@ -212,6 +212,7 @@ export type Database = {
           gradient: boolean | null
           icon: string | null
           id: string
+          image_url: string | null
           is_active: boolean | null
           profile_id: string
           title: string
@@ -224,6 +225,7 @@ export type Database = {
           gradient?: boolean | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           profile_id: string
           title: string
@@ -236,6 +238,7 @@ export type Database = {
           gradient?: boolean | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           profile_id?: string
           title?: string
