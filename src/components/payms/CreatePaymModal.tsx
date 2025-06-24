@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -33,6 +32,7 @@ import { format, addDays } from "date-fns";
 import { PaymFormData } from "@/types/payms";
 import { z } from "zod";
 import { safelyConvertToUpiDetails } from "@/types/payment";
+import emailjs from '@emailjs/browser';
 
 interface CreatePaymModalProps {
   open: boolean;
@@ -128,35 +128,35 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         .eq("id", user?.id)
         .single();
 
-      const emailData = {
-        to: recipientEmail,
-        paymTitle: formData.title,
-        amount: formData.amount,
-        currency: formData.currency,
-        paymLink: paymentLink,
-        senderName: profile?.display_name || "Someone",
-        expiresAt: formData.expiresAt?.toISOString(),
+      const senderName = profile?.display_name || "Someone";
+      const expiryText = formData.expiresAt
+        ? `Expires on ${formData.expiresAt.toLocaleDateString()}`
+        : "No expiry date";
+
+      const templateParams = {
+        to_email: recipientEmail,
+        name: senderName,
+        email: recipientEmail,
+        title: formData.title,
+        paym_title: formData.title,
+        amount: `${formData.currency}${formData.amount}`,
+        payment_link: paymentLink,
+        expiry_text: expiryText,
+        sender_name: senderName,
       };
 
-      console.log("Email data being sent:", emailData);
+      console.log("EmailJS template params:", templateParams);
 
-      if (!emailData.to || typeof emailData.to !== "string") {
-        throw new Error("Invalid recipient email address");
-      }
+      // Initialize EmailJS with your public key
+      emailjs.init("NCttFpe_PZtgHbL88");
 
-      const { data, error } = await supabase.functions.invoke(
-        "send-paym-email",
-        {
-          body: emailData,
-        }
+      const response = await emailjs.send(
+        "service_9dxsewl", // Your service ID
+        "template_p6wkvnr", // Your template ID
+        templateParams
       );
 
-      if (error) {
-        console.error("Email sending error:", error);
-        throw error;
-      }
-
-      console.log("Email sent successfully:", data);
+      console.log("Email sent successfully:", response);
       return true;
     } catch (error) {
       console.error("Error sending email:", error);
