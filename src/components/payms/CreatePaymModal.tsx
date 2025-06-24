@@ -129,8 +129,21 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         .eq("id", user?.id)
         .single();
 
+      // Get user's primary UPI payment method
+      const { data: paymentMethods } = await supabase
+        .from("payment_methods")
+        .select("details")
+        .eq("profile_id", user?.id)
+        .eq("type", "upi")
+        .eq("is_primary", true)
+        .single();
+
+      // Safely convert the details to UpiDetails type
+      const upiDetails = safelyConvertToUpiDetails(paymentMethods?.details);
+      const upiId = upiDetails.upiId;
+
       const emailData = {
-        to: recipientEmail,
+        to: recipientEmail, // Ensure this is a string and not undefined
         paymTitle: formData.title,
         amount: formData.amount,
         currency: formData.currency,
@@ -162,7 +175,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       return true;
     } catch (error) {
       console.error("Error sending email:", error);
-      toast.error("Failed to send email notification via EmailJS");
+      toast.error("Failed to send email notification");
       return false;
     }
   };
