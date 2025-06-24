@@ -129,40 +129,52 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         .eq("id", user?.id)
         .single();
 
-      const emailData = {
-        to: recipientEmail,
-        paymTitle: formData.title,
-        amount: formData.amount,
-        currency: formData.currency,
-        paymLink: paymentLink,
-        senderName: profile?.display_name || "Someone",
-        expiresAt: formData.expiresAt?.toISOString(),
+      const expiryText = formData.expiresAt
+        ? `This payment request expires on ${new Date(
+            formData.expiresAt
+          ).toLocaleDateString()}.`
+        : "";
+
+      const templateParams = {
+        to_email: recipientEmail,
+        from_name: profile?.display_name || "Someone",
+        paym_title: formData.title,
+        amount: `${formData.currency}${formData.amount}`,
+        payment_link: paymentLink,
+        expiry_text: expiryText,
+        sender_name: profile?.display_name || "Someone",
       };
 
-      console.log("Email data for EmailJS:", emailData);
+      console.log("EmailJS template params:", templateParams);
 
-      // Validate email data before sending
-      if (!emailData.to || typeof emailData.to !== "string") {
-        throw new Error("Invalid recipient email address");
+      // Load EmailJS if not already loaded
+      if (!window.emailjs) {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+        script.onload = () => {
+          window.emailjs.init('NCttFpe_PZtgHbL88');
+        };
+        document.head.appendChild(script);
+        
+        // Wait for script to load
+        await new Promise((resolve) => {
+          script.onload = resolve;
+        });
+      } else {
+        window.emailjs.init('NCttFpe_PZtgHbL88');
       }
 
-      const { data, error } = await supabase.functions.invoke(
-        "send-paym-email",
-        {
-          body: emailData,
-        }
+      const result = await window.emailjs.send(
+        'default_service',
+        'template_paym_invoice',
+        templateParams
       );
 
-      if (error) {
-        console.error("EmailJS sending error:", error);
-        throw error;
-      }
-
-      console.log("Email sent successfully via EmailJS:", data);
+      console.log('EmailJS response:', result);
       return true;
     } catch (error) {
       console.error("Error sending email via EmailJS:", error);
-      toast.error("Failed to send email notification via EmailJS");
+      toast.error(`Failed to send email notification: ${error.message || 'Unknown error'}`);
       return false;
     }
   };
@@ -254,7 +266,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       const successMessage = emailSent
         ? "Paym created successfully and email sent via EmailJS to recipient"
         : formData.recipientEmail && formData.recipientEmail.trim()
-        ? "Paym created successfully, but EmailJS email sending failed"
+        ? "Paym created successfully, but email sending failed"
         : "Paym created successfully";
 
       toast.success(successMessage);
