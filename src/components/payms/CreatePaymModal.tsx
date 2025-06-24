@@ -165,8 +165,8 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       }
 
       const result = await window.emailjs.send(
-        'default_service',
-        'template_paym_invoice',
+        'service_9dxsewl',
+        'template_p6wkvnr',
         templateParams
       );
 
