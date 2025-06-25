@@ -168,6 +168,7 @@ export type Database = {
           linkedin_url: string | null
           twitter_url: string | null
           updated_at: string
+          upi_id: string | null
           username: string
           username_updated_at: string | null
           website_url: string | null
@@ -183,6 +184,7 @@ export type Database = {
           linkedin_url?: string | null
           twitter_url?: string | null
           updated_at?: string
+          upi_id?: string | null
           username: string
           username_updated_at?: string | null
           website_url?: string | null
@@ -198,6 +200,7 @@ export type Database = {
           linkedin_url?: string | null
           twitter_url?: string | null
           updated_at?: string
+          upi_id?: string | null
           username?: string
           username_updated_at?: string | null
           website_url?: string | null
