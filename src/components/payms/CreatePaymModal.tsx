@@ -122,16 +122,29 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       const recipientEmail = formData.recipientEmail.trim();
       console.log("Sending invoice email to:", recipientEmail);
 
+      // Get sender's profile information including UPI ID
       const { data: profile } = await supabase
         .from("profiles")
-        .select("display_name")
+        .select("display_name, upi_id")
         .eq("id", user?.id)
         .single();
 
       const senderName = profile?.display_name || "Someone";
+      const senderUpiId = profile?.upi_id;
+      
       const expiryText = formData.expiresAt
         ? `Expires on ${formData.expiresAt.toLocaleDateString()}`
         : "No expiry date";
+
+      // Create UPI payment link for the Pay Now button
+      let upiPaymentLink = paymentLink; // Fallback to regular payment link
+      
+      if (senderUpiId && formData.amount > 0) {
+        // Create comprehensive UPI URL for direct payment
+        const upiUrl = `upi://pay?pa=${encodeURIComponent(senderUpiId)}&pn=${encodeURIComponent(senderName)}&am=${formData.amount}&tn=${encodeURIComponent(formData.title)}&cu=INR&mc=0000`;
+        upiPaymentLink = upiUrl;
+        console.log("Generated UPI payment link for email:", upiPaymentLink);
+      }
 
       const templateParams = {
         to_email: recipientEmail,
@@ -140,7 +153,8 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
         title: formData.title,
         paym_title: formData.title,
         amount: `${formData.currency}${formData.amount}`,
-        payment_link: paymentLink,
+        payment_link: paymentLink, // Regular payment link for viewing
+        upi_payment_link: upiPaymentLink, // UPI payment link for Pay Now button
         expiry_text: expiryText,
         sender_name: senderName,
       };
@@ -250,7 +264,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
       }
 
       const successMessage = emailSent
-        ? "Paym created successfully and email sent to recipient"
+        ? "Paym created successfully and email sent to recipient with UPI payment link"
         : formData.recipientEmail && formData.recipientEmail.trim()
         ? "Paym created successfully, but email sending failed"
         : "Paym created successfully";
@@ -486,7 +500,7 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
                       required
                     />
                     <p className="text-xs md:text-sm text-muted-foreground">
-                      Invoice will be automatically sent to this email
+                      Invoice will be automatically sent to this email with UPI payment link
                     </p>
                   </div>
 
