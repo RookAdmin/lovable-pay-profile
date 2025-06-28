@@ -13,6 +13,7 @@ const Profile = () => {
   
   useEffect(() => {
     if (username) {
+      document.title = `${username} - Profile | Rook Payment Platform`;
       refetch();
     }
   }, [username, refetch]);
