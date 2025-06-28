@@ -1,14 +1,11 @@
-import React, { useEffect } from 'react';
+
+import React from "react";
 import AnalyticsDashboard from "../components/analytics/AnalyticsDashboard";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartPie, BarChart3, LineChart } from "lucide-react";
 
 const Analytics = () => {
-  useEffect(() => {
-    document.title = 'Analytics - Rook Payment Platform';
-  }, []);
-
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold mb-8 text-black">Analytics Dashboard</h1>

@@ -1,9 +1,8 @@
+
 export interface Profile {
   id: string;
   username: string;
   displayName: string;
-  firstName?: string;
-  lastName?: string;
   bio?: string;
   avatarUrl?: string;
   isVerified: boolean;
@@ -14,7 +13,7 @@ export interface Profile {
   createdAt: string;
   updatedAt: string;
   usernameUpdatedAt?: string;
-  views: number;
+  views: number; // Added views as a required field with number type
 }
 
 export interface PaymentMethod {

@@ -1,14 +1,11 @@
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Pricing = () => {
-  useEffect(() => {
-    document.title = 'Pricing - Rook Payment Platform';
-  }, []);
-
   return (
     <div className="container max-w-6xl px-4 py-16 mx-auto">
       <div className="max-w-3xl mx-auto text-center mb-16">

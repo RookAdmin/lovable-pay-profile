@@ -16,8 +16,6 @@ import AvatarPicker, { Avatar as DefaultAvatar } from '@/components/ui/avatar-pi
 
 const profileSchema = z.object({
   display_name: z.string().min(2, 'Display name must be at least 2 characters'),
-  first_name: z.string().min(2, 'First name must be at least 2 characters').max(20, 'First name is too long'),
-  last_name: z.string().min(2, 'Last name must be at least 2 characters').max(20, 'Last name is too long'),
   bio: z.string().optional().or(z.literal('')),
   website_url: z.string().url().optional().or(z.literal('')),
   instagram_url: z.string().url().optional().or(z.literal('')),
@@ -104,12 +102,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {
-      const toUpdate = { 
-        ...data, 
-        avatar_url: avatarUrl,
-        // Create display_name from first_name and last_name if not provided
-        display_name: data.display_name || `${data.first_name} ${data.last_name}`.trim()
-      };
+      const toUpdate = { ...data, avatar_url: avatarUrl };
       const { error } = await supabase
         .from('profiles')
         .update(toUpdate)
@@ -181,34 +174,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ initialData, onProfil
             </TabsContent>
           </Tabs>
         </div>
-
-        <FormField
-          control={form.control}
-          name="first_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First Name</FormLabel>
-              <FormControl>
-                <Input {...field} maxLength={20} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="last_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input {...field} maxLength={20} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <FormField
           control={form.control}
