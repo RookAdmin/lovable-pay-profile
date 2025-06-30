@@ -1,157 +1,848 @@
-
-import React, { useEffect } from 'react';
-import { Button } from "@/components/ui/button";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CreditCard, Shield, Zap } from "lucide-react";
-import { motion } from "framer-motion";
-import PaymsSection from "@/components/home/PaymsSection";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Shield,
+  Zap,
+  User,
+  UserCheck,
+  PlusSquare,
+  ArrowRight,
+  MessageSquare,
+  CreditCard,
+  Share2,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Briefcase,
+  ShoppingBag,
+  Users,
+  BookOpen,
+  Calendar,
+  Heart,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const Home = () => {
+  const { user } = useAuth();
+  const [scrollY, setScrollY] = useState(0);
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+
   useEffect(() => {
-    document.title = 'Rook Payment Platform - Secure Digital Payments';
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+      if (window.scrollY > 100) {
+        setShowScrollIndicator(false);
+      } else {
+        setShowScrollIndicator(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <motion.section 
-        className="relative py-20 px-4 text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="max-w-4xl mx-auto">
-          <motion.h1 
-            className="text-5xl md:text-6xl font-bold text-gray-900 mb-6"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-          >
-            The Future of{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Digital Payments
-            </span>
-          </motion.h1>
-          
-          <motion.p 
-            className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
-            Create personalized payment links, manage transactions, and accept payments 
-            seamlessly with Rook's powerful platform.
-          </motion.p>
-          
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-          >
-            <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              <Link to="/signup" className="flex items-center">
-                Get Started Free
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link to="/about">Learn More</Link>
-            </Button>
-          </motion.div>
-        </div>
-      </motion.section>
+    <div className="flex flex-col">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
+        <div
+          className="absolute inset-0 bg-white -z-10"
+          style={{ transform: `translateY(${scrollY * 0.1}px)` }}
+        />
+        <div
+          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center bg-no-repeat opacity-5 -z-20"
+          style={{ transform: `translateY(${scrollY * 0.05}px)` }}
+        />
 
-      {/* Features Section */}
-      <motion.section 
-        className="py-20 px-4 bg-white"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Rook?
+        {/* Decorative elements */}
+        <div className="absolute top-1/4 left-10 w-64 h-64 rounded-full bg-[#0096d4]/10 blur-3xl -z-10"></div>
+        <div className="absolute bottom-1/4 right-10 w-80 h-80 rounded-full bg-[#dc2e3e]/10 blur-3xl -z-10"></div>
+
+        <div className="container px-4 z-10 py-20 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1">
+              <div className="max-w-xl">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 text-black tracking-tight leading-tight animate-fade-in">
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#dc2e3e] via-[#0096d4] to-[#00d437]">
+                    Your Payment Receivables Identity
+                  </span>
+                </h1>
+                <p
+                  className="text-lg md:text-xl text-black/80 mb-8 animate-fade-in opacity-90 leading-relaxed"
+                  style={{ animationDelay: "200ms" }}
+                >
+                  Collect payments elegantly with a single beautiful link.
+                  <span className="font-semibold block mt-2 text-[#0096d4]">
+                    paym.me/you
+                  </span>
+                </p>
+                <div
+                  className="flex flex-col sm:flex-row gap-4 animate-fade-in"
+                  style={{ animationDelay: "400ms" }}
+                >
+                  {!user ? (
+                    <Link to="/signup">
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto shadow-md hover:shadow-lg transition-all bg-[#0096d4] hover:bg-[#0096d4]/90 text-white"
+                      >
+                        Get Started for Free
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link to="/dashboard">
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto shadow-md hover:shadow-lg transition-all bg-[#0096d4] hover:bg-[#0096d4]/90 text-white"
+                      >
+                        Go to Dashboard
+                      </Button>
+                    </Link>
+                  )}
+                  <Link to="/arav">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full sm:w-auto border-2 border-[#0096d4] text-black hover:bg-[#0096d4]/10"
+                    >
+                      See Demo
+                    </Button>
+                  </Link>
+                </div>
+
+                <div
+                  className="mt-12 flex items-center space-x-6 text-sm text-black/70 animate-fade-in"
+                  style={{ animationDelay: "600ms" }}
+                >
+                  <div className="flex items-center">
+                    <Shield size={16} className="mr-2 text-[#dc2e3e]" />
+                    <span>Secure & Private</span>
+                  </div>
+                  <div className="flex items-center">
+                    <UserCheck size={16} className="mr-2 text-[#00d437]" />
+                    <span>10k+ Users</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Zap size={16} className="mr-2 text-[#ffd800]" />
+                    <span>Instant Setup</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-1 md:order-2 flex justify-center items-center">
+              <div
+                className="relative w-full max-w-md animate-fade-in transform md:translate-y-0 -translate-y-8"
+                style={{ animationDelay: "300ms" }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0096d4]/20 to-[#dc2e3e]/10 rounded-2xl transform rotate-3 scale-95 blur-sm"></div>
+                <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-black/10">
+                  <div className="bg-gradient-to-r from-[#dc2e3e] to-[#0096d4] h-16 flex items-center px-6">
+                    <span className="text-white font-medium">
+                      paym.me/sarah
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center mb-6">
+                      <div className="w-16 h-16 rounded-full bg-[#0096d4]/10 flex items-center justify-center mr-4">
+                        <User size={32} className="text-[#0096d4]" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-semibold text-black">
+                          Sarah Johnson
+                        </h3>
+                        <p className="text-black/70">Freelance Designer</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4 mb-6">
+                      <div className="bg-[#f8fafc] p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-black mb-2">
+                          UPI Payment
+                        </h4>
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded bg-[#00d437]/10 flex items-center justify-center mr-3">
+                            <CreditCard size={20} className="text-[#00d437]" />
+                          </div>
+                          <span className="text-black">sarah@upi</span>
+                        </div>
+                      </div>
+                      <div className="bg-[#f8fafc] p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-black mb-2">
+                          Bank Transfer
+                        </h4>
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded bg-[#0096d4]/10 flex items-center justify-center mr-3">
+                            <CreditCard size={20} className="text-[#0096d4]" />
+                          </div>
+                          <span className="text-black">XXXX XXXX 1234</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Button className="w-full bg-[#0096d4] hover:bg-[#0096d4]/90">
+                      Pay Now
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {showScrollIndicator && (
+          <div
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce transition-opacity"
+            style={{ opacity: 1 - scrollY / 100 }}
+          >
+            <ChevronDown size={32} className="text-black opacity-50" />
+          </div>
+        )}
+      </section>
+
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547621706-1a9c79d5c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5" />
+
+        <div className="container px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
+              How It Works
             </h2>
-            <p className="text-xl text-gray-600">
-              Built for modern businesses and individuals who value simplicity and security.
+            <p className="text-lg md:text-xl text-black/80">
+              Three simple steps to start collecting payments privately
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <motion.div 
-              className="text-center p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <CreditCard className="h-6 w-6 text-blue-600" />
+
+          <div className="grid md:grid-cols-3 gap-10 max-w-5xl mx-auto relative">
+            <div className="absolute top-24 left-0 w-full h-1 bg-[#0096d4]/30 hidden md:block" />
+
+            {[
+              {
+                icon: PlusSquare,
+                title: "Create Account",
+                desc: "Sign up in seconds with just your email",
+                step: 1,
+                color: "#dc2e3e",
+              },
+              {
+                icon: CreditCard,
+                title: "Add Payment Methods",
+                desc: "Connect your UPI, bank account, or cards",
+                step: 2,
+                color: "#0096d4",
+              },
+              {
+                icon: Share2,
+                title: "Share Your Link",
+                desc: "Share your paym.me link with anyone",
+                step: 3,
+                color: "#00d437",
+              },
+            ].map((step, i) => (
+              <div
+                key={i}
+                className="text-center relative hover:-translate-y-2 transition-transform duration-300"
+                style={{ animationDelay: `${i * 200}ms` }}
+              >
+                <div className="rounded-full bg-white shadow-xl w-20 h-20 mx-auto mb-6 flex items-center justify-center border-4 border-[#0096d4]/20 relative z-10 hover:border-[#0096d4]/50 transition-colors">
+                  <step.icon
+                    className="h-9 w-9"
+                    style={{ color: step.color }}
+                  />
+                  <span className="absolute -top-4 -right-4 w-8 h-8 rounded-full bg-[#ffd800] flex items-center justify-center text-black font-bold text-sm">
+                    {step.step}
+                  </span>
+                </div>
+                <h3 className="text-2xl font-semibold mb-3 text-black">
+                  {step.title}
+                </h3>
+                <p className="text-black/70 text-lg">{step.desc}</p>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Easy Payments</h3>
-              <p className="text-gray-600">
-                Create custom payment links in seconds and accept payments from anywhere.
-              </p>
-            </motion.div>
-            
-            <motion.div 
-              className="text-center p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-6 w-6 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Secure & Reliable</h3>
-              <p className="text-gray-600">
-                Bank-grade security with end-to-end encryption for all transactions.
-              </p>
-            </motion.div>
-            
-            <motion.div 
-              className="text-center p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Zap className="h-6 w-6 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Lightning Fast</h3>
-              <p className="text-gray-600">
-                Process payments instantly with real-time notifications and updates.
-              </p>
-            </motion.div>
+            ))}
           </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* Payms Section */}
-      <PaymsSection />
+      <section className="py-24 bg-gradient-to-br from-white to-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547621706-1a9c79d5c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5" />
 
-      {/* CTA Section */}
-      <motion.section 
-        className="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Transform Your Payments?
-          </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join thousands of businesses already using Rook for their payment needs.
-          </p>
-          <Button asChild size="lg" variant="secondary" className="bg-white text-blue-600 hover:bg-gray-100">
-            <Link to="/signup" className="flex items-center">
-              Start Your Free Trial
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+        <div className="container px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
+              Why Choose Paym.me?
+            </h2>
+            <p className="text-lg md:text-xl text-black/80">
+              A complete payment identity solution that puts your privacy first
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                icon: Shield,
+                title: "Privacy-First",
+                desc: "No need to share personal contact info. Only show payment methods.",
+                color: "#dc2e3e",
+              },
+              {
+                icon: Zap,
+                title: "Smart Links",
+                desc: "Create one-click payment links with custom amounts and messages.",
+                color: "#ffd800",
+              },
+              {
+                icon: User,
+                title: "Your Identity",
+                desc: "Customize your page with your brand, photo, and social links.",
+                color: "#0096d4",
+              },
+              {
+                icon: MessageSquare,
+                title: "Payms",
+                desc: "Generate professional invoices and custom payment links for clients.",
+                color: "#00d437",
+              },
+            ].map((feature, i) => (
+              <Card
+                key={i}
+                className="bg-white border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group"
+              >
+                <CardContent className="pt-8 pb-6 relative">
+                  <div
+                    className="rounded-full p-4 w-16 h-16 flex items-center justify-center mb-6 transition-colors"
+                    style={{ backgroundColor: `${feature.color}10` }}
+                  >
+                    <feature.icon
+                      className="h-8 w-8"
+                      style={{ color: feature.color }}
+                    />
+                  </div>
+                  <h3 className="text-2xl font-semibold mb-3 text-black">
+                    {feature.title}
+                  </h3>
+                  <p className="text-black/70 text-lg">{feature.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-      </motion.section>
+      </section>
+
+      {/* New Payms Section */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547621706-1a9c79d5c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5" />
+
+        {/* Decorative elements */}
+        <div className="absolute top-1/4 right-10 w-64 h-64 rounded-full bg-[#0096d4]/10 blur-3xl"></div>
+        <div className="absolute bottom-1/4 left-10 w-80 h-80 rounded-full bg-[#dc2e3e]/10 blur-3xl"></div>
+
+        <div className="container px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
+              Introducing Payms
+            </h2>
+            <p className="text-lg md:text-xl text-black/80">
+              Create custom payment links for specific amounts and purposes
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center max-w-6xl mx-auto">
+            <div className="order-2 md:order-1">
+              <h3 className="text-2xl md:text-3xl font-bold mb-6 text-black">
+                Standard Link vs Payms
+              </h3>
+
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl p-6 shadow-lg">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-[#0096d4]/10 flex items-center justify-center mr-4">
+                      <User size={24} className="text-[#0096d4]" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-semibold text-black">
+                        Standard Link
+                      </h4>
+                      <p className="text-black/70">paym.me/yourname</p>
+                    </div>
+                  </div>
+                  <ul className="space-y-3 text-black/80">
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0096d4]">•</div>
+                      <span>Shows all your payment methods</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0096d4]">•</div>
+                      <span>Payer decides the amount</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0096d4]">•</div>
+                      <span>Your permanent payment identity</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#0096d4]/20">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-[#0096d4] flex items-center justify-center mr-4">
+                      <MessageSquare size={24} className="text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-semibold text-black">
+                        Payms
+                      </h4>
+                      <p className="text-black/70">paym.me/yourname/coffee</p>
+                    </div>
+                  </div>
+                  <ul className="space-y-3 text-black/80">
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0096d4]">•</div>
+                      <span>Pre-set payment amount</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0096d4]">•</div>
+                      <span>Custom description & purpose</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0096d4]">•</div>
+                      <span>One-click payment experience</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-3 mt-1 text-[#0096d4]">•</div>
+                      <span>Perfect for specific products or services</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-1 md:order-2 flex justify-center">
+              <div className="relative w-full max-w-md">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0096d4]/20 to-[#dc2e3e]/10 rounded-2xl transform rotate-3 scale-95 blur-sm"></div>
+                <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-black/10">
+                  <div className="bg-gradient-to-r from-[#dc2e3e] to-[#0096d4] h-16 flex items-center px-6">
+                    <span className="text-white font-medium">
+                      paym.me/alex/design-project
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center mb-6">
+                      <div className="w-16 h-16 rounded-full bg-[#0096d4]/10 flex items-center justify-center mr-4">
+                        <User size={32} className="text-[#0096d4]" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-semibold text-black">
+                          Alex's Design Project
+                        </h3>
+                        <p className="text-black/70">Logo Design - Phase 1</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-[#f8fafc] p-4 rounded-lg mb-6">
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="text-sm font-medium text-black">
+                          Project Details
+                        </h4>
+                        <span className="text-xl font-bold text-black">
+                          ₹5,000
+                        </span>
+                      </div>
+                      <p className="text-sm text-black/80">
+                        Initial payment for logo design project. Includes 3
+                        concepts and 2 revision rounds.
+                      </p>
+                    </div>
+
+                    <div className="space-y-4 mb-6">
+                      <div className="bg-[#f8fafc] p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-black mb-2">
+                          Payment Methods
+                        </h4>
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded bg-[#0096d4]/10 flex items-center justify-center mr-3">
+                            <CreditCard size={20} className="text-[#0096d4]" />
+                          </div>
+                          <span className="text-black">
+                            Multiple options available
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-[#0096d4] hover:bg-[#0096d4]/90">
+                      Pay ₹5,000
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-16 max-w-4xl mx-auto text-center">
+            <h3 className="text-2xl font-bold mb-6 text-black">
+              Create Payms For:
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                "Products",
+                "Services",
+                "Donations",
+                "Subscriptions",
+                "Events",
+                "Invoices",
+                "Memberships",
+                "Custom Amounts",
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-white/80 backdrop-blur-sm rounded-lg py-3 px-4 shadow-md hover:shadow-lg transition-all hover:-translate-y-1 border border-[#0096d4]/10"
+                >
+                  <p className="text-black font-medium">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Perfect For Section - Premium Auto-Carousel Design */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&auto=format&q=80&w=2940')] bg-cover bg-center opacity-[0.03]" />
+
+        <div className="container px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
+              Perfect For
+            </h2>
+            <p className="text-lg md:text-xl text-black/80">
+              Designed for professionals who value elegance and simplicity
+            </p>
+          </div>
+
+          {/* Premium Auto-Carousel */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            {/* Carousel Navigation */}
+            <div className="absolute top-1/2 left-0 transform -translate-y-1/2 z-20 w-full flex justify-between pointer-events-none">
+              <button
+                className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-black pointer-events-auto focus:outline-none hover:bg-white transition-all"
+                onClick={() => {
+                  const carousel = document.getElementById("premium-carousel");
+                  if (carousel) {
+                    carousel.scrollBy({ left: -400, behavior: "smooth" });
+                  }
+                }}
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-black pointer-events-auto focus:outline-none hover:bg-white transition-all"
+                onClick={() => {
+                  const carousel = document.getElementById("premium-carousel");
+                  if (carousel) {
+                    carousel.scrollBy({ left: 400, behavior: "smooth" });
+                  }
+                }}
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+
+            {/* Carousel Items */}
+            <div className="overflow-hidden" id="premium-carousel">
+              <div className="flex space-x-6 py-8 animate-carousel">
+                {[
+                  {
+                    icon: <Briefcase size={32} />,
+                    title: "Freelancers",
+                    desc: "Create professional payment links for clients with detailed project descriptions and milestone payments.",
+                    image:
+                      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2942",
+                    color: "#0096d4",
+                  },
+                  {
+                    icon: <ShoppingBag size={32} />,
+                    title: "Small Businesses",
+                    desc: "Streamline your payment collection with branded payment links that reflect your company's identity.",
+                    image:
+                      "https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                    color: "#dc2e3e",
+                  },
+                  {
+                    icon: <Users size={32} />,
+                    title: "Creators",
+                    desc: "Monetize your content with elegant payment links for subscriptions, tips, and exclusive offerings.",
+                    image:
+                      "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                    color: "#00d437",
+                  },
+                  {
+                    icon: <BookOpen size={32} />,
+                    title: "Educators",
+                    desc: "Collect course fees and workshop payments with professional, branded payment links.",
+                    image:
+                      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                    color: "#ffd800",
+                  },
+                  {
+                    icon: <Calendar size={32} />,
+                    title: "Event Organizers",
+                    desc: "Manage event registrations and ticket sales with customized payment experiences.",
+                    image:
+                      "https://images.unsplash.com/photo-1540317580384-e5d43867caa6?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                    color: "#0096d4",
+                  },
+                  {
+                    icon: <Heart size={32} />,
+                    title: "Non-Profits",
+                    desc: "Create donation links with purpose-specific descriptions and suggested amounts.",
+                    image:
+                      "https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-1.2.1&auto=format&fit=crop&q=80&w=2940",
+                    color: "#dc2e3e",
+                  },
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    className="min-w-[350px] md:min-w-[400px] flex-shrink-0"
+                  >
+                    <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 h-full group">
+                      <div className="h-48 overflow-hidden relative">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10"></div>
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-8 relative">
+                        <div
+                          className="w-16 h-16 rounded-full bg-white flex items-center justify-center absolute -top-8 right-8 border-4 border-white shadow-md"
+                          style={{ color: item.color }}
+                        >
+                          {item.icon}
+                        </div>
+                        <h3 className="text-2xl font-semibold mb-4 text-black">
+                          {item.title}
+                        </h3>
+                        <div
+                          className="w-12 h-0.5 mb-4 transition-all duration-500 group-hover:w-24"
+                          style={{ backgroundColor: item.color }}
+                        ></div>
+                        <p className="text-black/80">{item.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Carousel Indicators */}
+            <div className="flex justify-center mt-8 space-x-2">
+              {[0, 1, 2, 3].map((index) => (
+                <button
+                  key={index}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    index === 0 ? "bg-[#0096d4]" : "bg-[#0096d4]/20"
+                  }`}
+                  onClick={() => {
+                    const carousel =
+                      document.getElementById("premium-carousel");
+                    if (carousel) {
+                      carousel.scrollTo({
+                        left: index * 400,
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
+                ></button>
+              ))}
+            </div>
+          </div>
+
+          {/* Categories */}
+          <div className="mt-20 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {[
+                { name: "Freelancers", color: "#0096d4" },
+                { name: "Businesses", color: "#dc2e3e" },
+                { name: "Creators", color: "#00d437" },
+                { name: "Consultants", color: "#ffd800" },
+                { name: "Educators", color: "#0096d4" },
+                { name: "Non-profits", color: "#dc2e3e" },
+                { name: "Events", color: "#00d437" },
+                { name: "Personal", color: "#ffd800" },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-lg py-4 px-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 border border-black/5 text-center"
+                >
+                  <p className="font-medium" style={{ color: item.color }}>
+                    {item.name}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547945026-a788b13c73f7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-fixed opacity-5" />
+
+        <div className="container px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
+              What Our Users Say
+            </h2>
+            <p className="text-lg md:text-xl text-black/80">
+              Join thousands of creators who trust paym.me
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {[
+              {
+                name: "Priya M.",
+                role: "Content Creator",
+                quote:
+                  "Finally I can collect tips without sharing my personal phone number!",
+                avatar: "https://i.pravatar.cc/150?img=32",
+                color: "#dc2e3e",
+              },
+              {
+                name: "Rahul S.",
+                role: "Freelance Designer",
+                quote:
+                  "My clients love how professional my payment page looks.",
+                avatar: "https://i.pravatar.cc/150?img=12",
+                color: "#0096d4",
+              },
+              {
+                name: "Ananya K.",
+                role: "Small Business Owner",
+                quote:
+                  "Simplified payments and increased customer satisfaction.",
+                avatar: "https://i.pravatar.cc/150?img=23",
+                color: "#00d437",
+              },
+            ].map((item, i) => (
+              <Card
+                key={i}
+                className="bg-white border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+              >
+                <CardContent className="p-8 relative">
+                  <div
+                    className="absolute top-0 right-0 w-20 h-20 rounded-bl-full -mt-2 -mr-2 z-0"
+                    style={{ backgroundColor: `${item.color}10` }}
+                  />
+                  <div className="mb-6 flex items-center relative z-10">
+                    <div className="mr-4">
+                      <img
+                        src={item.avatar}
+                        alt={item.name}
+                        className="w-14 h-14 rounded-full object-cover border-2"
+                        style={{ borderColor: item.color }}
+                      />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-lg text-black">
+                        {item.name}
+                      </p>
+                      <p className="text-sm text-black/70">{item.role}</p>
+                    </div>
+                  </div>
+                  <p className="text-black/80 text-lg mb-4 relative z-10">
+                    "{item.quote}"
+                  </p>
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg
+                        key={star}
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill={item.color}
+                        stroke="none"
+                      >
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-white text-black relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579547621113-e4bb2a19bdd6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center opacity-5" />
+
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <div
+            className="absolute w-64 h-64 rounded-full bg-[#0096d4]/10 -top-20 -left-20 animate-pulse"
+            style={{ animationDuration: "10s" }}
+          />
+          <div
+            className="absolute w-96 h-96 rounded-full bg-[#dc2e3e]/10 bottom-20 right-10 animate-pulse"
+            style={{ animationDuration: "15s", animationDelay: "1s" }}
+          />
+        </div>
+
+        <div className="container px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl md:text-5xl font-bold mb-8 text-black">
+              Ready to Get Started?
+            </h2>
+            <p className="text-xl text-black/80 mb-12">
+              Create your payment profile in minutes and start receiving money
+              with privacy and dignity.
+            </p>
+            {!user ? (
+              <Link to="/signup">
+                <Button
+                  size="lg"
+                  className="bg-[#0096d4] text-white hover:bg-[#0096d4]/90 shadow-lg shadow-[#0096d4]/20 hover:shadow-xl hover:shadow-[#0096d4]/30 transition-all hover:scale-105 text-lg px-8 py-6 h-auto"
+                >
+                  Create Your Profile <ArrowRight className="ml-2" />
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/dashboard">
+                <Button
+                  size="lg"
+                  className="bg-[#0096d4] text-white hover:bg-[#0096d4]/90 shadow-lg shadow-[#0096d4]/20 hover:shadow-xl hover:shadow-[#0096d4]/30 transition-all hover:scale-105 text-lg px-8 py-6 h-auto"
+                >
+                  Go to Dashboard <ArrowRight className="ml-2" />
+                </Button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Replace the style jsx tag with a style tag */}
+      <style>
+        {`
+        @keyframes carousel {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-1200px);
+          }
+        }
+        .animate-carousel {
+          animation: carousel 30s linear infinite;
+        }
+        .animate-carousel:hover {
+          animation-play-state: paused;
+        }
+        `}
+      </style>
     </div>
   );
 };
