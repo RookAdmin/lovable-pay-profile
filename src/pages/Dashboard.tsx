@@ -55,6 +55,10 @@ declare global {
 }
 
 const Dashboard = () => {
+  useEffect(() => {
+    document.title = 'Dashboard - Rook Payment Platform';
+  }, []);
+
   const { user, signOut } = useAuth();
   const location = useLocation();
   const [isUpiValid, setIsUpiValid] = useState(true);
