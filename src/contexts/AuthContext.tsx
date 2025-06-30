@@ -9,7 +9,7 @@ type AuthContextType = {
   user: User | null;
   session: Session | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, username: string) => Promise<void>;
+  signUp: (email: string, password: string, firstName: string, lastName: string, username: string) => Promise<void>;
   signOut: () => Promise<void>;
   loading: boolean;
 };
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, username: string) => {
+  const signUp = async (email: string, password: string, firstName: string, lastName: string, username: string) => {
     try {
       // Check if username is already taken
       const { data: existingUser, error: checkError } = await supabase
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('username', username)
         .single();
       
-      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 means no rows returned
+      if (checkError && checkError.code !== 'PGRST116') {
         throw checkError;
       }
       
@@ -71,22 +71,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Username already taken');
       }
       
-      // If username is available, proceed with sign up
-      // Pass the username in the metadata so our trigger function can use it
+      // Sign up with first name, last name, and username in metadata
       const { error, data } = await supabase.auth.signUp({ 
         email, 
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/`,
           data: {
-            username: username, // This will be used by the database trigger
+            username: username,
+            first_name: firstName,
+            last_name: lastName
           }
         }
       });
       
       if (error) throw error;
-      
-      // The database trigger will now use the username from metadata
-      // We don't need the profile update anymore since our trigger handles this
       
       toast.success('Account created! Please check your email for confirmation.');
     } catch (error: any) {

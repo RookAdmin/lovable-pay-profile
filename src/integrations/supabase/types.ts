@@ -162,9 +162,11 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
+          first_name: string | null
           id: string
           instagram_url: string | null
           is_verified: boolean | null
+          last_name: string | null
           linkedin_url: string | null
           twitter_url: string | null
           updated_at: string
@@ -178,9 +180,11 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          first_name?: string | null
           id: string
           instagram_url?: string | null
           is_verified?: boolean | null
+          last_name?: string | null
           linkedin_url?: string | null
           twitter_url?: string | null
           updated_at?: string
@@ -194,9 +198,11 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          first_name?: string | null
           id?: string
           instagram_url?: string | null
           is_verified?: boolean | null
+          last_name?: string | null
           linkedin_url?: string | null
           twitter_url?: string | null
           updated_at?: string
