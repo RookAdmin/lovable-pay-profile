@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
@@ -70,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Username already taken');
       }
       
-      // If username is available, proceed with sign up
+      // Sign up with first_name and last_name in metadata
       const { error, data } = await supabase.auth.signUp({ 
         email, 
         password,

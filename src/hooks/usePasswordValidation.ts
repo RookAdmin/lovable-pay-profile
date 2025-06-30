@@ -1,75 +1,63 @@
 
 import { useState, useEffect } from 'react';
 
-interface PasswordStrength {
-  score: number;
-  feedback: string[];
-  isStrong: boolean;
+interface PasswordValidation {
+  isValid: boolean;
+  requirements: {
+    length: boolean;
+    uppercase: boolean;
+    lowercase: boolean;
+    number: boolean;
+    special: boolean;
+  };
+  message: string;
 }
 
-export const usePasswordValidation = (password: string) => {
-  const [strength, setStrength] = useState<PasswordStrength>({
-    score: 0,
-    feedback: [],
-    isStrong: false
+export const usePasswordValidation = (password: string): PasswordValidation => {
+  const [validation, setValidation] = useState<PasswordValidation>({
+    isValid: false,
+    requirements: {
+      length: false,
+      uppercase: false,
+      lowercase: false,
+      number: false,
+      special: false,
+    },
+    message: '',
   });
 
   useEffect(() => {
-    const validatePassword = () => {
-      const feedback: string[] = [];
-      let score = 0;
-
-      if (password.length === 0) {
-        setStrength({ score: 0, feedback: [], isStrong: false });
-        return;
-      }
-
-      // Length check
-      if (password.length < 8) {
-        feedback.push('At least 8 characters required');
-      } else {
-        score += 1;
-      }
-
-      // Uppercase check
-      if (!/[A-Z]/.test(password)) {
-        feedback.push('Add uppercase letter');
-      } else {
-        score += 1;
-      }
-
-      // Lowercase check
-      if (!/[a-z]/.test(password)) {
-        feedback.push('Add lowercase letter');
-      } else {
-        score += 1;
-      }
-
-      // Number check
-      if (!/\d/.test(password)) {
-        feedback.push('Add number');
-      } else {
-        score += 1;
-      }
-
-      // Special character check
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-        feedback.push('Add special character');
-      } else {
-        score += 1;
-      }
-
-      const isStrong = score >= 4 && password.length >= 8;
-
-      setStrength({
-        score,
-        feedback,
-        isStrong
-      });
+    const requirements = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     };
 
-    validatePassword();
+    const isValid = Object.values(requirements).every(req => req);
+    
+    let message = '';
+    if (password.length > 0) {
+      if (isValid) {
+        message = '✓ Strong password';
+      } else {
+        const missing = [];
+        if (!requirements.length) missing.push('8+ characters');
+        if (!requirements.uppercase) missing.push('uppercase letter');
+        if (!requirements.lowercase) missing.push('lowercase letter');
+        if (!requirements.number) missing.push('number');
+        if (!requirements.special) missing.push('special character');
+        message = `Missing: ${missing.join(', ')}`;
+      }
+    }
+
+    setValidation({
+      isValid,
+      requirements,
+      message,
+    });
   }, [password]);
 
-  return strength;
+  return validation;
 };

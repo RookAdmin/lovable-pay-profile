@@ -7,46 +7,29 @@ interface PasswordStrengthIndicatorProps {
 }
 
 const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({ password }) => {
-  const { score, feedback, isStrong } = usePasswordValidation(password);
+  const { requirements, message, isValid } = usePasswordValidation(password);
 
   if (!password) return null;
 
-  const getStrengthColor = () => {
-    if (score <= 2) return 'bg-red-500';
-    if (score <= 3) return 'bg-yellow-500';
-    return 'bg-green-500';
-  };
-
-  const getStrengthText = () => {
-    if (score <= 2) return 'Weak';
-    if (score <= 3) return 'Medium';
-    return 'Strong';
-  };
-
   return (
     <div className="mt-2 space-y-2">
-      <div className="flex items-center gap-2">
-        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-          <div 
-            className={`h-full transition-all duration-300 ${getStrengthColor()}`}
-            style={{ width: `${(score / 5) * 100}%` }}
-          />
-        </div>
-        <span className={`text-xs font-medium ${isStrong ? 'text-green-600' : 'text-muted-foreground'}`}>
-          {getStrengthText()}
-        </span>
+      <div className={`text-sm ${isValid ? 'text-green-600' : 'text-red-600'}`}>
+        {message}
       </div>
-      
-      {feedback.length > 0 && (
-        <ul className="space-y-1">
-          {feedback.map((item, index) => (
-            <li key={index} className="text-xs text-muted-foreground flex items-center gap-1">
-              <span className="w-1 h-1 bg-muted-foreground rounded-full" />
-              {item}
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="space-y-1">
+        {Object.entries(requirements).map(([key, met]) => (
+          <div key={key} className={`text-xs flex items-center ${met ? 'text-green-600' : 'text-gray-400'}`}>
+            <span className="mr-2">{met ? '✓' : '○'}</span>
+            <span>
+              {key === 'length' && '8+ characters'}
+              {key === 'uppercase' && 'Uppercase letter'}
+              {key === 'lowercase' && 'Lowercase letter'}
+              {key === 'number' && 'Number'}
+              {key === 'special' && 'Special character'}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

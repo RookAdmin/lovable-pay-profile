@@ -1,8 +1,8 @@
 
 -- Add first_name and last_name columns to profiles table
 ALTER TABLE public.profiles 
-ADD COLUMN IF NOT EXISTS first_name text,
-ADD COLUMN IF NOT EXISTS last_name text;
+ADD COLUMN first_name text,
+ADD COLUMN last_name text;
 
 -- Update the trigger function to handle first_name and last_name
 CREATE OR REPLACE FUNCTION public.handle_new_user()

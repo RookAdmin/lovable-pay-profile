@@ -1,40 +1,35 @@
 
 import { useState, useEffect } from 'react';
 
-interface NameValidation {
-  isValid: boolean;
-  error: string;
-  cleanedValue: string;
-}
-
-export const useNameValidation = (name: string, maxLength: number = 20) => {
-  const [validation, setValidation] = useState<NameValidation>({
-    isValid: true,
-    error: '',
-    cleanedValue: name
-  });
+export const useNameValidation = (name: string, fieldName: string) => {
+  const [isValid, setIsValid] = useState(true);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Remove numbers from name
-    const cleanedName = name.replace(/[0-9]/g, '');
-    
-    let isValid = true;
-    let error = '';
-
-    if (name.length > maxLength) {
-      isValid = false;
-      error = 'Character length is too long';
-    } else if (name !== cleanedName) {
-      isValid = false;
-      error = 'Numbers are not allowed';
+    if (name.length === 0) {
+      setIsValid(true);
+      setMessage('');
+      return;
     }
 
-    setValidation({
-      isValid,
-      error,
-      cleanedValue: cleanedName
-    });
-  }, [name, maxLength]);
+    // Check for numbers
+    const hasNumbers = /\d/.test(name);
+    if (hasNumbers) {
+      setIsValid(false);
+      setMessage(`${fieldName} cannot contain numbers`);
+      return;
+    }
 
-  return validation;
+    // Check length
+    if (name.length > 20) {
+      setIsValid(false);
+      setMessage(`${fieldName} is too long (max 20 characters)`);
+      return;
+    }
+
+    setIsValid(true);
+    setMessage(`✓ ${fieldName} looks good`);
+  }, [name, fieldName]);
+
+  return { isValid, message };
 };

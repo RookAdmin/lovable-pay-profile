@@ -1,12 +1,8 @@
-
 import React from "react";
+import { Outlet } from "react-router-dom";
 import Logo from "@/components/Logo";
 
-interface ProfileLayoutProps {
-  children: React.ReactNode;
-}
-
-const ProfileLayout: React.FC<ProfileLayoutProps> = ({ children }) => {
+const ProfileLayout: React.FC = () => {
   console.log(
     "Rendering ProfileLayout - This is a public page that should work without login"
   );
@@ -31,7 +27,7 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({ children }) => {
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue/5 rounded-full filter blur-3xl -z-10" />
         <div className="absolute bottom-20 left-10 w-96 h-96 bg-blue/5 rounded-full filter blur-3xl -z-10" />
-        {children}
+        <Outlet />
       </main>
 
       <footer className="w-full border-t border-gray-100 bg-white">

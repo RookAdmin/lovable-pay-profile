@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Info, Globe, Users } from "lucide-react";
 
 const About = () => {
+  useEffect(() => {
+    document.title = 'About - Rook Payment Platform';
+  }, []);
+
   return (
     <div className="container max-w-5xl py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
