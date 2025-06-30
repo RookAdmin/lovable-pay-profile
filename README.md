@@ -1,38 +1,34 @@
-# Welcome to your Lovable project
+# Paym.me – Your Payment Identity Platform
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/c8b2c027-cb05-4394-b013-19894892564f
+**Website**: https://paym.me
+
+## What is Paym.me?
+
+Paym.me is a privacy-first payment identity platform that lets you collect payments securely and privately with a single, beautiful link. Whether you’re a creator, freelancer, or business, Paym.me makes it easy to share your payment details, receive payments, and manage your payment profile—all in one place.
 
 ## How can I edit this code?
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/c8b2c027-cb05-4394-b013-19894892564f) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
+You can work on your Paym.me project in several ways:
 
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Clone this repository and work locally using your favorite code editor. Make sure you have Node.js & npm installed ([get Node.js](https://nodejs.org/)).
 
 Follow these steps:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Step 1: Clone the repository using your Git URL.
 git clone <YOUR_GIT_URL>
 
 # Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
 
 # Step 3: Install the necessary dependencies.
-npm i
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server with auto-reloading and instant preview.
 npm run dev
 ```
 
@@ -40,7 +36,7 @@ npm run dev
 
 - Navigate to the desired file(s).
 - Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- Make your changes and commit them.
 
 **Use GitHub Codespaces**
 
@@ -59,15 +55,25 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (for backend and authentication)
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/c8b2c027-cb05-4394-b013-19894892564f) and click on Share -> Publish.
+You can deploy Paym.me using your preferred hosting provider (such as Vercel, Netlify, or your own server). Just build the project and follow your provider's deployment instructions.
 
-## Can I connect a custom domain to my Lovable project?
+## Can I connect a custom domain to my Paym.me project?
 
-Yes, you can!
+Yes! Most hosting providers allow you to connect a custom domain. Follow their documentation to set up your domain and point it to your deployed Paym.me project.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Key Features
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- Create a secure, shareable payment profile
+- Accept payments via UPI, bank transfer, and more
+- Smart payment links for invoices and requests
+- Analytics dashboard to track your payment activity
+- Privacy-first: your personal details are never exposed
+- Customizable profile and branding
+
+---
+
+For more information, visit [https://paym.me](https://paym.me) or contact the Paym.me team.
