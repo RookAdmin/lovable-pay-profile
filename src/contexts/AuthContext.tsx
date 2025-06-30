@@ -9,7 +9,7 @@ type AuthContextType = {
   user: User | null;
   session: Session | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, username: string, firstName: string, lastName: string) => Promise<void>;
+  signUp: (email: string, password: string, username: string) => Promise<void>;
   signOut: () => Promise<void>;
   loading: boolean;
 };
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, username: string, firstName: string, lastName: string) => {
+  const signUp = async (email: string, password: string, username: string) => {
     try {
       // Check if username is already taken
       const { data: existingUser, error: checkError } = await supabase
@@ -71,20 +71,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Username already taken');
       }
       
-      // Sign up with first_name and last_name in metadata
+      // If username is available, proceed with sign up
+      // Pass the username in the metadata so our trigger function can use it
       const { error, data } = await supabase.auth.signUp({ 
         email, 
         password,
         options: {
           data: {
-            username: username,
-            first_name: firstName,
-            last_name: lastName,
+            username: username, // This will be used by the database trigger
           }
         }
       });
       
       if (error) throw error;
+      
+      // The database trigger will now use the username from metadata
+      // We don't need the profile update anymore since our trigger handles this
       
       toast.success('Account created! Please check your email for confirmation.');
     } catch (error: any) {

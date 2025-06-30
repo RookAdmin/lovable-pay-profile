@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mail, MessageSquare, Phone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Contact = () => {
-  useEffect(() => {
-    document.title = 'Contact - Rook Payment Platform';
-  }, []);
-
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
