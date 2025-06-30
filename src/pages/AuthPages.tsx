@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEmailValidation } from '@/hooks/useEmailValidation';
 import { usePasswordStrength } from '@/hooks/usePasswordStrength';
-import { Eye, EyeOff, Check, X, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Check, X, AlertCircle, Copy } from 'lucide-react';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
@@ -34,8 +34,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   const [lastNameError, setLastNameError] = useState('');
   const [passwordsMatch, setPasswordsMatch] = useState(true);
 
-  // Email validation
-  const { isChecking, emailExists, hasChecked } = useEmailValidation(formData.email);
+  // Email validation - only for signup
+  const { isChecking, emailExists, hasChecked } = useEmailValidation(mode === 'signup' ? formData.email : '');
   
   // Password strength validation
   const passwordStrength = usePasswordStrength(formData.password);
@@ -107,6 +107,24 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const useSuggestedPassword = () => {
+    if (passwordStrength.suggestion) {
+      setFormData(prev => ({ 
+        ...prev, 
+        password: passwordStrength.suggestion!,
+        confirmPassword: passwordStrength.suggestion!
+      }));
+      setPasswordsMatch(true);
+    }
+  };
+
+  const copyPasswordSuggestion = () => {
+    if (passwordStrength.suggestion) {
+      navigator.clipboard.writeText(passwordStrength.suggestion);
+      toast.success('Password copied to clipboard');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -323,28 +341,62 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {mode === 'signup' && formData.password && (
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <div className={`h-2 flex-1 rounded ${
-                        passwordStrength.score === 0 ? 'bg-gray-200' :
-                        passwordStrength.score <= 2 ? 'bg-red-500' :
-                        passwordStrength.score <= 3 ? 'bg-yellow-500' : 'bg-green-500'
-                      }`} />
-                      <span className="text-xs text-muted-foreground">
-                        {passwordStrength.score <= 2 ? 'Weak' :
-                         passwordStrength.score <= 3 ? 'Medium' : 'Strong'}
-                      </span>
-                    </div>
-                    {passwordStrength.feedback.length > 0 && (
-                      <ul className="text-xs text-muted-foreground space-y-1">
-                        {passwordStrength.feedback.map((item, index) => (
-                          <li key={index} className="flex items-center gap-1">
-                            <X size={10} className="text-red-500" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
+                {mode === 'signup' && (
+                  <div className="space-y-2">
+                    {formData.password && (
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <div className={`h-2 flex-1 rounded ${
+                            passwordStrength.score === 0 ? 'bg-gray-200' :
+                            passwordStrength.score <= 2 ? 'bg-red-500' :
+                            passwordStrength.score <= 3 ? 'bg-yellow-500' : 'bg-green-500'
+                          }`} />
+                          <span className="text-xs text-muted-foreground">
+                            {passwordStrength.score <= 2 ? 'Weak' :
+                             passwordStrength.score <= 3 ? 'Medium' : 'Strong'}
+                          </span>
+                        </div>
+                        {passwordStrength.feedback.length > 0 && (
+                          <ul className="text-xs text-muted-foreground space-y-1">
+                            {passwordStrength.feedback.map((item, index) => (
+                              <li key={index} className="flex items-center gap-1">
+                                <X size={10} className="text-red-500" />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                    {passwordStrength.suggestion && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-2">
+                        <p className="text-xs font-medium text-blue-800">
+                          Suggested strong password:
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <code className="text-sm bg-white px-2 py-1 rounded border flex-1 font-mono">
+                            {passwordStrength.suggestion}
+                          </code>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={copyPasswordSuggestion}
+                            className="h-8 px-2"
+                          >
+                            <Copy size={14} />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={useSuggestedPassword}
+                            className="h-8 px-3 text-xs"
+                          >
+                            Use
+                          </Button>
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}

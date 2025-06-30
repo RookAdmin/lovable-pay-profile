@@ -8,7 +8,7 @@ export const useEmailValidation = (email: string) => {
   const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
-    if (!email || email.length < 3) {
+    if (!email || email.length < 3 || !email.includes('@')) {
       setEmailExists(false);
       setHasChecked(false);
       return;
@@ -17,36 +17,40 @@ export const useEmailValidation = (email: string) => {
     const checkEmail = async () => {
       setIsChecking(true);
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', email) // This won't work for email check, we need to check auth.users
-          .single();
-        
-        // Since we can't directly query auth.users, we'll try to sign in with a fake password
-        // If the user exists, we'll get a specific error
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        // Try to sign up with the email to check if it exists
+        // This is the most reliable way to check email existence
+        const { data, error } = await supabase.auth.signUp({
           email,
-          password: 'fake-password-for-check'
+          password: 'temp-password-for-check-123!@#', // Temporary password
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+          }
         });
         
-        // If error message contains 'Invalid login credentials', user exists but password is wrong
-        // If error contains 'Email not confirmed' or similar, user exists
-        if (signInError?.message && 
-            (signInError.message.includes('Invalid login credentials') || 
-             signInError.message.includes('Email not confirmed'))) {
+        // If there's an error about email already registered, user exists
+        if (error && error.message.toLowerCase().includes('already registered')) {
           setEmailExists(true);
+        } else if (error && error.message.toLowerCase().includes('user already registered')) {
+          setEmailExists(true);
+        } else if (data.user && !data.user.email_confirmed_at) {
+          // If signup succeeded but email not confirmed, it means email is available
+          setEmailExists(false);
+          // Clean up the test user registration immediately
+          if (data.session) {
+            await supabase.auth.signOut();
+          }
         } else {
           setEmailExists(false);
         }
       } catch (error) {
+        console.log('Email check error:', error);
         setEmailExists(false);
       }
       setIsChecking(false);
       setHasChecked(true);
     };
 
-    const timer = setTimeout(checkEmail, 800); // Debounce
+    const timer = setTimeout(checkEmail, 1000); // Increased debounce time
     return () => clearTimeout(timer);
   }, [email]);
 
