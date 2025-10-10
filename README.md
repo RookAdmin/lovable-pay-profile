@@ -63,7 +63,7 @@ You can deploy Paym.me using your preferred hosting provider (such as Vercel, Ne
 
 ## Can I connect a custom domain to my Paym.me project?
 
-Yes! Most hosting providers allow you to connect a custom domain. Follow their documentation to set up your domain and point it to your deployed Paym.me project.
+Yes! Most hosting providers allow you to connects a custom domain. Follow their documentation to set up your domain and point it to your deployed Paym.me project.
 
 ## Key Features
 
