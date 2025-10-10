@@ -1,15 +1,30 @@
-
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, addDays } from "date-fns";
@@ -70,7 +85,10 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
 
   const validateForm = () => {
     const schema = z.object({
-      title: z.string().min(1, "Title is required"),
+      title: z
+        .string()
+        .min(1, "Title is required")
+        .max(35, "Title must be 35 characters or less"),
       amount: z.number().min(1, "Amount must be greater than 0"),
       currency: z.string(),
     });
@@ -90,29 +108,31 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
-    
+
     try {
       const updateData = {
         title: formData.title,
         amount: formData.amount,
         currency: formData.currency,
-        expires_at: expirationEnabled ? formData.expiresAt?.toISOString() : null,
+        expires_at: expirationEnabled
+          ? formData.expiresAt?.toISOString()
+          : null,
         invoice_app: formData.invoiceApp || null,
         invoice_id: formData.invoiceId || null,
         reminder_enabled: formData.reminderEnabled,
       };
-      
+
       const { error } = await supabase
         .from("payms")
         .update(updateData)
         .eq("id", paym.id);
-        
+
       if (error) throw error;
-      
+
       toast.success("Paym updated successfully");
       onSuccess();
       onOpenChange(false);
@@ -133,21 +153,27 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
             Update your payment link details
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
           <div className="space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="title">Title</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="title">Title</Label>
+                <span className="text-xs text-muted-foreground">
+                  {formData.title.length}/35
+                </span>
+              </div>
               <Input
                 id="title"
                 name="title"
                 placeholder="Invoice for Website Design"
                 value={formData.title}
                 onChange={handleInputChange}
+                maxLength={35}
                 required
               />
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="amount">Amount</Label>
@@ -163,12 +189,14 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
                   required
                 />
               </div>
-              
+
               <div className="grid gap-2">
                 <Label htmlFor="currency">Currency</Label>
                 <Select
                   value={formData.currency}
-                  onValueChange={(value) => handleSelectChange("currency", value)}
+                  onValueChange={(value) =>
+                    handleSelectChange("currency", value)
+                  }
                 >
                   <SelectTrigger id="currency">
                     <SelectValue placeholder="Select currency" />
@@ -183,7 +211,7 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
                 </Select>
               </div>
             </div>
-            
+
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="expiration">Expiration Date</Label>
@@ -193,12 +221,15 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
                     checked={expirationEnabled}
                     onCheckedChange={setExpirationEnabled}
                   />
-                  <Label htmlFor="expiration-toggle" className="text-sm text-muted-foreground">
+                  <Label
+                    htmlFor="expiration-toggle"
+                    className="text-sm text-muted-foreground"
+                  >
                     Enable
                   </Label>
                 </div>
               </div>
-              
+
               {expirationEnabled && (
                 <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                   <PopoverTrigger asChild>
@@ -210,7 +241,9 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.expiresAt ? format(formData.expiresAt, "PPP") : "Select a date"}
+                      {formData.expiresAt
+                        ? format(formData.expiresAt, "PPP")
+                        : "Select a date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -218,7 +251,10 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
                       mode="single"
                       selected={formData.expiresAt}
                       onSelect={(date) => {
-                        setFormData((prev) => ({ ...prev, expiresAt: date || undefined }));
+                        setFormData((prev) => ({
+                          ...prev,
+                          expiresAt: date || undefined,
+                        }));
                         setIsCalendarOpen(false);
                       }}
                       initialFocus
@@ -228,12 +264,14 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
                 </Popover>
               )}
             </div>
-            
+
             <div className="grid gap-2">
               <Label htmlFor="invoiceApp">Invoice Application (Optional)</Label>
               <Select
                 value={formData.invoiceApp || ""}
-                onValueChange={(value) => handleSelectChange("invoiceApp", value)}
+                onValueChange={(value) =>
+                  handleSelectChange("invoiceApp", value)
+                }
               >
                 <SelectTrigger id="invoiceApp">
                   <SelectValue placeholder="Select invoice app" />
@@ -247,7 +285,7 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="grid gap-2">
               <Label htmlFor="invoiceId">Invoice ID (Optional)</Label>
               <Input
@@ -258,7 +296,7 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
                 onChange={handleInputChange}
               />
             </div>
-            
+
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="reminder">Payment Reminders</Label>
@@ -267,17 +305,23 @@ const EditPaymModal: React.FC<EditPaymModalProps> = ({
                     id="reminder-toggle"
                     checked={formData.reminderEnabled}
                     onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, reminderEnabled: checked }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        reminderEnabled: checked,
+                      }))
                     }
                   />
-                  <Label htmlFor="reminder-toggle" className="text-sm text-muted-foreground">
+                  <Label
+                    htmlFor="reminder-toggle"
+                    className="text-sm text-muted-foreground"
+                  >
                     Enable
                   </Label>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-end space-x-4">
             <Button
               type="button"

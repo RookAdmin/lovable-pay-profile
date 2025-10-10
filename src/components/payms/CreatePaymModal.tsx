@@ -32,7 +32,7 @@ import { format, addDays } from "date-fns";
 import { PaymFormData } from "@/types/payms";
 import { z } from "zod";
 import { safelyConvertToUpiDetails } from "@/types/payment";
-import emailjs from '@emailjs/browser';
+import emailjs from "@emailjs/browser";
 
 interface CreatePaymModalProps {
   open: boolean;
@@ -89,7 +89,10 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
 
   const validateForm = () => {
     const schema = z.object({
-      title: z.string().min(1, "Title is required"),
+      title: z
+        .string()
+        .min(1, "Title is required")
+        .max(35, "Title must be 35 characters or less"),
       amount: z.number().min(1, "Amount must be greater than 0"),
       currency: z.string(),
       recipientEmail: z
@@ -131,17 +134,21 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
 
       const senderName = profile?.display_name || "Someone";
       const senderUpiId = profile?.upi_id;
-      
+
       const expiryText = formData.expiresAt
         ? `Expires on ${formData.expiresAt.toLocaleDateString()}`
         : "No expiry date";
 
       // Create UPI payment link for the Pay Now button
       let upiPaymentLink = paymentLink; // Fallback to regular payment link
-      
+
       if (senderUpiId && formData.amount > 0) {
         // Create comprehensive UPI URL for direct payment
-        const upiUrl = `upi://pay?pa=${encodeURIComponent(senderUpiId)}&pn=${encodeURIComponent(senderName)}&am=${formData.amount}&tn=${encodeURIComponent(formData.title)}&cu=INR&mc=0000`;
+        const upiUrl = `upi://pay?pa=${encodeURIComponent(
+          senderUpiId
+        )}&pn=${encodeURIComponent(senderName)}&am=${
+          formData.amount
+        }&tn=${encodeURIComponent(formData.title)}&cu=INR&mc=0000`;
         upiPaymentLink = upiUrl;
         console.log("Generated UPI payment link for email:", upiPaymentLink);
       }
@@ -299,15 +306,21 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
           <div className="space-y-3 md:space-y-4">
             {/* Title field */}
             <div className="grid gap-1 md:gap-2">
-              <Label htmlFor="title" className="text-sm md:text-base">
-                Title
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="title" className="text-sm md:text-base">
+                  Title
+                </Label>
+                <span className="text-xs text-muted-foreground">
+                  {formData.title.length}/35
+                </span>
+              </div>
               <Input
                 id="title"
                 name="title"
                 placeholder="Invoice for Website Design"
                 value={formData.title}
                 onChange={handleInputChange}
+                maxLength={35}
                 required
               />
             </div>
@@ -500,7 +513,8 @@ const CreatePaymModal: React.FC<CreatePaymModalProps> = ({
                       required
                     />
                     <p className="text-xs md:text-sm text-muted-foreground">
-                      Invoice will be automatically sent to this email with UPI payment link
+                      Invoice will be automatically sent to this email with UPI
+                      payment link
                     </p>
                   </div>
 
