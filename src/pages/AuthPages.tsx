@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEmailValidation } from '@/hooks/useEmailValidation';
 import { usePasswordStrength } from '@/hooks/usePasswordStrength';
+import { validateEmail } from '@/utils/validation';
 import { Eye, EyeOff, Check, X, AlertCircle, Copy } from 'lucide-react';
 
 interface AuthFormProps {
@@ -35,7 +36,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   // Email validation - only for signup
-  const { isChecking, emailExists, hasChecked } = useEmailValidation(mode === 'signup' ? formData.email : '');
+  const { isChecking, emailExists, hasChecked, isValidFormat } = useEmailValidation(mode === 'signup' ? formData.email : '');
+  const [emailFormatError, setEmailFormatError] = useState('');
   
   // Password strength validation
   const passwordStrength = usePasswordStrength(formData.password);
@@ -90,6 +92,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
     if (name === 'firstName' || name === 'lastName') {
       handleNameChange(name, value);
       return;
+    }
+    
+    // Validate email format on change
+    if (name === 'email' && value && !validateEmail(value)) {
+      setEmailFormatError('Please enter a valid email address');
+    } else if (name === 'email') {
+      setEmailFormatError('');
     }
     
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -161,8 +170,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
           return;
         }
         
+        if (!validateEmail(formData.email)) {
+          toast.error('Please enter a valid email address');
+          setIsSubmitting(false);
+          return;
+        }
+        
         if (emailExists) {
-          toast.error('Email already exists');
+          toast.error('This email is already registered. Please use a different one.');
           setIsSubmitting(false);
           return;
         }
@@ -293,22 +308,33 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
                     required 
                     value={formData.email}
                     onChange={handleChange}
-                    className={emailExists ? 'border-red-500' : ''}
+                    className={emailExists || emailFormatError ? 'border-red-500' : ''}
                   />
-                  {mode === 'signup' && hasChecked && (
+                  {mode === 'signup' && formData.email && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       {isChecking ? (
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+                      ) : !isValidFormat ? (
+                        <X className="h-4 w-4 text-red-500" />
                       ) : emailExists ? (
                         <X className="h-4 w-4 text-red-500" />
-                      ) : (
+                      ) : hasChecked ? (
                         <Check className="h-4 w-4 text-green-500" />
-                      )}
+                      ) : null}
                     </div>
                   )}
                 </div>
-                {mode === 'signup' && emailExists && (
-                  <p className="text-xs text-red-500">Email already exists</p>
+                {emailFormatError && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle size={12} />
+                    {emailFormatError}
+                  </p>
+                )}
+                {mode === 'signup' && emailExists && !emailFormatError && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle size={12} />
+                    This email is already registered. Please use a different one.
+                  </p>
                 )}
               </div>
               
@@ -437,7 +463,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
               <Button 
                 type="submit" 
                 className="w-full mb-4" 
-                disabled={isSubmitting || (mode === 'signup' && (emailExists || !passwordStrength.isStrong || !passwordsMatch))}
+                disabled={isSubmitting || (mode === 'signup' && (emailExists || !isValidFormat || !!emailFormatError || !passwordStrength.isStrong || !passwordsMatch))}
               >
                 {isSubmitting ? 'Processing...' : mode === 'login' ? 'Log in' : 'Sign up'}
               </Button>

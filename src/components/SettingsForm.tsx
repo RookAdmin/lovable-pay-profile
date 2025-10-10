@@ -8,14 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge"; // Add this import
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, User, Lock, Bell, AlertTriangle, Clock } from 'lucide-react';
+import { Calendar, User, Lock, Bell, AlertTriangle, Clock, AlertCircle } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { UserPreference } from "@/types/userPreference";
+import { validateEmail } from "@/utils/validation";
 
 interface SettingsFormProps {
   initialData: any;
@@ -35,6 +36,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData, refetchProfile
   const [lastUsernameChange, setLastUsernameChange] = useState<Date | null>(null);
   const [canChangeUsername, setCanChangeUsername] = useState(true);
   const [nextChangeDate, setNextChangeDate] = useState<Date | null>(null);
+  const [emailError, setEmailError] = useState("");
   
   // State for notification preferences
   const [notificationPrefs, setNotificationPrefs] = useState({
@@ -139,6 +141,14 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData, refetchProfile
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    
+    if (name === 'email') {
+      if (value && !validateEmail(value)) {
+        setEmailError('Please enter a valid email address');
+      } else {
+        setEmailError('');
+      }
+    }
   };
   
   const handleUsernameUpdate = async (e: React.FormEvent) => {
@@ -185,8 +195,9 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData, refetchProfile
   const handleEmailUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.email || !formData.email.includes('@')) {
+    if (!formData.email || !validateEmail(formData.email)) {
       toast.error("Please enter a valid email address");
+      setEmailError("Please enter a valid email address");
       return;
     }
     
@@ -395,14 +406,23 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData, refetchProfile
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
                   <div className="flex gap-2">
-                    <Input
-                      id="email"
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                    />
-                    <Button type="submit">
+                    <div className="flex-1">
+                      <Input
+                        id="email"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className={emailError ? 'border-red-500' : ''}
+                      />
+                      {emailError && (
+                        <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                          <AlertCircle size={12} />
+                          {emailError}
+                        </p>
+                      )}
+                    </div>
+                    <Button type="submit" disabled={!!emailError}>
                       Update
                     </Button>
                   </div>

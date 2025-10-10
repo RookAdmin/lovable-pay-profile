@@ -17,7 +17,7 @@ import { DocumentUpload } from '@/types/verification';
 
 const phoneRegex = /^[6-9]\d{9}$/;
 const aadhaarRegex = /^\d{12}$/;
-const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const formSchema = z.object({
   fullName: z.string().min(3, { message: 'Full name is required' }),

@@ -1,58 +1,85 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { validateEmail } from '@/utils/validation';
 
 export const useEmailValidation = (email: string) => {
   const [isChecking, setIsChecking] = useState(false);
   const [emailExists, setEmailExists] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
+  const [isValidFormat, setIsValidFormat] = useState(true);
 
   useEffect(() => {
-    if (!email || email.length < 3 || !email.includes('@')) {
+    // First check if email format is valid
+    if (!email) {
       setEmailExists(false);
       setHasChecked(false);
+      setIsValidFormat(true);
       return;
     }
 
+    if (!validateEmail(email)) {
+      setIsValidFormat(false);
+      setHasChecked(false);
+      setEmailExists(false);
+      return;
+    }
+
+    setIsValidFormat(true);
+
     const checkEmail = async () => {
       setIsChecking(true);
+      setHasChecked(false);
+      
       try {
         // Try to sign up with the email to check if it exists
-        // This is the most reliable way to check email existence
-        const { data, error } = await supabase.auth.signUp({
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email,
-          password: 'temp-password-for-check-123!@#', // Temporary password
+          password: 'TempCheck123!@#$%^&*()',
           options: {
             emailRedirectTo: `${window.location.origin}/`,
           }
         });
-        
-        // If there's an error about email already registered, user exists
-        if (error && error.message.toLowerCase().includes('already registered')) {
-          setEmailExists(true);
-        } else if (error && error.message.toLowerCase().includes('user already registered')) {
-          setEmailExists(true);
-        } else if (data.user && !data.user.email_confirmed_at) {
-          // If signup succeeded but email not confirmed, it means email is available
-          setEmailExists(false);
-          // Clean up the test user registration immediately
-          if (data.session) {
-            await supabase.auth.signOut();
+
+        if (signUpError) {
+          // Check if error message indicates user already exists
+          const errorMessage = signUpError.message.toLowerCase();
+          if (
+            errorMessage.includes('already') ||
+            errorMessage.includes('registered') ||
+            errorMessage.includes('exists')
+          ) {
+            setEmailExists(true);
+          } else {
+            setEmailExists(false);
+          }
+        } else if (signUpData.user) {
+          // Check if user was actually created or already exists
+          if (signUpData.user.identities && signUpData.user.identities.length === 0) {
+            // User already exists - identities array is empty
+            setEmailExists(true);
+          } else {
+            // New user was created, clean it up
+            setEmailExists(false);
+            if (signUpData.session) {
+              await supabase.auth.signOut();
+            }
           }
         } else {
           setEmailExists(false);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log('Email check error:', error);
         setEmailExists(false);
       }
+      
       setIsChecking(false);
       setHasChecked(true);
     };
 
-    const timer = setTimeout(checkEmail, 1000); // Increased debounce time
+    const timer = setTimeout(checkEmail, 1000);
     return () => clearTimeout(timer);
   }, [email]);
 
-  return { isChecking, emailExists, hasChecked };
+  return { isChecking, emailExists, hasChecked, isValidFormat };
 };

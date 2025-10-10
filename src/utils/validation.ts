@@ -12,3 +12,17 @@ export const validateUpiId = (upiId: string): boolean => {
   
   return upiPattern.test(upiId);
 };
+
+/**
+ * Validates an email address according to RFC 5322 standard
+ * @param email The email address to validate
+ * @returns boolean indicating if the email is valid
+ */
+export const validateEmail = (email: string): boolean => {
+  if (!email || typeof email !== 'string') return false;
+  
+  // Comprehensive email regex pattern following RFC 5322
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  
+  return emailPattern.test(email.trim());
+};

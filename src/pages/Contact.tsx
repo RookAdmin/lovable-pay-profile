@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, MessageSquare, Phone } from "lucide-react";
+import { Mail, MessageSquare, Phone, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { validateEmail } from "@/utils/validation";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -13,16 +14,31 @@ const Contact = () => {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    if (name === 'email') {
+      if (value && !validateEmail(value)) {
+        setEmailError('Please enter a valid email address');
+      } else {
+        setEmailError('');
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateEmail(formData.email)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+    
     setIsSubmitting(true);
 
     // Simulate form submission
@@ -172,9 +188,17 @@ const Contact = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+                        emailError ? 'border-red-500' : 'border-gray-200'
+                      }`}
                       placeholder="your.email@example.com"
                     />
+                    {emailError && (
+                      <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                        <AlertCircle size={12} />
+                        {emailError}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -198,7 +222,7 @@ const Contact = () => {
 
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !!emailError}
                     className="w-full"
                   >
                     {isSubmitting ? "Sending..." : "Send Message"}
