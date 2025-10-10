@@ -90,7 +90,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             <VerificationBadge
               isVerified={isVerified}
               category={verificationCategory}
-              size="sm"
+              size="lg"
             />
           )}
         </div>

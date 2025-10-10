@@ -12,14 +12,6 @@ const ProfileLayout: React.FC = () => {
       <header className="w-full backdrop-blur-md bg-white sticky top-0 z-50 border-b border-gray-100 shadow-sm">
         <div className="container px-4 py-4 flex items-center justify-between">
           <Logo />
-          <div className="text-sm text-gray-600 flex items-center">
-            <img
-              src="/Rook-dark.png"
-              alt="Rook"
-              className="h-8 w-25 mr-2"
-            />
-            <span className="opacity-70"> from Rook</span>
-          </div>
         </div>
       </header>
 

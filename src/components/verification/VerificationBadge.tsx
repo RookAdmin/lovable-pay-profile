@@ -1,7 +1,11 @@
-
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { VerificationType } from "@/types/verification";
 
@@ -18,7 +22,7 @@ const categoryLabel: Record<VerificationType, string> = {
   proprietorship: "Proprietorship",
   private_limited: "Private Limited",
   llp: "LLP",
-  corporation: "Corporation"
+  corporation: "Corporation",
 };
 
 const VerificationBadge: React.FC<VerificationBadgeProps> = ({
@@ -26,28 +30,34 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
   category,
   className,
   showTooltip = true,
-  size = "md"
+  size = "md",
 }) => {
   if (!isVerified) return null;
 
   const sizeClasses = {
     sm: "text-xs",
     md: "text-sm",
-    lg: "text-base"
+    lg: "text-base",
+  };
+
+  const iconSizeClasses = {
+    sm: "h-3 w-3",
+    md: "h-4 w-4",
+    lg: "h-5 w-5",
   };
 
   const badge = (
-    <Badge 
+    <Badge
       className={cn(
         "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 font-medium flex items-center gap-1",
         sizeClasses[size],
         className
       )}
     >
-      <img 
+      <img
         src="/lovable-uploads/2c53d21a-5f90-41e2-9d99-3f8dbe8c424d.png"
         alt="Verified"
-        className="h-3 w-3"
+        className={iconSizeClasses[size]}
       />
       {category ? `Verified ${categoryLabel[category]}` : ""}
     </Badge>
@@ -58,13 +68,13 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
-          {badge}
-        </TooltipTrigger>
+        <TooltipTrigger asChild>{badge}</TooltipTrigger>
         <TooltipContent>
-          <p>{category ? 
-            `${categoryLabel[category]} verification approved` : 
-            "Account verified"}</p>
+          <p>
+            {category
+              ? `${categoryLabel[category]} verification approved`
+              : "Account verified"}
+          </p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

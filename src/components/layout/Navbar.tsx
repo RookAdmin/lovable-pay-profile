@@ -32,48 +32,7 @@ const Navbar: React.FC = () => {
 
   const NavLinks = () => (
     <>
-      <Link
-        to="/features"
-        className="text-black hover:text-secondary transition-colors"
-        onClick={() => setIsOpen(false)}
-      >
-        Features
-      </Link>
-      <Link
-        to="/solutions"
-        className="text-black hover:text-secondary transition-colors"
-        onClick={() => setIsOpen(false)}
-      >
-        Solutions
-      </Link>
-      <Link
-        to="/resources"
-        className="text-black hover:text-secondary transition-colors"
-        onClick={() => setIsOpen(false)}
-      >
-        Free Resources
-      </Link>
-      <Link
-        to="/trends"
-        className="text-black hover:text-secondary transition-colors"
-        onClick={() => setIsOpen(false)}
-      >
-        Latest Trends
-      </Link>
-      <Link
-        to="/pricing"
-        className="text-black hover:text-secondary transition-colors"
-        onClick={() => setIsOpen(false)}
-      >
-        Pricing
-      </Link>
-      <Link
-        to="/blog"
-        className="text-black hover:text-secondary transition-colors"
-        onClick={() => setIsOpen(false)}
-      >
-        Blog
-      </Link>
+      
     </>
   );
 
@@ -100,15 +59,6 @@ const Navbar: React.FC = () => {
         </>
       ) : (
         <>
-          <Link to="/demo" onClick={() => setIsOpen(false)}>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-blue-500 font-medium w-full md:w-auto"
-            >
-              ▶ DEMO
-            </Button>
-          </Link>
           <Link to="/login" onClick={() => setIsOpen(false)}>
             <Button
               variant="outline"
