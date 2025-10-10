@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { SocialLink } from "@/types/profile";
 import VerificationBadge from "./verification/VerificationBadge";
 import { VerificationType } from "@/types/verification";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface ProfileHeaderProps {
   username: string;
@@ -76,22 +81,58 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         >
           <AvatarImage src={avatarUrl} alt={displayName} />
           <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white font-medium text-3xl">
-            {displayName.substring(0, 2).toUpperCase()}
+            {displayName ? displayName.substring(0, 2).toUpperCase() : ""}
           </AvatarFallback>
         </Avatar>
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center">
           <h1 className="text-2xl md:text-3xl font-bold text-center">
             {displayName}
           </h1>
           {isVerified && (
-            <VerificationBadge
-              isVerified={isVerified}
-              category={verificationCategory}
-              size="lg"
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-full"
+                >
+                  <VerificationBadge
+                    isVerified={isVerified}
+                    category={verificationCategory}
+                    size="lg"
+                    showTooltip={false}
+                  />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-6">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900">
+                    <img
+                      src="/lovable-uploads/2c53d21a-5f90-41e2-9d99-3f8dbe8c424d.png"
+                      alt="Verified"
+                      className="h-10 w-10"
+                    />
+                  </div>
+                  <div className="space-y-3 text-center">
+                    <h3 className="font-bold text-lg">About Verified</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      This profile is officially verified by Paym.me to ensure
+                      the utmost authenticity. All payment QR codes and linked
+                      bank details are directly validated with the account
+                      holder. You can confidently make payments using the
+                      provided details, knowing they are secure.
+                    </p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Verification protects you from phishing and fraudulent
+                      requests. Look for this badge to trust payments and
+                      support genuine profiles.
+                    </p>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
         </div>
 
