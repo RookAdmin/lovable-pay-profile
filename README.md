@@ -52,7 +52,7 @@ This project is built with:
 
 - Vite
 - TypeScript
-- React
+- ReactJS
 - shadcn-ui
 - Tailwind CSS
 - Supabase (for backend and authentication)
