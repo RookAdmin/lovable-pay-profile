@@ -254,9 +254,11 @@ Thank you.`;
                 }`}
               >
                 <CardHeader className="pb-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{paym.title}</CardTitle>
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="flex-1 min-w-0 max-w-[180px]">
+                      <CardTitle className="text-lg break-words leading-tight">
+                        {paym.title}
+                      </CardTitle>
                       <CardDescription className="mt-1">
                         {format(paym.createdAt, "MMM d, yyyy")}
                       </CardDescription>

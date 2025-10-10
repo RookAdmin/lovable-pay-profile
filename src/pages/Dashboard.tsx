@@ -865,6 +865,7 @@ const Dashboard = () => {
                           initialData={profile}
                           onProfilePhotoUpdated={refetchProfile}
                           onClose={() => setEditingProfile(false)}
+                          username={profile.username}
                         />
                       </CardContent>
                     </Card>
