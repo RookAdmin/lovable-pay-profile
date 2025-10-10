@@ -47,6 +47,7 @@ import { VerificationSection } from "@/components/verification/VerificationSecti
 import AppsIntegrationsSection from "@/components/integrations/AppsIntegrationsSection";
 import TransactionsSection from "@/components/TransactionsSection";
 import Payms from "./Payms";
+import AnalyticsDashboard from "@/components/analytics/AnalyticsDashboard";
 
 // Define goToAppsIntegrations for the global window object
 declare global {
@@ -274,12 +275,7 @@ const Dashboard = () => {
     { icon: QrCode, label: "Payment Methods", tabId: "payment" },
     { icon: LinkIcon, label: "Smart Links", tabId: "smart-links" },
     { icon: Wallet, label: "Transactions", tabId: "transactions" },
-    {
-      icon: BarChart,
-      label: "Analytics",
-      tabId: "analytics",
-      link: "/analytics",
-    },
+    { icon: BarChart, label: "Analytics", tabId: "analytics" },
     { icon: Puzzle, label: "Apps & Integrations", tabId: "apps-integrations" },
     { icon: BadgeCheck, label: "Verification", tabId: "verification" },
     { icon: Settings, label: "Settings", tabId: "settings" },
@@ -343,47 +339,26 @@ const Dashboard = () => {
                 </div>
 
                 <nav className="space-y-2">
-                  {navigationItems.map((item) =>
-                    item.link ? (
-                      <Link to={item.link} key={item.label}>
-                        <Button
-                          variant="ghost"
-                          className={`w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-300 rounded-lg py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary ${
-                            activeTab === item.tabId
-                              ? "bg-gray-100 dark:bg-gray-700/50 text-primary dark:text-primary font-medium"
-                              : ""
-                          }`}
-                          size="sm"
-                        >
-                          <item.icon size={18} className="mr-3" />
-                          {item.label}
-                          <ChevronRight
-                            size={16}
-                            className="ml-auto opacity-70"
-                          />
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Button
-                        key={item.label}
-                        variant="ghost"
-                        className={`w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-300 rounded-lg py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary ${
-                          activeTab === item.tabId
-                            ? "bg-gray-100 dark:bg-gray-700/50 text-primary dark:text-primary font-medium"
-                            : ""
-                        }`}
-                        size="sm"
-                        onClick={() => handleNavItemClick(item.tabId)}
-                      >
-                        <item.icon size={18} className="mr-3" />
-                        {item.label}
-                        <ChevronRight
-                          size={16}
-                          className="ml-auto opacity-70"
-                        />
-                      </Button>
-                    )
-                  )}
+                  {navigationItems.map((item) => (
+                    <Button
+                      key={item.label}
+                      variant="ghost"
+                      className={`w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-300 rounded-lg py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary ${
+                        activeTab === item.tabId
+                          ? "bg-gray-100 dark:bg-gray-700/50 text-primary dark:text-primary font-medium"
+                          : ""
+                      }`}
+                      size="sm"
+                      onClick={() => handleNavItemClick(item.tabId)}
+                    >
+                      <item.icon size={18} className="mr-3" />
+                      {item.label}
+                      <ChevronRight
+                        size={16}
+                        className="ml-auto opacity-70"
+                      />
+                    </Button>
+                  ))}
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300 rounded-lg py-3 px-4"
@@ -818,6 +793,57 @@ const Dashboard = () => {
 
                 {/* Transactions Tab Content */}
                 {activeTab === "transactions" && <TransactionsSection />}
+
+                {/* Analytics Tab Content */}
+                {activeTab === "analytics" && (
+                  <div className="space-y-6">
+                    <Tabs defaultValue="overview" className="space-y-6">
+                      <TabsList className="grid grid-cols-3 w-full max-w-md bg-muted">
+                        <TabsTrigger
+                          value="overview"
+                          className="flex items-center gap-2"
+                        >
+                          <BarChart size={16} />
+                          <span>Overview</span>
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="payments"
+                          className="flex items-center gap-2"
+                        >
+                          <Wallet size={16} />
+                          <span>Payments</span>
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="links"
+                          className="flex items-center gap-2"
+                        >
+                          <LinkIcon size={16} />
+                          <span>Smart Links</span>
+                        </TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="overview" className="space-y-6">
+                        <AnalyticsDashboard />
+                      </TabsContent>
+
+                      <TabsContent value="payments" className="space-y-6">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-xl">Payment Analytics</CardTitle>
+                          </CardHeader>
+                        </Card>
+                      </TabsContent>
+
+                      <TabsContent value="links" className="space-y-6">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-xl">Smart Link Analytics</CardTitle>
+                          </CardHeader>
+                        </Card>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+                )}
 
                 {/* Verification Tab Content */}
                 {activeTab === "verification" && <VerificationSection />}
