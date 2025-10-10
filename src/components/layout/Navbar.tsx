@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -11,15 +10,25 @@ const Navbar: React.FC = () => {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  
+
+  // Scroll to top whenever the route changes
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, [location.pathname]);
+
   // Show navigation links only on homepage and other public pages
-  const showNavLinks = location.pathname === '/' || 
-                      location.pathname === '/features' || 
-                      location.pathname === '/solutions' || 
-                      location.pathname === '/resources' || 
-                      location.pathname === '/trends' || 
-                      location.pathname === '/pricing' || 
-                      location.pathname === '/blog';
+  const showNavLinks =
+    location.pathname === "/" ||
+    location.pathname === "/features" ||
+    location.pathname === "/solutions" ||
+    location.pathname === "/resources" ||
+    location.pathname === "/trends" ||
+    location.pathname === "/pricing" ||
+    location.pathname === "/blog";
 
   const NavLinks = () => (
     <>
@@ -77,9 +86,9 @@ const Navbar: React.FC = () => {
               Dashboard
             </Button>
           </Link>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => {
               signOut();
               setIsOpen(false);
@@ -101,7 +110,11 @@ const Navbar: React.FC = () => {
             </Button>
           </Link>
           <Link to="/login" onClick={() => setIsOpen(false)}>
-            <Button variant="outline" size="sm" className="font-medium w-full md:w-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              className="font-medium w-full md:w-auto"
+            >
               LOGIN
             </Button>
           </Link>
@@ -151,23 +164,23 @@ const Navbar: React.FC = () => {
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between pb-4 border-b">
                   <Logo withTagline />
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setIsOpen(false)}
                     className="p-2"
                   >
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
-                
+
                 {/* Mobile Navigation Links */}
                 {showNavLinks && (
                   <nav className="flex flex-col space-y-4 py-6 border-b">
                     <NavLinks />
                   </nav>
                 )}
-                
+
                 {/* Mobile Auth Buttons */}
                 <div className="flex flex-col space-y-3 pt-6 mt-auto">
                   <AuthButtons />
