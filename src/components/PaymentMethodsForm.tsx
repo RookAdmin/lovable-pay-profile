@@ -21,7 +21,7 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const upiSchema = z.object({
-  upiId: z.string().optional()
+  upiId: z.string().optional().or(z.literal(''))
 });
 
 const bankSchema = z.object({
@@ -73,8 +73,23 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         return;
       }
 
-      if (!data.upiId) {
-        toast.error('Please enter a UPI ID');
+      // If UPI ID is empty or undefined, delete the payment method
+      if (!data.upiId || data.upiId.trim() === '') {
+        if (upiMethod?.id) {
+          const { error } = await supabase
+            .from('payment_methods')
+            .delete()
+            .eq('id', upiMethod.id);
+
+          if (error) throw error;
+          toast.success('UPI details removed');
+        }
+        
+        await queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
+        
+        if (onUpdate) {
+          onUpdate();
+        }
         return;
       }
 
@@ -160,50 +175,51 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
 
 
   return (
-    <Card className="border-border/40">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-xl">Payment Methods</CardTitle>
-        <CardDescription className="text-sm">
+    <Card className="border-border/50 bg-gradient-to-br from-background to-muted/20">
+      <CardHeader className="pb-3 space-y-1">
+        <CardTitle className="text-lg font-semibold">Payment Methods</CardTitle>
+        <CardDescription className="text-xs text-muted-foreground">
           Configure how you receive payments
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="upi" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="upi">UPI</TabsTrigger>
-            <TabsTrigger value="bank">Bank Account</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-4 h-9">
+            <TabsTrigger value="upi" className="text-sm">UPI</TabsTrigger>
+            <TabsTrigger value="bank" className="text-sm">Bank Account</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="upi" className="space-y-4 mt-0">
+          <TabsContent value="upi" className="space-y-3 mt-0">
             <Form {...upiForm}>
-              <form onSubmit={upiForm.handleSubmit(handleUpiSubmit)} className="space-y-4">
+              <form onSubmit={upiForm.handleSubmit(handleUpiSubmit)} className="space-y-3">
                 <FormField
                   control={upiForm.control}
                   name="upiId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">UPI ID</FormLabel>
+                      <FormLabel className="text-sm font-medium">UPI ID (Optional)</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="yourname@upi" 
                           {...field}
-                          className="h-10"
+                          className="h-9 text-sm"
                         />
                       </FormControl>
+                      <p className="text-xs text-muted-foreground">Leave empty to remove UPI from your profile</p>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full h-10">
+                <Button type="submit" className="w-full h-9 text-sm">
                   {upiMethod?.id ? 'Update' : 'Save'}
                 </Button>
               </form>
             </Form>
           </TabsContent>
           
-          <TabsContent value="bank" className="space-y-4 mt-0">
+          <TabsContent value="bank" className="space-y-3 mt-0">
             <Form {...bankForm}>
-              <form onSubmit={bankForm.handleSubmit(handleBankSubmit)} className="space-y-4">
+              <form onSubmit={bankForm.handleSubmit(handleBankSubmit)} className="space-y-3">
                 <FormField
                   control={bankForm.control}
                   name="bankName"
@@ -218,21 +234,21 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                               role="combobox"
                               aria-expanded={bankSearchOpen}
                               className={cn(
-                                "w-full justify-between h-10 font-normal",
+                                "w-full justify-between h-9 font-normal text-sm",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
-                              {field.value || "Select bank..."}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              <span className="truncate">{field.value || "Search and select bank..."}</span>
+                              <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-full p-0" align="start">
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
                           <Command>
-                            <CommandInput placeholder="Search banks..." className="h-9" />
+                            <CommandInput placeholder="Type to search banks..." className="h-9 text-sm" />
                             <CommandList>
-                              <CommandEmpty>No bank found.</CommandEmpty>
-                              <CommandGroup className="max-h-64 overflow-auto">
+                              <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">No bank found.</CommandEmpty>
+                              <CommandGroup className="max-h-72 overflow-auto">
                                 {globalBanks.map((bank) => (
                                   <CommandItem
                                     key={`${bank.name}-${bank.country}`}
@@ -241,11 +257,12 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                                       field.onChange(formatBankDisplay(bank));
                                       setBankSearchOpen(false);
                                     }}
+                                    className="text-sm"
                                   >
-                                    {formatBankDisplay(bank)}
+                                    <span className="flex-1">{formatBankDisplay(bank)}</span>
                                     <Check
                                       className={cn(
-                                        "ml-auto h-4 w-4",
+                                        "ml-2 h-4 w-4",
                                         field.value === formatBankDisplay(bank)
                                           ? "opacity-100"
                                           : "opacity-0"
@@ -273,7 +290,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                         <Input 
                           placeholder="Full name as per bank records" 
                           {...field}
-                          className="h-10"
+                          className="h-9 text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -291,7 +308,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                         <Input 
                           placeholder="Account number" 
                           {...field}
-                          className="h-10"
+                          className="h-9 text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -309,7 +326,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                         <Input 
                           placeholder="IFSC or SWIFT code" 
                           {...field}
-                          className="h-10"
+                          className="h-9 text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -317,7 +334,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                   )}
                 />
                 
-                <Button type="submit" className="w-full h-10">
+                <Button type="submit" className="w-full h-9 text-sm">
                   {bankMethod?.id ? 'Update' : 'Save'}
                 </Button>
               </form>

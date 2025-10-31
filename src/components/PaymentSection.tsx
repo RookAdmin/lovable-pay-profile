@@ -59,6 +59,14 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
   // Check if we're in the profile view mode (public profile view)
   const isInViewMode = isViewingMode || !onPaymentMethodUpdate;
   
+  // Check if any payment method exists
+  const hasPaymentMethods = upiId || bankDetails;
+  
+  // If in viewing mode and no payment methods, don't render anything
+  if (isInViewMode && !hasPaymentMethods) {
+    return null;
+  }
+  
   // Determine the default tab based on available payment methods
   const getDefaultTab = () => {
     if (upiId) return "upi";
@@ -68,25 +76,26 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
   
   return (
     <div className="space-y-6">
-      <Card className={`shadow-md border-gray-100 ${className}`}>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-xl">Payment Methods</CardTitle>
+      <Card className={`border-border/40 ${className}`}>
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
+          <CardTitle className="text-lg font-semibold">Payment Methods</CardTitle>
           {!isInViewMode && (
             <Button 
-              variant="outline" 
+              variant="ghost" 
               size="sm" 
               onClick={handleFormToggle}
+              className="h-8 text-xs"
             >
-              {showForm ? 'Hide Form' : (
+              {showForm ? 'Cancel' : (
                 <>
-                  <PlusCircle size={16} className="mr-2" />
-                  {(!upiId && !bankDetails) ? 'Add Payment Method' : 'Edit Payment Methods'}
+                  <PlusCircle size={14} className="mr-1.5" />
+                  {(!upiId && !bankDetails) ? 'Add' : 'Edit'}
                 </>
               )}
             </Button>
           )}
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           {(showForm && !isInViewMode) ? (
             <PaymentMethodsForm 
               upiMethod={upiId ? { 
@@ -99,37 +108,37 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
             />
           ) : (
             <Tabs defaultValue={getDefaultTab()} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="upi" className="flex items-center gap-2">
-                  <QrCode size={16} />
+              <TabsList className="grid w-full grid-cols-2 mb-3 h-9">
+                <TabsTrigger value="upi" className="flex items-center gap-1.5 text-sm" disabled={!upiId && isInViewMode}>
+                  <QrCode size={14} />
                   <span>UPI</span>
                 </TabsTrigger>
-                <TabsTrigger value="bank" className="flex items-center gap-2">
-                  <Banknote size={16} />
+                <TabsTrigger value="bank" className="flex items-center gap-1.5 text-sm" disabled={!bankDetails && isInViewMode}>
+                  <Banknote size={14} />
                   <span>Bank</span>
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="upi" className="space-y-4">
+              <TabsContent value="upi" className="space-y-3">
                 {upiId ? (
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center space-y-3">
                     <DynamicQRCode 
                       value={upiId} 
                       type="upi" 
-                      className="mb-4"
+                      className="mb-2"
                     />
                     <CopyField label="UPI ID" value={upiId} className="w-full" />
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No UPI ID available.
+                  <div className="text-center py-6 text-sm text-muted-foreground">
+                    No UPI ID configured
                   </div>
                 )}
               </TabsContent>
               
-              <TabsContent value="bank" className="space-y-4">
+              <TabsContent value="bank" className="space-y-3">
                 {bankDetails ? (
-                  <>
+                  <div className="space-y-2.5">
                     <CopyField 
                       label="Account Number" 
                       value={bankDetails.accountNumber} 
@@ -146,10 +155,10 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
                       label="Bank Name" 
                       value={bankDetails.bankName} 
                     />
-                  </>
+                  </div>
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No bank details available.
+                  <div className="text-center py-6 text-sm text-muted-foreground">
+                    No bank details configured
                   </div>
                 )}
               </TabsContent>

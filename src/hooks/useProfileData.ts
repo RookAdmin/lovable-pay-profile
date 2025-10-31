@@ -36,11 +36,11 @@ const getProfile = async (username: string) => {
   console.log("Fetching profile for:", username);
   
   try {
-    // Get public profile data
+    // Get public profile data - case insensitive username lookup
     const { data: rawProfile, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('username', username)
+      .ilike('username', username)
       .single();
 
     if (error) {
