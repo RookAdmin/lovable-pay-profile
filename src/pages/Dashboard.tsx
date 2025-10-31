@@ -357,15 +357,20 @@ const Dashboard = () => {
                       />
                     </button>
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1 text-center flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1 text-center">
                     {profile?.displayName || user?.email}
-                    {profile?.isVerified && (
-                      <BadgeCheck size={20} className="text-green-500" />
-                    )}
                   </h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    @{profile?.username}
-                  </p>
+                  <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    <span>@{profile?.username}</span>
+                    {profile?.isVerified && (
+                      <img
+                        src="/lovable-uploads/2c53d21a-5f90-41e2-9d99-3f8dbe8c424d.png"
+                        alt="Verified"
+                        className="h-4 w-4"
+                        title="Verified Account"
+                      />
+                    )}
+                  </div>
                   <Button
                     onClick={handleShare}
                     className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white shadow-lg hover:shadow-primary/30 transition-all duration-300 rounded-lg py-2 px-4 flex items-center justify-center"

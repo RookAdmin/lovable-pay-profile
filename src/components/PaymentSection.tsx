@@ -147,6 +147,12 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
                       label="IFSC Code" 
                       value={bankDetails.ifsc} 
                     />
+                    {bankDetails.swiftCode && (
+                      <CopyField 
+                        label="SWIFT/BIC Code" 
+                        value={bankDetails.swiftCode} 
+                      />
+                    )}
                     <CopyField 
                       label="Account Holder" 
                       value={bankDetails.accountName} 

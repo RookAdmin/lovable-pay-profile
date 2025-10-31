@@ -56,10 +56,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center justify-center">
+        {displayName && (
           <h1 className="text-2xl md:text-3xl font-bold text-center">
             {displayName}
           </h1>
+        )}
+
+        <div className="flex items-center justify-center gap-1">
+          <div className="text-muted-foreground font-medium">@{username}</div>
           {isVerified && (
             <Popover>
               <PopoverTrigger asChild>
@@ -70,7 +74,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   <VerificationBadge
                     isVerified={isVerified}
                     category={verificationCategory}
-                    size="lg"
+                    size="md"
                     showTooltip={false}
                   />
                 </button>
@@ -104,8 +108,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             </Popover>
           )}
         </div>
-
-        <div className="text-muted-foreground font-medium">@{username}</div>
 
         {bio && <p className="text-muted-foreground max-w-md">{bio}</p>}
 

@@ -4,6 +4,7 @@ export interface BankDetails {
   ifsc: string;
   accountName: string;
   bankName: string;
+  swiftCode?: string;
 }
 
 export interface UpiDetails {

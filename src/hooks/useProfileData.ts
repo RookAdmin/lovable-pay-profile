@@ -11,6 +11,7 @@ interface PaymentDetails {
   ifsc?: string;
   accountName?: string;
   bankName?: string;
+  swiftCode?: string;
   qrCodeUrl?: string;
 }
 
@@ -129,7 +130,8 @@ const getProfile = async (username: string) => {
         accountNumber: paymentDetails.accountNumber,
         ifsc: paymentDetails.ifsc,
         accountName: paymentDetails.accountName,
-        bankName: paymentDetails.bankName
+        bankName: paymentDetails.bankName,
+        swiftCode: paymentDetails.swiftCode
       };
     }
     

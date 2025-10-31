@@ -26,17 +26,22 @@ const upiSchema = z.object({
 
 const bankSchema = z.object({
   accountNumber: z.string().min(5, 'Account number must be at least 5 characters'),
-  ifsc: z.string().min(5, 'IFSC code must be at least 5 characters'),
+  ifsc: z.string().min(5, 'IFSC/SWIFT code must be at least 5 characters'),
   accountName: z.string().min(2, 'Account name must be at least 2 characters'),
-  bankName: z.string().min(2, 'Bank name must be at least 2 characters')
+  bankName: z.string().min(2, 'Bank name must be at least 2 characters').max(30, 'Bank name must be less than 30 characters'),
+  swiftCode: z.string().min(8, 'SWIFT code must be at least 8 characters').max(11, 'SWIFT code must be 8-11 characters')
 });
 
 type UpiFormData = z.infer<typeof upiSchema>;
 type BankFormData = z.infer<typeof bankSchema>;
 
+interface BankMethodDetails extends BankFormData {
+  swiftCode?: string;
+}
+
 interface PaymentMethodsFormProps {
   upiMethod?: { id: string; details: UpiDetails; qr_code_url?: string };
-  bankMethod?: { id: string; details: BankFormData };
+  bankMethod?: { id: string; details: BankMethodDetails };
   onUpdate?: () => void;
 }
 
@@ -62,7 +67,8 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
       accountNumber: bankMethod?.details?.accountNumber || '',
       ifsc: bankMethod?.details?.ifsc || '',
       accountName: bankMethod?.details?.accountName || '',
-      bankName: bankMethod?.details?.bankName || ''
+      bankName: bankMethod?.details?.bankName || '',
+      swiftCode: bankMethod?.details?.swiftCode || ''
     }
   });
 
@@ -238,16 +244,35 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                                 !field.value && "text-muted-foreground"
                               )}
                             >
-                              <span className="truncate">{field.value || "Search and select bank..."}</span>
+                              <span className="truncate">{field.value || "Search or enter custom bank..."}</span>
                               <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
                         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
                           <Command>
-                            <CommandInput placeholder="Type to search banks..." className="h-9 text-sm" />
+                            <CommandInput placeholder="Type to search or enter custom bank..." className="h-9 text-sm" />
                             <CommandList>
-                              <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">No bank found.</CommandEmpty>
+                              <CommandEmpty className="py-3">
+                                <div className="text-center space-y-2">
+                                  <p className="text-sm text-muted-foreground">No bank found.</p>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      const input = document.querySelector('[cmdk-input]') as HTMLInputElement;
+                                      if (input?.value) {
+                                        field.onChange(input.value);
+                                        setBankSearchOpen(false);
+                                      }
+                                    }}
+                                    className="text-xs"
+                                  >
+                                    Use custom bank name
+                                  </Button>
+                                </div>
+                              </CommandEmpty>
                               <CommandGroup className="max-h-72 overflow-auto">
                                 {globalBanks.map((bank) => (
                                   <CommandItem
@@ -275,6 +300,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                           </Command>
                         </PopoverContent>
                       </Popover>
+                      <p className="text-xs text-muted-foreground">Select from list or enter custom bank (max 30 chars)</p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -321,14 +347,34 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                   name="ifsc"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">IFSC / SWIFT Code</FormLabel>
+                      <FormLabel className="text-sm font-medium">IFSC / Routing Code *</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="IFSC or SWIFT code" 
+                          placeholder="IFSC, Routing, or Sort Code" 
                           {...field}
                           className="h-9 text-sm"
                         />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={bankForm.control}
+                  name="swiftCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">SWIFT/BIC Code *</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="SWIFT or BIC code (8-11 characters)" 
+                          {...field}
+                          className="h-9 text-sm uppercase"
+                          maxLength={11}
+                        />
+                      </FormControl>
+                      <p className="text-xs text-muted-foreground">Required for international transfers</p>
                       <FormMessage />
                     </FormItem>
                   )}

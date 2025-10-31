@@ -412,14 +412,16 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="bio">Bio</Label>
+            <Label htmlFor="bio">Bio (max 100 characters)</Label>
             <Textarea
               id="bio"
               name="bio"
               value={formData.bio}
               onChange={handleInputChange}
               rows={3}
+              maxLength={100}
             />
+            <p className="text-xs text-muted-foreground">{formData.bio.length}/100 characters</p>
           </div>
 
           <div className="space-y-2">
