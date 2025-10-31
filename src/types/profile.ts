@@ -13,7 +13,43 @@ export interface Profile {
   createdAt: string;
   updatedAt: string;
   usernameUpdatedAt?: string;
-  views: number; // Added views as a required field with number type
+  views: number;
+  // Social Media & External Profiles
+  facebookUsername?: string;
+  youtubeUsername?: string;
+  pinterestUsername?: string;
+  tiktokUsername?: string;
+  rumbleUsername?: string;
+  whatsappNumber?: string;
+  wechatUsername?: string;
+  telegramUsername?: string;
+  snapchatUsername?: string;
+  qqUsername?: string;
+  tumblrUsername?: string;
+  redditUsername?: string;
+  discordUsername?: string;
+  twitchUsername?: string;
+  quoraUsername?: string;
+  threadsUsername?: string;
+  mastodonUsername?: string;
+  githubUsername?: string;
+  dribbbleUsername?: string;
+  behanceUsername?: string;
+  mediumUsername?: string;
+  soundcloudUsername?: string;
+  spotifyUsername?: string;
+  vimeoUsername?: string;
+  letterboxdUsername?: string;
+  goodreadsUsername?: string;
+  producthuntUsername?: string;
+  amazonStoreUsername?: string;
+  etsyShopUsername?: string;
+  paypalMeUsername?: string;
+  patreonUsername?: string;
+  appleMusicUsername?: string;
+  blueskyHandle?: string;
+  linkedinCompanyUsername?: string;
+  linkedinPersonUsername?: string;
 }
 
 export interface PaymentMethod {

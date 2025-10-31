@@ -43,6 +43,7 @@ import {
 import { Transaction } from "@/types/transaction";
 import UpiVerificationField from "@/components/UpiVerificationField";
 import SettingsForm from "@/components/SettingsForm";
+import ComprehensiveSettingsForm from "@/components/settings/ComprehensiveSettingsForm";
 import { VerificationSection } from "@/components/verification/VerificationSection";
 import AppsIntegrationsSection from "@/components/integrations/AppsIntegrationsSection";
 import TransactionsSection from "@/components/TransactionsSection";
@@ -115,7 +116,43 @@ const Dashboard = () => {
         createdAt: data.created_at,
         updatedAt: data.updated_at,
         usernameUpdatedAt: data.username_updated_at,
-        views: 0, // Default to 0 since the column might not exist yet
+        views: typeof (data as any).views === 'number' ? (data as any).views : 0,
+        // Social Media & External Profiles  
+        facebookUsername: (data as any).facebook_username,
+        youtubeUsername: (data as any).youtube_username,
+        pinterestUsername: (data as any).pinterest_username,
+        tiktokUsername: (data as any).tiktok_username,
+        rumbleUsername: (data as any).rumble_username,
+        whatsappNumber: (data as any).whatsapp_number,
+        wechatUsername: (data as any).wechat_username,
+        telegramUsername: (data as any).telegram_username,
+        snapchatUsername: (data as any).snapchat_username,
+        qqUsername: (data as any).qq_username,
+        tumblrUsername: (data as any).tumblr_username,
+        redditUsername: (data as any).reddit_username,
+        discordUsername: (data as any).discord_username,
+        twitchUsername: (data as any).twitch_username,
+        quoraUsername: (data as any).quora_username,
+        threadsUsername: (data as any).threads_username,
+        mastodonUsername: (data as any).mastodon_username,
+        githubUsername: (data as any).github_username,
+        dribbbleUsername: (data as any).dribbble_username,
+        behanceUsername: (data as any).behance_username,
+        mediumUsername: (data as any).medium_username,
+        soundcloudUsername: (data as any).soundcloud_username,
+        spotifyUsername: (data as any).spotify_username,
+        vimeoUsername: (data as any).vimeo_username,
+        letterboxdUsername: (data as any).letterboxd_username,
+        goodreadsUsername: (data as any).goodreads_username,
+        producthuntUsername: (data as any).producthunt_username,
+        amazonStoreUsername: (data as any).amazon_store_username,
+        etsyShopUsername: (data as any).etsy_shop_username,
+        paypalMeUsername: (data as any).paypal_me_username,
+        patreonUsername: (data as any).patreon_username,
+        appleMusicUsername: (data as any).apple_music_username,
+        blueskyHandle: (data as any).bluesky_handle,
+        linkedinCompanyUsername: (data as any).linkedin_company_username,
+        linkedinPersonUsername: (data as any).linkedin_person_username
       };
 
       return profileData;
@@ -383,15 +420,6 @@ const Dashboard = () => {
                       ?.label || "Dashboard"}
                   </CardTitle>
                   <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-1 border-gray-300 dark:border-gray-600"
-                      onClick={() => setEditingProfile(true)}
-                    >
-                      <Edit size={16} />
-                      Edit Profile
-                    </Button>
                     <Link to={`/${profile?.username}`} target="_blank">
                       <Button
                         variant="outline"
@@ -850,7 +878,7 @@ const Dashboard = () => {
 
                 {/* Settings Tab Content */}
                 {activeTab === "settings" && (
-                  <SettingsForm
+                  <ComprehensiveSettingsForm
                     initialData={profile}
                     refetchProfile={refetchProfile}
                   />

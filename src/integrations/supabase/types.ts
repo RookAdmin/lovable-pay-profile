@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
+  }
   public: {
     Tables: {
       paym_reminders: {
@@ -158,58 +163,163 @@ export type Database = {
       }
       profiles: {
         Row: {
+          amazon_store_username: string | null
+          apple_music_username: string | null
           avatar_url: string | null
+          behance_username: string | null
           bio: string | null
+          bluesky_handle: string | null
           created_at: string
+          discord_username: string | null
           display_name: string | null
+          dribbble_username: string | null
+          etsy_shop_username: string | null
+          facebook_username: string | null
           first_name: string | null
+          github_username: string | null
+          goodreads_username: string | null
           id: string
           instagram_url: string | null
           is_verified: boolean | null
           last_name: string | null
+          letterboxd_username: string | null
+          linkedin_company_username: string | null
+          linkedin_person_username: string | null
           linkedin_url: string | null
+          mastodon_username: string | null
+          medium_username: string | null
+          patreon_username: string | null
+          paypal_me_username: string | null
+          pinterest_username: string | null
+          producthunt_username: string | null
+          qq_username: string | null
+          quora_username: string | null
+          reddit_username: string | null
+          rumble_username: string | null
+          snapchat_username: string | null
+          soundcloud_username: string | null
+          spotify_username: string | null
+          telegram_username: string | null
+          threads_username: string | null
+          tiktok_username: string | null
+          tumblr_username: string | null
+          twitch_username: string | null
           twitter_url: string | null
           updated_at: string
           upi_id: string | null
           username: string
           username_updated_at: string | null
+          vimeo_username: string | null
           website_url: string | null
+          wechat_username: string | null
+          whatsapp_number: string | null
+          youtube_username: string | null
         }
         Insert: {
+          amazon_store_username?: string | null
+          apple_music_username?: string | null
           avatar_url?: string | null
+          behance_username?: string | null
           bio?: string | null
+          bluesky_handle?: string | null
           created_at?: string
+          discord_username?: string | null
           display_name?: string | null
+          dribbble_username?: string | null
+          etsy_shop_username?: string | null
+          facebook_username?: string | null
           first_name?: string | null
+          github_username?: string | null
+          goodreads_username?: string | null
           id: string
           instagram_url?: string | null
           is_verified?: boolean | null
           last_name?: string | null
+          letterboxd_username?: string | null
+          linkedin_company_username?: string | null
+          linkedin_person_username?: string | null
           linkedin_url?: string | null
+          mastodon_username?: string | null
+          medium_username?: string | null
+          patreon_username?: string | null
+          paypal_me_username?: string | null
+          pinterest_username?: string | null
+          producthunt_username?: string | null
+          qq_username?: string | null
+          quora_username?: string | null
+          reddit_username?: string | null
+          rumble_username?: string | null
+          snapchat_username?: string | null
+          soundcloud_username?: string | null
+          spotify_username?: string | null
+          telegram_username?: string | null
+          threads_username?: string | null
+          tiktok_username?: string | null
+          tumblr_username?: string | null
+          twitch_username?: string | null
           twitter_url?: string | null
           updated_at?: string
           upi_id?: string | null
           username: string
           username_updated_at?: string | null
+          vimeo_username?: string | null
           website_url?: string | null
+          wechat_username?: string | null
+          whatsapp_number?: string | null
+          youtube_username?: string | null
         }
         Update: {
+          amazon_store_username?: string | null
+          apple_music_username?: string | null
           avatar_url?: string | null
+          behance_username?: string | null
           bio?: string | null
+          bluesky_handle?: string | null
           created_at?: string
+          discord_username?: string | null
           display_name?: string | null
+          dribbble_username?: string | null
+          etsy_shop_username?: string | null
+          facebook_username?: string | null
           first_name?: string | null
+          github_username?: string | null
+          goodreads_username?: string | null
           id?: string
           instagram_url?: string | null
           is_verified?: boolean | null
           last_name?: string | null
+          letterboxd_username?: string | null
+          linkedin_company_username?: string | null
+          linkedin_person_username?: string | null
           linkedin_url?: string | null
+          mastodon_username?: string | null
+          medium_username?: string | null
+          patreon_username?: string | null
+          paypal_me_username?: string | null
+          pinterest_username?: string | null
+          producthunt_username?: string | null
+          qq_username?: string | null
+          quora_username?: string | null
+          reddit_username?: string | null
+          rumble_username?: string | null
+          snapchat_username?: string | null
+          soundcloud_username?: string | null
+          spotify_username?: string | null
+          telegram_username?: string | null
+          threads_username?: string | null
+          tiktok_username?: string | null
+          tumblr_username?: string | null
+          twitch_username?: string | null
           twitter_url?: string | null
           updated_at?: string
           upi_id?: string | null
           username?: string
           username_updated_at?: string | null
+          vimeo_username?: string | null
           website_url?: string | null
+          wechat_username?: string | null
+          whatsapp_number?: string | null
+          youtube_username?: string | null
         }
         Relationships: []
       }
@@ -401,21 +511,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -433,14 +547,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -456,14 +572,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -479,14 +597,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -494,14 +614,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
