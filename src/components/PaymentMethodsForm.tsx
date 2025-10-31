@@ -12,11 +12,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import QRUploader from "./QRUploader";
 import { UpiDetails } from '@/types/payment';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { globalBanks, formatBankDisplay, searchBanks } from '@/data/globalBanks';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const upiSchema = z.object({
-  upiId: z.string().min(5, 'UPI ID must be at least 5 characters')
+  upiId: z.string().optional()
 });
 
 const bankSchema = z.object({
@@ -42,16 +47,7 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
 }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
-  const [qrCodeUrl, setQrCodeUrl] = React.useState<string>(
-    upiMethod?.details?.qrCodeUrl || 
-    upiMethod?.qr_code_url || 
-    ""
-  );
-
-  console.log("Initial QR Code URL:", qrCodeUrl);
-  console.log("UPI method:", upiMethod);
-  console.log("UPI method ID:", upiMethod?.id);
+  const [bankSearchOpen, setBankSearchOpen] = React.useState(false);
 
   const upiForm = useForm<UpiFormData>({
     resolver: zodResolver(upiSchema),
@@ -77,48 +73,36 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
         return;
       }
 
-      console.log("Saving UPI with QR code URL:", qrCodeUrl);
+      if (!data.upiId) {
+        toast.error('Please enter a UPI ID');
+        return;
+      }
 
       const payload = {
         profile_id: user.id,
         type: 'upi',
         details: { 
-          upiId: data.upiId,
-          qrCodeUrl: qrCodeUrl 
+          upiId: data.upiId
         },
-        qr_code_url: qrCodeUrl || null,
         is_active: true,
         is_primary: true
       };
 
-      console.log("Full payload for UPI save:", payload);
-      console.log("UPI method ID for update:", upiMethod?.id);
-
-      if (upiMethod?.id && upiMethod.id.length > 5) {
-        const { data: updateData, error } = await supabase
+      if (upiMethod?.id) {
+        const { error } = await supabase
           .from('payment_methods')
           .update(payload)
-          .eq('id', upiMethod.id)
-          .select();
+          .eq('id', upiMethod.id);
 
-        if (error) {
-          console.error("Update error:", error);
-          throw error;
-        }
-        console.log("UPI update result:", updateData);
-        toast.success('UPI details updated successfully');
+        if (error) throw error;
+        toast.success('UPI details updated');
       } else {
-        const { data: insertData, error } = await supabase
+        const { error } = await supabase
           .from('payment_methods')
-          .insert(payload)
-          .select();
+          .insert(payload);
 
-        if (error) {
-          console.error("Insert error:", error);
-          throw error;
-        }
-        console.log("UPI insert result:", insertData);
-        toast.success('UPI details saved successfully');
+        if (error) throw error;
+        toast.success('UPI details saved');
       }
       
       await queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
@@ -174,131 +158,23 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
     }
   };
 
-  const saveQrToSupabase = async (qrUrl: string) => {
-    if (!user) return false;
-    let result;
-    
-    console.log("Saving QR to Supabase:", qrUrl);
-    console.log("UPI method ID for QR save:", upiMethod?.id);
-    
-    try {
-      if (upiMethod?.id && upiMethod.id.length > 5) {
-        result = await supabase
-          .from('payment_methods')
-          .update({
-            details: { 
-              ...(upiMethod.details || {}),
-              qrCodeUrl: qrUrl 
-            },
-            qr_code_url: qrUrl
-          })
-          .eq('id', upiMethod.id)
-          .select();
-
-        console.log("QR update result:", result);
-      } else {
-        const upiId = upiForm.getValues().upiId;
-        if (upiId) {
-          result = await supabase
-            .from('payment_methods')
-            .insert({
-              profile_id: user.id,
-              type: 'upi',
-              details: { 
-                upiId: upiId,
-                qrCodeUrl: qrUrl 
-              },
-              qr_code_url: qrUrl,
-              is_active: true,
-              is_primary: true
-            })
-            .select();
-
-          console.log("QR insert result:", result);
-        } else {
-          toast.error("Please enter a UPI ID before saving QR code");
-          return false;
-        }
-      }
-
-      if (result?.error) {
-        console.error("Failed to save QR public URL:", result.error);
-        toast.error("Failed to save QR code image.");
-        return false;
-      } else {
-        toast.success("QR code saved!");
-        await queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
-        
-        if (onUpdate) {
-          onUpdate();
-        }
-        
-        return true;
-      }
-    } catch (error) {
-      console.error("Error saving QR to Supabase:", error);
-      toast.error("Failed to save QR code image.");
-      return false;
-    }
-  };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Add Payment Methods</CardTitle>
-        <CardDescription>
-          Set up how people can pay you. Upload your QR for UPI if available.
+    <Card className="border-border/40">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl">Payment Methods</CardTitle>
+        <CardDescription className="text-sm">
+          Configure how you receive payments
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="upi">
-          <TabsList className="mb-4">
+        <Tabs defaultValue="upi" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="upi">UPI</TabsTrigger>
             <TabsTrigger value="bank">Bank Account</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="upi">
-            <div className="mb-3">
-              <QRUploader
-                initialUrl={qrCodeUrl}
-                onUpload={(url) => {
-                  console.log("QR code uploaded:", url);
-                  setQrCodeUrl(url);
-                }}
-                onDelete={() => {
-                  setQrCodeUrl("");
-                  if (user && upiMethod?.id) {
-                    supabase
-                      .from('payment_methods')
-                      .update({
-                        details: { 
-                          ...(upiMethod.details || {}),
-                          qrCodeUrl: ""
-                        },
-                        qr_code_url: null
-                      })
-                      .eq('id', upiMethod.id)
-                      .then(({ error }) => {
-                        if (error) {
-                          toast.error("Failed to remove QR code");
-                        } else {
-                          queryClient.invalidateQueries({ queryKey: ['payment_methods', user.id] });
-                          if (onUpdate) {
-                            onUpdate();
-                          }
-                          toast.success("QR code removed");
-                        }
-                      });
-                  }
-                }}
-                onSave={(url) => {
-                  return saveQrToSupabase(url);
-                }}
-              />
-              <div className="text-xs text-muted-foreground text-center mt-1">
-                Upload your own UPI QR (for Google Pay, PhonePe, Paytm, etc).
-              </div>
-            </div>
+          <TabsContent value="upi" className="space-y-4 mt-0">
             <Form {...upiForm}>
               <form onSubmit={upiForm.handleSubmit(handleUpiSubmit)} className="space-y-4">
                 <FormField
@@ -306,32 +182,117 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                   name="upiId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>UPI ID</FormLabel>
+                      <FormLabel className="text-sm font-medium">UPI ID</FormLabel>
                       <FormControl>
-                        <Input placeholder="yourname@upi" {...field} />
+                        <Input 
+                          placeholder="yourname@upi" 
+                          {...field}
+                          className="h-10"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
-                  {upiMethod?.id ? 'Update UPI Details' : 'Save UPI Details'}
+                <Button type="submit" className="w-full h-10">
+                  {upiMethod?.id ? 'Update' : 'Save'}
                 </Button>
               </form>
             </Form>
           </TabsContent>
           
-          <TabsContent value="bank">
+          <TabsContent value="bank" className="space-y-4 mt-0">
             <Form {...bankForm}>
               <form onSubmit={bankForm.handleSubmit(handleBankSubmit)} className="space-y-4">
+                <FormField
+                  control={bankForm.control}
+                  name="bankName"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel className="text-sm font-medium">Bank Name</FormLabel>
+                      <Popover open={bankSearchOpen} onOpenChange={setBankSearchOpen}>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={bankSearchOpen}
+                              className={cn(
+                                "w-full justify-between h-10 font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value || "Select bank..."}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0" align="start">
+                          <Command>
+                            <CommandInput placeholder="Search banks..." className="h-9" />
+                            <CommandList>
+                              <CommandEmpty>No bank found.</CommandEmpty>
+                              <CommandGroup className="max-h-64 overflow-auto">
+                                {globalBanks.map((bank) => (
+                                  <CommandItem
+                                    key={`${bank.name}-${bank.country}`}
+                                    value={formatBankDisplay(bank)}
+                                    onSelect={() => {
+                                      field.onChange(formatBankDisplay(bank));
+                                      setBankSearchOpen(false);
+                                    }}
+                                  >
+                                    {formatBankDisplay(bank)}
+                                    <Check
+                                      className={cn(
+                                        "ml-auto h-4 w-4",
+                                        field.value === formatBankDisplay(bank)
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={bankForm.control}
+                  name="accountName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">Account Holder Name</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Full name as per bank records" 
+                          {...field}
+                          className="h-10"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
                 <FormField
                   control={bankForm.control}
                   name="accountNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Account Number</FormLabel>
+                      <FormLabel className="text-sm font-medium">Account Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your account number" {...field} />
+                        <Input 
+                          placeholder="Account number" 
+                          {...field}
+                          className="h-10"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -343,45 +304,21 @@ const PaymentMethodsForm: React.FC<PaymentMethodsFormProps> = ({
                   name="ifsc"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>IFSC Code</FormLabel>
+                      <FormLabel className="text-sm font-medium">IFSC / SWIFT Code</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter IFSC code" {...field} />
+                        <Input 
+                          placeholder="IFSC or SWIFT code" 
+                          {...field}
+                          className="h-10"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 
-                <FormField
-                  control={bankForm.control}
-                  name="accountName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Account Holder Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter account holder name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={bankForm.control}
-                  name="bankName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bank Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter bank name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <Button type="submit" className="w-full">
-                  {bankMethod?.id ? 'Update Bank Details' : 'Save Bank Details'}
+                <Button type="submit" className="w-full h-10">
+                  {bankMethod?.id ? 'Update' : 'Save'}
                 </Button>
               </form>
             </Form>
