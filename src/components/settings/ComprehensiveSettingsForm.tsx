@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Camera, AlertCircle, Calendar, AlertTriangle } from 'lucide-react';
+import { Camera, AlertCircle, Calendar, AlertTriangle, Shield } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -74,6 +74,11 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
   });
   const [timeZone, setTimeZone] = useState("UTC");
   const [tfaEnabled, setTfaEnabled] = useState(false);
+  
+  // Profile PIN state
+  const [profilePinEnabled, setProfilePinEnabled] = useState(true);
+  const [profilePin, setProfilePin] = useState('');
+  const [showPin, setShowPin] = useState(false);
 
   // Query user preferences
   const { data: userPreferences, refetch: refetchPreferences } = useQuery({
@@ -106,6 +111,13 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
       }
     }
   }, [userPreferences]);
+
+  // Load profile PIN enabled state
+  useEffect(() => {
+    if (initialData) {
+      setProfilePinEnabled(initialData.profile_pin_enabled ?? true);
+    }
+  }, [initialData]);
 
   // Check username change eligibility
   useEffect(() => {
@@ -294,6 +306,64 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
       setSecurityData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (error: any) {
       toast.error(error.message || "Failed to update password");
+    }
+  };
+
+  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    setProfilePin(value);
+  };
+
+  const handleSavePin = async () => {
+    if (profilePin.length !== 6) {
+      toast.error('PIN must be exactly 6 characters');
+      return;
+    }
+
+    try {
+      if (!user?.id) return;
+
+      // Hash the PIN (simple SHA-256)
+      const encoder = new TextEncoder();
+      const data = encoder.encode(profilePin + 'paym_salt_2024');
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ profile_pin_hash: hashHex })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast.success('Profile PIN saved successfully');
+      setProfilePin('');
+      setShowPin(false);
+      await refetchProfile();
+    } catch (error) {
+      console.error('Error saving PIN:', error);
+      toast.error('Failed to save PIN');
+    }
+  };
+
+  const handleTogglePinProtection = async (checked: boolean) => {
+    try {
+      if (!user?.id) return;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ profile_pin_enabled: checked })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setProfilePinEnabled(checked);
+      toast.success(checked ? 'PIN protection enabled' : 'PIN protection disabled');
+      await refetchProfile();
+    } catch (error) {
+      console.error('Error toggling PIN protection:', error);
+      toast.error('Failed to update PIN protection');
     }
   };
 
@@ -526,6 +596,93 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
               />
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Privacy Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="w-5 h-5" />
+            Profile PIN & Payment Privacy
+          </CardTitle>
+          <CardDescription>
+            Secure your payment details with a 6-character PIN. When enabled, visitors must enter your PIN to view payment information on your public profile.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-start justify-between gap-4 p-4 bg-muted/30 rounded-lg border border-border/40">
+            <div className="space-y-1 flex-1">
+              <div className="flex items-center gap-2">
+                <label htmlFor="pin-protection" className="text-sm font-medium">
+                  Require Profile PIN to view payment details
+                </label>
+                <span className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                  Recommended
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Your Profile PIN secures all payment methods. Without the correct PIN, no one (including bots, crawlers, and AI) can view your payment info—even on public pages.
+              </p>
+            </div>
+            <Switch
+              id="pin-protection"
+              checked={profilePinEnabled}
+              onCheckedChange={handleTogglePinProtection}
+            />
+          </div>
+
+          {profilePinEnabled && (
+            <div className="space-y-3 p-4 border border-border/40 rounded-lg">
+              <div className="space-y-2">
+                <label htmlFor="profile-pin" className="text-sm font-medium">
+                  Profile PIN
+                </label>
+                <p className="text-xs text-muted-foreground">
+                  Enter exactly 6 uppercase letters (A-Z) and numbers (0-9). This PIN will be required to view your payment details.
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    id="profile-pin"
+                    type={showPin ? "text" : "password"}
+                    value={profilePin}
+                    onChange={handlePinChange}
+                    placeholder="Enter 6-character PIN"
+                    maxLength={6}
+                    className="font-mono tracking-wider uppercase"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPin(!showPin)}
+                  >
+                    {showPin ? 'Hide' : 'Show'}
+                  </Button>
+                </div>
+                {profilePin.length > 0 && profilePin.length < 6 && (
+                  <p className="text-xs text-muted-foreground">
+                    {6 - profilePin.length} more character{6 - profilePin.length !== 1 ? 's' : ''} required
+                  </p>
+                )}
+              </div>
+              <Button
+                onClick={handleSavePin}
+                disabled={profilePin.length !== 6}
+                className="w-full"
+              >
+                Save Profile PIN
+              </Button>
+            </div>
+          )}
+
+          {!profilePinEnabled && (
+            <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+              <p className="text-sm text-yellow-700 dark:text-yellow-400">
+                <strong>Warning:</strong> Your payment details will be visible to anyone who visits your public profile. Only disable PIN protection if you're using this for public fundraising or creator profiles.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

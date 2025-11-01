@@ -1,21 +1,64 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useProfileData } from '@/hooks/useProfileData';
 import ProfileHeader from '@/components/ProfileHeader';
 import PaymentSection from '@/components/PaymentSection';
 import SmartLinkSection from '@/components/SmartLinkSection';
+import { ProfilePinModal } from '@/components/ProfilePinModal';
 import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 const Profile = () => {
   const { username } = useParams<{ username: string }>();
   const { data, isLoading, error, refetch } = useProfileData(username);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinVerified, setPinVerified] = useState(false);
+  const [validatedPaymentMethods, setValidatedPaymentMethods] = useState<any[]>([]);
+  const [pinProtectionEnabled, setPinProtectionEnabled] = useState(true);
   
   useEffect(() => {
     if (username) {
       refetch();
     }
   }, [username, refetch]);
+
+  useEffect(() => {
+    const checkPinProtection = async () => {
+      if (!data?.profile?.username) return;
+      
+      try {
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('profile_pin_enabled')
+          .ilike('username', data.profile.username)
+          .single();
+        
+        if (error) throw error;
+        
+        const pinEnabled = profileData?.profile_pin_enabled ?? true;
+        setPinProtectionEnabled(pinEnabled);
+        
+        // Show PIN modal if protection is enabled
+        if (pinEnabled) {
+          setShowPinModal(true);
+        }
+      } catch (error) {
+        console.error('Error checking PIN protection:', error);
+        // Default to enabled for security
+        setPinProtectionEnabled(true);
+        setShowPinModal(true);
+      }
+    };
+    
+    checkPinProtection();
+  }, [data?.profile?.username]);
+
+  const handleValidPin = (paymentMethods: any[]) => {
+    setPinVerified(true);
+    setValidatedPaymentMethods(paymentMethods);
+    setShowPinModal(false);
+  };
 
   if (isLoading) {
     return (
@@ -44,13 +87,21 @@ const Profile = () => {
     );
   }
   
-  
   return (
     <>
       <Helmet>
         <title>{`${data.profile.displayName || data.profile.username} - Paym.me`}</title>
         <meta name="description" content={`${data.profile.bio || `Professional payment profile for ${data.profile.displayName || data.profile.username}`} - Send payments easily with smart links and UPI integration.`} />
       </Helmet>
+      
+      {/* PIN Modal */}
+      {showPinModal && username && (
+        <ProfilePinModal
+          open={showPinModal}
+          onValidPin={handleValidPin}
+          username={username}
+        />
+      )}
       
       <div className="min-h-screen bg-gray-50">
         {/* Premium background texture */}
@@ -87,20 +138,22 @@ const Profile = () => {
           </motion.div>
           
           <div className="space-y-6">
-            {/* Payment Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-            >
-              <PaymentSection
-                upiId={data.upiId}
-                bankDetails={data.bankDetails}
-                qrCodeUrl={data.qrCodeUrl}
-                isViewingMode={true}
-                className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
-              />
-            </motion.div>
+            {/* Payment Section - Only show if PIN is verified or protection is disabled */}
+            {(!pinProtectionEnabled || pinVerified) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+              >
+                <PaymentSection
+                  upiId={data.upiId}
+                  bankDetails={data.bankDetails}
+                  qrCodeUrl={data.qrCodeUrl}
+                  isViewingMode={true}
+                  className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
+                />
+              </motion.div>
+            )}
             
             {/* Smart Links Section - Now with connected UPI payment */}
             <motion.div

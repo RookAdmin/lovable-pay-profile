@@ -1,1 +1,4 @@
 project_id = "yluhgcbluxsnzlyhyabr"
+
+[functions.validate-profile-pin]
+verify_jwt = false
