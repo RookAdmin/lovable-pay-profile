@@ -161,6 +161,41 @@ export type Database = {
           },
         ]
       }
+      profile_pin_audit: {
+        Row: {
+          attempt_ip: string | null
+          attempt_success: boolean
+          attempt_user_agent: string | null
+          created_at: string | null
+          id: string
+          profile_id: string
+        }
+        Insert: {
+          attempt_ip?: string | null
+          attempt_success: boolean
+          attempt_user_agent?: string | null
+          created_at?: string | null
+          id?: string
+          profile_id: string
+        }
+        Update: {
+          attempt_ip?: string | null
+          attempt_success?: boolean
+          attempt_user_agent?: string | null
+          created_at?: string | null
+          id?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_pin_audit_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           amazon_store_username: string | null
@@ -192,6 +227,8 @@ export type Database = {
           paypal_me_username: string | null
           pinterest_username: string | null
           producthunt_username: string | null
+          profile_pin_enabled: boolean | null
+          profile_pin_hash: string | null
           qq_username: string | null
           quora_username: string | null
           reddit_username: string | null
@@ -245,6 +282,8 @@ export type Database = {
           paypal_me_username?: string | null
           pinterest_username?: string | null
           producthunt_username?: string | null
+          profile_pin_enabled?: boolean | null
+          profile_pin_hash?: string | null
           qq_username?: string | null
           quora_username?: string | null
           reddit_username?: string | null
@@ -298,6 +337,8 @@ export type Database = {
           paypal_me_username?: string | null
           pinterest_username?: string | null
           producthunt_username?: string | null
+          profile_pin_enabled?: boolean | null
+          profile_pin_hash?: string | null
           qq_username?: string | null
           quora_username?: string | null
           reddit_username?: string | null
