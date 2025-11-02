@@ -541,7 +541,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_random_pin: { Args: never; Returns: string }
+      hash_pin: { Args: { pin: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
