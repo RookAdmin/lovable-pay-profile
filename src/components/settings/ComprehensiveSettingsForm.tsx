@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Camera, AlertCircle, Calendar, AlertTriangle, Shield } from 'lucide-react';
+import { Camera, AlertCircle, Calendar, AlertTriangle, Shield, Edit2, Check } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { validateEmail } from "@/utils/validation";
 import { socialPlatforms } from '@/utils/socialMedia';
 import AvatarPicker, { Avatar as DefaultAvatar } from "@/components/ui/avatar-picker";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 interface ComprehensiveSettingsFormProps {
   initialData: any;
@@ -78,7 +79,8 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
   // Profile PIN state
   const [profilePinEnabled, setProfilePinEnabled] = useState(true);
   const [profilePin, setProfilePin] = useState('');
-  const [showPin, setShowPin] = useState(false);
+  const [isEditingPin, setIsEditingPin] = useState(false);
+  const [hasExistingPin, setHasExistingPin] = useState(false);
 
   // Query user preferences
   const { data: userPreferences, refetch: refetchPreferences } = useQuery({
@@ -116,6 +118,7 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
   useEffect(() => {
     if (initialData) {
       setProfilePinEnabled(initialData.profile_pin_enabled ?? true);
+      setHasExistingPin(!!initialData.profile_pin_hash);
     }
   }, [initialData]);
 
@@ -309,9 +312,10 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
     }
   };
 
-  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    setProfilePin(value);
+  const handlePinChange = (value: string) => {
+    const sanitized = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    setProfilePin(sanitized);
+    setHasChanges(true);
   };
 
   const handleSavePin = async () => {
@@ -339,7 +343,9 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
 
       toast.success('Profile PIN saved successfully');
       setProfilePin('');
-      setShowPin(false);
+      setIsEditingPin(false);
+      setHasExistingPin(true);
+      setHasChanges(false);
       await refetchProfile();
     } catch (error) {
       console.error('Error saving PIN:', error);
@@ -634,45 +640,84 @@ const ComprehensiveSettingsForm: React.FC<ComprehensiveSettingsFormProps> = ({
 
           {profilePinEnabled && (
             <div className="space-y-3 p-4 border border-border/40 rounded-lg">
-              <div className="space-y-2">
-                <label htmlFor="profile-pin" className="text-sm font-medium">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium">
                   Profile PIN
                 </label>
-                <p className="text-xs text-muted-foreground">
-                  Enter exactly 6 uppercase letters (A-Z) and numbers (0-9). This PIN will be required to view your payment details.
-                </p>
-                <div className="flex gap-2">
-                  <Input
-                    id="profile-pin"
-                    type={showPin ? "text" : "password"}
-                    value={profilePin}
-                    onChange={handlePinChange}
-                    placeholder="Enter 6-character PIN"
-                    maxLength={6}
-                    className="font-mono tracking-wider uppercase"
-                  />
+                {hasExistingPin && !isEditingPin && (
                   <Button
-                    type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    onClick={() => setShowPin(!showPin)}
+                    onClick={() => setIsEditingPin(true)}
+                    className="h-8 gap-2"
                   >
-                    {showPin ? 'Hide' : 'Show'}
+                    <Edit2 className="w-4 h-4" />
+                    Edit PIN
                   </Button>
-                </div>
-                {profilePin.length > 0 && profilePin.length < 6 && (
-                  <p className="text-xs text-muted-foreground">
-                    {6 - profilePin.length} more character{6 - profilePin.length !== 1 ? 's' : ''} required
-                  </p>
                 )}
               </div>
-              <Button
-                onClick={handleSavePin}
-                disabled={profilePin.length !== 6}
-                className="w-full"
-              >
-                Save Profile PIN
-              </Button>
+
+              {hasExistingPin && !isEditingPin ? (
+                <div className="p-4 border rounded-lg bg-muted/50">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Shield className="w-4 h-4" />
+                    <span>PIN is set and active</span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Enter exactly 6 uppercase letters (A-Z) and numbers (0-9)
+                  </p>
+                  <div className="flex justify-center py-2">
+                    <InputOTP
+                      maxLength={6}
+                      value={profilePin}
+                      onChange={handlePinChange}
+                      pattern="^[A-Z0-9]+$"
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} className="w-12 h-12 text-xl" />
+                        <InputOTPSlot index={1} className="w-12 h-12 text-xl" />
+                        <InputOTPSlot index={2} className="w-12 h-12 text-xl" />
+                        <InputOTPSlot index={3} className="w-12 h-12 text-xl" />
+                        <InputOTPSlot index={4} className="w-12 h-12 text-xl" />
+                        <InputOTPSlot index={5} className="w-12 h-12 text-xl" />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                  {profilePin.length > 0 && profilePin.length < 6 && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      {6 - profilePin.length} more character{6 - profilePin.length !== 1 ? 's' : ''} required
+                    </p>
+                  )}
+                  {profilePin.length === 6 && (
+                    <div className="flex gap-2 mt-3">
+                      <Button 
+                        onClick={handleSavePin}
+                        size="sm"
+                        className="flex-1"
+                      >
+                        <Check className="w-4 h-4 mr-2" />
+                        Save PIN
+                      </Button>
+                      {isEditingPin && (
+                        <Button 
+                          onClick={() => {
+                            setIsEditingPin(false);
+                            setProfilePin('');
+                            setHasChanges(false);
+                          }}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )}
 

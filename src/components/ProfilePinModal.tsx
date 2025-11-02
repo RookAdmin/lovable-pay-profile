@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Shield, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 interface ProfilePinModalProps {
   open: boolean;
@@ -16,12 +16,10 @@ export const ProfilePinModal: React.FC<ProfilePinModalProps> = ({ open, onValidP
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (value.length <= 6) {
-      setPin(value);
-      setError('');
-    }
+  const handlePinChange = (value: string) => {
+    const sanitized = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    setPin(sanitized);
+    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,16 +79,24 @@ export const ProfilePinModal: React.FC<ProfilePinModalProps> = ({ open, onValidP
         
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Input
-              type="text"
-              value={pin}
-              onChange={handlePinChange}
-              placeholder="Enter 6-character PIN"
-              maxLength={6}
-              className="text-center text-2xl tracking-widest font-mono uppercase"
-              autoFocus
-              disabled={loading}
-            />
+            <div className="flex justify-center">
+              <InputOTP
+                maxLength={6}
+                value={pin}
+                onChange={handlePinChange}
+                disabled={loading}
+                pattern="^[A-Z0-9]+$"
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} className="w-12 h-12 text-xl" />
+                  <InputOTPSlot index={1} className="w-12 h-12 text-xl" />
+                  <InputOTPSlot index={2} className="w-12 h-12 text-xl" />
+                  <InputOTPSlot index={3} className="w-12 h-12 text-xl" />
+                  <InputOTPSlot index={4} className="w-12 h-12 text-xl" />
+                  <InputOTPSlot index={5} className="w-12 h-12 text-xl" />
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
             {error && (
               <div className="flex items-center gap-2 text-sm text-destructive">
                 <AlertCircle className="w-4 h-4" />
